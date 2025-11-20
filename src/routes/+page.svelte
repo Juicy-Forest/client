@@ -1,2 +1,3 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<section class="flex items-center justify-center h-screen">
+  <h1 class="text-3xl font-bold text-amber-800 bg-amber-300/50 p-2">Juicy forest is currently under construction!</h1>
+</section>
