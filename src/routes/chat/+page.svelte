@@ -1,5 +1,4 @@
 <script>
     import Construction from "$lib/components/Construction.svelte";
 </script>
-
-<Construction text={"Juicy Forest"}/>
+<Construction text={"Chat"}/>
