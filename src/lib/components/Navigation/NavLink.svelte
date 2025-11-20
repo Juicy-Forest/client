@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
   let { route, text, icon } = $props()
-
 </script>
 
 <li>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
-    import Navigation from '$lib/components/Navigation.svelte';
+  import Navigation from '$lib/components/Navigation/Navigation.svelte';
 
 	let { children } = $props();
 </script>
