@@ -1,3 +1,7 @@
-<section class="flex items-center justify-center h-screen">
-  <h1 class="text-3xl font-bold text-amber-800 bg-amber-300/50 p-2">Inventory is currently under construction!</h1>
-</section>
+<script>
+    import Construction from "$lib/components/Construction.svelte";
+</script>
+
+<Construction text="Inventory"/>
+
+
