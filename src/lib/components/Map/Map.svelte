@@ -76,28 +76,32 @@
   .rectangle {
     width: 1000px;
     height: 500px;
-    background-color: lightblue;
-    border: 2px solid black;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 3px solid #b45309;
+    border-radius: 12px;
     position: relative;
     overflow: hidden;
     user-select: none;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   }
 
   .rectangle i {
     position: absolute;
     transform: translate(-50%, -50%);
     pointer-events: none; 
-    color: #333;
+    color: #92400e;
   }
 
   .rectangle i.preview {
-    opacity: 0.8;
-    font-size: 32px;
-    color: rgba(0,0,0,0.6);
+    opacity: 0.6;
+    font-size: 40px;
+    color: rgba(146, 64, 14, 0.5);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
   }
 
   .rectangle i.placed {
-    font-size: 28px;
-    color: #222;
+    font-size: 32px;
+    color: #b45309;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
   }
 </style>

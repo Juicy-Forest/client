@@ -20,54 +20,74 @@
           referrerpolicy="no-referrer" />
 </svelte:head>
 
-<div class="map-container">
-    <Map {selectedIcon} on:placed={handlePlaced} />
-</div>
+<div class="flex flex-col items-center justify-center min-h-screen gap-6 p-6">
+    <div class="flex flex-col items-center gap-2">
+        <h1 class="text-3xl font-bold text-amber-900">Map</h1>
+        <p class="text-sm text-amber-700">Select an item and click on the map to place it</p>
+    </div>
+    
+    <div class="rounded-xl overflow-hidden shadow-lg">
+        <Map {selectedIcon} on:placed={handlePlaced} />
+    </div>
 
-<div class="item-picker" role="list">
-    <button type="button" class:selected={selectedIcon === 'fa-solid fa-fan'} on:click={() => select('fa-solid fa-fan')} aria-label="Fan">
-        <i class="fa-solid fa-fan" aria-hidden="true"></i>
-    </button>
-    <button type="button" class:selected={selectedIcon === 'fa-solid fa-box'} on:click={() => select('fa-solid fa-box')} aria-label="Box">
-        <i class="fa-solid fa-box" aria-hidden="true"></i>
-    </button>
-    <button type="button" class:selected={selectedIcon === 'fa-solid fa-heart'} on:click={() => select('fa-solid fa-heart')} aria-label="Heart">
-        <i class="fa-solid fa-heart" aria-hidden="true"></i>
-    </button>
+    <div class="flex gap-3 bg-amber-100 rounded-lg p-4 shadow-md border-2 border-amber-200" role="list">
+        <button type="button" 
+            class:selected={selectedIcon === 'fa-solid fa-fan'} 
+            on:click={() => select('fa-solid fa-fan')} 
+            aria-label="Fan"
+            class="item-btn">
+            <i class="fa-solid fa-fan" aria-hidden="true"></i>
+            <span class="text-xs mt-1">Fan</span>
+        </button>
+        <button type="button" 
+            class:selected={selectedIcon === 'fa-solid fa-box'} 
+            on:click={() => select('fa-solid fa-box')} 
+            aria-label="Box"
+            class="item-btn">
+            <i class="fa-solid fa-box" aria-hidden="true"></i>
+            <span class="text-xs mt-1">Box</span>
+        </button>
+        <button type="button" 
+            class:selected={selectedIcon === 'fa-solid fa-heart'} 
+            on:click={() => select('fa-solid fa-heart')} 
+            aria-label="Heart"
+            class="item-btn">
+            <i class="fa-solid fa-heart" aria-hidden="true"></i>
+            <span class="text-xs mt-1">Heart</span>
+        </button>
+    </div>
 </div>
 
 <style>
-.map-container {
-    display: flex;
-    justify-content: center; 
-    align-items: center;     
-    width: 100%;             
-    min-height: calc(100vh - 6rem); 
-    padding-top: 3rem;     
-    box-sizing: border-box;
-}
-.item-picker {
-    margin: 0 auto;
-    display: flex;
-    flex-wrap: nowrap;
-    background-color: DodgerBlue;
-    width: 50%;
-    justify-content: center;
-}
-.item-picker button {
-    background-color: #f1f1f1;
-    width: 100px;
-    margin: 10px;
-    padding: 10px;
-    text-align: center;  
-    font-size: 30px;
-    border: none;
-    cursor: pointer;
-}
-.item-picker button.selected {
-    outline: 3px solid gold;
-    box-shadow: 0 0 6px rgba(0,0,0,0.25);
-}
+    .item-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 80px;
+        height: 80px;
+        background-color: white;
+        color: #78350f;
+        border-radius: 8px;
+        border: 2px solid transparent;
+        cursor: pointer;
+        font-size: 24px;
+        transition: all 200ms;
+    }
+
+    .item-btn:hover {
+        background-color: #fef3c7;
+    }
+
+    .item-btn.selected {
+        border-color: #b45309;
+        background-color: #fcd34d;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    :global(body) {
+        background-color: #faf5f0;
+    }
 </style>
 
 
