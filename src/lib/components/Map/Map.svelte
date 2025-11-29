@@ -1,7 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  export let selectedIcon: string | null = null; 
+  export let selectedIcon: string | null = null;
+  export let isEditMode = false; 
 
   let container: HTMLDivElement | null = null;
   let rect = { left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0 };
@@ -38,6 +39,7 @@
       return;
     }
 
+    if (!isEditMode) return; 
     updateRect();
     preview.visible = true;
     preview.x = e.clientX - rect.left;
@@ -56,6 +58,7 @@
   }
 
   function handleMouseDown(e: MouseEvent) {
+    if (isEditMode) return;
     isDragging = true;
     dragStartX = e.clientX;
     dragStartY = e.clientY;
@@ -68,7 +71,7 @@
   }
 
   function handleClick(e: MouseEvent) {
-    if (isDragging) return; // don't place if we were dragging
+    if (isDragging) return; 
     
     updateRect();
     const x = e.clientX - rect.left;
@@ -89,7 +92,6 @@
     const delta = e.deltaY > 0 ? -0.1 : 0.1;
     zoom = Math.max(minZoom, Math.min(maxZoom, zoom + delta));
     
-    // Reset position when zooming out to minimum
     if (zoom === minZoom) {
       offsetX = 0;
       offsetY = 0;
@@ -136,7 +138,7 @@
     user-select: none;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     transition: transform 150ms ease-out;
-    cursor: grab;
+    cursor: pointer;
   }
 
   .rectangle:active {

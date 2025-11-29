@@ -2,9 +2,15 @@
     import Map from '$lib/components/Map/Map.svelte';
 
     let selectedIcon: string | null = null;
+    let isEditMode = false;
 
     function select(icon: string) {
         selectedIcon = selectedIcon === icon ? null : icon;
+    }
+
+    function toggleEditMode() {
+        isEditMode = !isEditMode;
+        selectedIcon = null; 
     }
 
     function handlePlaced(e: CustomEvent) {
@@ -21,15 +27,27 @@
 </svelte:head>
 
 <div class="flex flex-col items-center justify-center min-h-screen gap-6 p-6">
-    <div class="flex flex-col items-center gap-2">
+    <div class="flex flex-col items-center gap-4">
         <h1 class="text-3xl font-bold text-amber-900">Map</h1>
-        <p class="text-sm text-amber-700">Select an item and click on the map to place it</p>
+        <button
+            on:click={toggleEditMode}
+            class:active={isEditMode}
+            class="edit-toggle-btn"
+            aria-label="Toggle edit mode"
+        >
+            <i class="fa-solid fa-pen"></i>
+            <span>{isEditMode ? 'View Mode' : 'Edit Mode'}</span>
+        </button>
+        <p class="text-sm text-amber-700">
+            {isEditMode ? 'Select an item and click on the map to place it' : 'Drag to explore the map'}
+        </p>
     </div>
     
     <div class="rounded-xl overflow-hidden shadow-lg">
-        <Map {selectedIcon} on:placed={handlePlaced} />
+        <Map {selectedIcon} {isEditMode} on:placed={handlePlaced} />
     </div>
 
+    {#if isEditMode}
     <div class="flex gap-3 bg-amber-100 rounded-lg p-4 shadow-md border-2 border-amber-200" role="list">
         <button type="button" 
             class:selected={selectedIcon === 'fa-solid fa-fan'} 
@@ -56,9 +74,34 @@
             <span class="text-xs mt-1">Heart</span>
         </button>
     </div>
+    {/if}
 </div>
 
 <style>
+    .edit-toggle-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        background-color: white;
+        border: 2px solid #b45309;
+        border-radius: 8px;
+        color: #b45309;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 200ms;
+    }
+
+    .edit-toggle-btn:hover {
+        background-color: #fef3c7;
+    }
+
+    .edit-toggle-btn.active {
+        background-color: #fcd34d;
+        border-color: #92400e;
+        color: #92400e;
+    }
+
     .item-btn {
         display: flex;
         flex-direction: column;
