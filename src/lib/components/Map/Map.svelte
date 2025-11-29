@@ -60,7 +60,10 @@
 
   function placeAt(x: number, y: number) {
     if (!selectedIcon) return;
-    const item = { icon: selectedIcon, x, y, id: Date.now(), condition: getRandomCondition() };
+    // Store as percentage to handle resizing
+    const xPct = (x / rect.width) * 100;
+    const yPct = (y / rect.height) * 100;
+    const item = { icon: selectedIcon, x: xPct, y: yPct, id: Date.now(), condition: getRandomCondition() };
     placed = [...placed, item];
   }
 
@@ -72,9 +75,12 @@
     // Check if clicking on an existing item (hit radius of 30px)
     if (!isEditMode) {
       const hitRadius = 30;
-      const clickedItem = placed.find(item => 
-        Math.abs(item.x - mapX) < hitRadius && Math.abs(item.y - mapY) < hitRadius
-      );
+      const clickedItem = placed.find(item => {
+        const itemX = (item.x / 100) * rect.width;
+        const itemY = (item.y / 100) * rect.height;
+        return Math.abs(itemX - mapX) < hitRadius && Math.abs(itemY - mapY) < hitRadius;
+      });
+      
       if (clickedItem) {
         selectedItem = clickedItem;
         return;
@@ -107,7 +113,7 @@
   tabindex="0"
 >
   {#each placed as p (p.id)}
-    <span class="placed-emoji" style="left: {p.x}px; top: {p.y}px; border-color: {getConditionColor(p.condition)};" aria-hidden="true">{emojiMap[p.icon] || p.icon}</span>
+    <span class="placed-emoji" style="left: {p.x}%; top: {p.y}%; border-color: {getConditionColor(p.condition)};" aria-hidden="true">{emojiMap[p.icon] || p.icon}</span>
   {/each}
 
   {#if preview.visible && selectedIcon}
@@ -122,18 +128,15 @@
 
 <style>
   .rectangle {
-    width: 1400px;
-    height: 700px;
+    width: 100%;
+    height: 100%;
     background-image: url('https://www.spier.co.za/wp-content/uploads/2025/01/Spier-Food-Garden-aerial-06_EY-1-2.jpg');
     background-size: cover;
     background-position: center;
-    border: 3px solid #b45309;
-    border-radius: 12px;
+    border: none;
     position: relative;
     overflow: hidden;
     user-select: none;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    transition: transform 150ms ease-out;
     cursor: pointer;
   }
 

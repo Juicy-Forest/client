@@ -100,10 +100,10 @@
 
       <!-- Content -->
       <div class="flex flex-1 flex-col overflow-hidden bg-stone-50/30">
-        <div class="flex-1 overflow-y-auto px-8 py-6">
-            <div class="w-full relative rounded-3xl overflow-hidden shadow-lg border border-stone-200">
-                <img src="/images/JUICY_FOREST_FOOD_GARDEN.png" alt="Birds-eye-view food garden" class="w-full h-auto object-cover block" /> 
-                <div class="absolute inset-0 z-10 p-2 flex flex-wrap content-start">
+        <div class="flex-1 overflow-hidden px-8 py-6">
+            <div class="relative h-full w-full overflow-hidden rounded-3xl border border-stone-200 shadow-lg">
+                <img src="/images/JUICY_FOREST_FOOD_GARDEN.png" alt="Birds-eye-view food garden" class="block h-full w-full object-cover" /> 
+                <div class="absolute inset-0 z-10 flex flex-wrap content-start p-2">
                     {#each sectionInfo as sectionItem (sectionItem.sectionName)}
                         <div class="w-1/2 h-1/2 p-1">
                             <div class={`w-full h-full rounded-2xl border-2 p-4 flex flex-col justify-between transition-all duration-200 hover:scale-[0.98] cursor-pointer ${sectionItem.issue ? "bg-rose-500/20 border-rose-400 hover:border-rose-500 hover:bg-rose-500/30" : "bg-green-600/20 border-green-500 hover:border-green-400 hover:bg-green-600/30"}`}>
