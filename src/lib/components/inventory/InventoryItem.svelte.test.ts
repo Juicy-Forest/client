@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import InventoryItem from './InventoryItem.svelte';
@@ -10,22 +10,31 @@ describe('InventoryItem', () => {
     quantity: 5
   };
 
+  const mockOnEdit = vi.fn();
+  const mockOnDelete = vi.fn();
+
   it('renders item details correctly', () => {
     render(InventoryItem, {
-      props: { item: mockItem }
+      props: { 
+        item: mockItem,
+        onEdit: mockOnEdit,
+        onDelete: mockOnDelete
+      }
     });
 
-    expect(screen.getByText('Type:', { exact: false })).toBeInTheDocument();
     expect(screen.getByText('plant')).toBeInTheDocument();
-    expect(screen.getByText('Name:', { exact: false })).toBeInTheDocument();
     expect(screen.getByText('Tomato')).toBeInTheDocument();
     expect(screen.getByText('Quantity:', { exact: false })).toBeInTheDocument();
-    expect(screen.getByText('5')).toBeInTheDocument();
+    expect(screen.getByText('5', { exact: false })).toBeInTheDocument();
   });
 
   it('renders Edit and Delete buttons', () => {
     render(InventoryItem, {
-      props: { item: mockItem }
+      props: { 
+        item: mockItem,
+        onEdit: mockOnEdit,
+        onDelete: mockOnDelete
+      }
     });
 
     expect(screen.getByText('Edit')).toBeInTheDocument();
@@ -40,12 +49,16 @@ describe('InventoryItem', () => {
     };
 
     render(InventoryItem, {
-      props: { item: seedItem }
+      props: { 
+        item: seedItem,
+        onEdit: mockOnEdit,
+        onDelete: mockOnDelete
+      }
     });
 
     expect(screen.getByText('seed')).toBeInTheDocument();
     expect(screen.getByText('Carrot Seeds')).toBeInTheDocument();
-    expect(screen.getByText('20')).toBeInTheDocument();
+    expect(screen.getByText('20', { exact: false })).toBeInTheDocument();
   });
 
   it('renders tool items correctly', () => {
@@ -56,40 +69,73 @@ describe('InventoryItem', () => {
     };
 
     render(InventoryItem, {
-      props: { item: toolItem }
+      props: { 
+        item: toolItem,
+        onEdit: mockOnEdit,
+        onDelete: mockOnDelete
+      }
     });
 
     expect(screen.getByText('tool')).toBeInTheDocument();
     expect(screen.getByText('Shovel')).toBeInTheDocument();
-    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(screen.getByText('2', { exact: false })).toBeInTheDocument();
   });
 
-  it('Edit button is clickable', async () => {
+  it('renders quantityType when provided', () => {
+    const itemWithQuantityType = {
+      type: 'supply',
+      name: 'Fertilizer',
+      quantity: 10,
+      quantityType: 'kg'
+    };
+
+    render(InventoryItem, {
+      props: { 
+        item: itemWithQuantityType,
+        onEdit: mockOnEdit,
+        onDelete: mockOnDelete
+      }
+    });
+
+    expect(screen.getByText(/10 kg/)).toBeInTheDocument();
+  });
+
+  it('calls onEdit when Edit button is clicked', async () => {
     const user = userEvent.setup();
+    const onEdit = vi.fn();
     
     render(InventoryItem, {
-      props: { item: mockItem }
+      props: { 
+        item: mockItem,
+        onEdit,
+        onDelete: mockOnDelete
+      }
     });
 
     const editButton = screen.getByText('Edit');
     await user.click(editButton);
     
-    // Button should still be in document after click
-    expect(editButton).toBeInTheDocument();
+    expect(onEdit).toHaveBeenCalledWith(mockItem);
+    expect(onEdit).toHaveBeenCalledTimes(1);
   });
 
-  it('Delete button is clickable', async () => {
+  it('calls onDelete when Delete button is clicked', async () => {
     const user = userEvent.setup();
+    const onDelete = vi.fn();
     
     render(InventoryItem, {
-      props: { item: mockItem }
+      props: { 
+        item: mockItem,
+        onEdit: mockOnEdit,
+        onDelete
+      }
     });
 
     const deleteButton = screen.getByText('Delete');
     await user.click(deleteButton);
     
-    // Button should still be in document after click
-    expect(deleteButton).toBeInTheDocument();
+    expect(onDelete).toHaveBeenCalledWith(mockItem);
+    expect(onDelete).toHaveBeenCalledTimes(1);
   });
 
   it('handles items with zero quantity', () => {
@@ -100,9 +146,13 @@ describe('InventoryItem', () => {
     };
 
     render(InventoryItem, {
-      props: { item: emptyItem }
+      props: { 
+        item: emptyItem,
+        onEdit: mockOnEdit,
+        onDelete: mockOnDelete
+      }
     });
 
-    expect(screen.getByText('0')).toBeInTheDocument();
+    expect(screen.getByText('0', { exact: false })).toBeInTheDocument();
   });
 });
