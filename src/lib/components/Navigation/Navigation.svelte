@@ -65,7 +65,7 @@
       class="flex justify-center gap-6  px-8 items-center text-neutral-300"
     >
     {#each navigationLinks as navItem (navItem.route)}
-      <NavLink route={navItem.route} text={navItem.text} icon={navItem.icon} orientation={"Vertical"} onClick={() => {}} /> | 
+      <li><NavLink route={navItem.route} text={navItem.text} icon={navItem.icon} orientation={"Vertical"} onClick={() => {}} /></li> | 
     {/each}
     </ul>
   </div>
