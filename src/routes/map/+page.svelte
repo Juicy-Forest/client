@@ -1,5 +1,6 @@
 <script lang="ts">
     import Map from '$lib/components/Map/Map.svelte';
+    import { onMount } from 'svelte';
 
     let selectedIcon: string | null = null;
     let isEditMode = false;
@@ -16,7 +17,19 @@
     function handlePlaced(e: CustomEvent) {
         console.log('placed', e.detail);
     }
+
+    function handleWindowKeyDown(e: KeyboardEvent) {
+        if (e.key === 'Escape') {
+            if (selectedIcon) {
+                selectedIcon = null;
+            } else if (isEditMode) {
+                isEditMode = false;
+            }
+        }
+    }
 </script>
+
+<svelte:window on:keydown={handleWindowKeyDown} />
 
 <svelte:head>
     <link rel="stylesheet" 

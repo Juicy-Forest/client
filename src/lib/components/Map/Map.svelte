@@ -130,7 +130,7 @@
   .rectangle {
     width: 100%;
     height: 100%;
-    background-image: url('https://www.spier.co.za/wp-content/uploads/2025/01/Spier-Food-Garden-aerial-06_EY-1-2.jpg');
+    background-image: url('/images/JUICY_FOREST_FOOD_GARDEN.png');
     background-size: cover;
     background-position: center;
     border: none;
