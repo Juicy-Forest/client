@@ -39,26 +39,29 @@ $: completed = tasks.filter((t) => t.checked).length;
     total={tasks.length}
 />
 
-<div class="flex flex-col space-y-4 mt-2 mb-6">
+<div class="mt-6 mb-6 flex flex-col gap-2">
     {#each tasks as task, i}
-        <CheckboxTask
-            checked = {task.checked}
-            label = {task.label}
-            onChange={()=> toggleChecked(i)}
-        />
+        <div class="group flex items-center gap-3 rounded-xl border border-stone-100 bg-stone-50/50 px-3 py-2.5 transition-all hover:border-stone-200 hover:bg-white">
+            <CheckboxTask
+                checked = {task.checked}
+                label = {task.label}
+                onChange={()=> toggleChecked(i)}
+            />
+        </div>
     {/each}
 </div>
 
-<div class="flex">
+<form class="flex gap-2" on:submit|preventDefault={addTasks}>
     <input 
-        class="flex-1 border rounded-full p-2 bg-gray-100"
+        class="flex-1 rounded-xl border border-stone-200 bg-stone-50 px-4 py-2.5 text-sm text-stone-800 placeholder:text-stone-400 focus:border-lime-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-lime-100 transition-all"
         type="text"
         bind:value={newTasks}
         placeholder="Add a new task..."
     />
 
     <button 
-    class="ml-2 px-4 py-2 bg-green-500 text-white rounded-ful"
-    on:click={addTasks}
+    class="rounded-xl bg-lime-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-lime-700 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
+    type="submit"
+    disabled={!newTasks.trim()}
     >Add</button>
-</div>
+</form>

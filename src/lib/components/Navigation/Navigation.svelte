@@ -50,13 +50,13 @@
   <!-- Navbar for screen size lg+ -->
   <div class="flex w-full w-[50%]  items-center h-full justify-between items-center px-2 sm:px-4 md:px-10 ">
   <!-- Juicy forest icon -->
-   <div class="flex items-center gap-2 w-[200px]">
-    <div class="flex items-center justify-center rounded-full bg-green-600 p-3">
-      <i class="fa-solid fa-seedling text-white"></i>
+   <div class="flex items-center gap-3 w-[240px]">
+    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-lime-100 text-lime-700 shadow-sm">
+      <i class="fa-solid fa-seedling text-lg"></i>
     </div>
-    <div class="border-green-600/30 border bg-green-600/20 md:hidden lg:block  rounded-md w-fit h-full px-2 flex flex-col py-1">
-      <p class="text-neutral-600 text-xs">Current Garden</p>
-      <p class="text-base text-green-800 -mt-1">Harvet Moon Plot</p>
+    <div class="hidden flex-col md:hidden lg:flex">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400">Current Garden</p>
+      <p class="text-sm font-bold text-stone-700 leading-tight">Harvest Moon Plot</p>
     </div>
    </div>
   <!-- Center navbar -->
