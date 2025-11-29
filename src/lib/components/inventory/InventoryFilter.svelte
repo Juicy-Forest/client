@@ -12,7 +12,7 @@
     ]
 </script>
 
-<div class="flex justify-around bg-gray-200 mx-20 h-10 rounded-md">
+<div class="flex justify-around bg-gray-200 mx-20 h-10 rounded-md shadow-md">
     {#each buttonValues as buttonValue}
     <button
         onclick={() => (selectedInventoryType.selectedInventoryType = buttonValue.onclickType)}

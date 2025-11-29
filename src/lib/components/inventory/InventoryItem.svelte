@@ -1,21 +1,32 @@
 <script>
-    let { item } = $props();
+    let { item, onEdit, onDelete } = $props();
 </script>
 
-<div
-    class="flex justify-between items-center rounded-md border border-black mx-20 my-5 p-5 hover:bg-gray-100"
->
-    <div>
-        <p><b>Type:</b> {item.type}</p>
-        <p><b>Name:</b> {item.name}</p>
-        <p><b>Quantity:</b> {item.quantity}</p>
-    </div>
-    <div class="space-x-5">
-        <button class="bg-blue-300 h-10 w-20 rounded-md hover:bg-blue-400"
-            >Edit</button
-        >
-        <button class="bg-red-300 h-10 w-20 rounded-md hover:bg-red-400"
-            >Delete</button
-        >
-    </div>
+<div class="flex justify-between items-center rounded-md border border-gray-300 shadow-md mx-20 my-5 p-5 hover:bg-gray-50">
+	<div>
+		<div class="flex items-center gap-2 mb-1">
+			<span class="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded uppercase font-bold">
+				{item.type}
+			</span>
+		</div>
+		<h3 class="text-lg font-semibold text-gray-800">{item.name}</h3>
+		<p class="text-gray-600 text-sm mt-1">
+			Quantity: <span class="font-medium text-black">{item.quantity} {item.quantityType || ''}</span>
+		</p>
+	</div>
+	
+	<div class="space-x-3">
+		<button 
+			onclick={() => onEdit(item)}
+			class="bg-blue-100 text-blue-700 h-10 px-4 rounded-md hover:bg-blue-200 font-medium shadow-sm"
+		>
+			Edit
+		</button>
+		<button 
+			onclick={() => onDelete(item)}
+			class="bg-red-100 text-red-700 h-10 px-4 rounded-md hover:bg-red-200 font-medium shadow-sm"
+		>
+			Delete
+		</button>
+	</div>
 </div>

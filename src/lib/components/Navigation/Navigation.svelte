@@ -2,7 +2,7 @@
   import NavLink from "./NavLink.svelte";
 </script>
 
-<nav class="mt-6">
+<nav class="mt-6 absolute left-1/2 -translate-x-1/2">
   <div class="flex justify-center text-center items-center">
     <ul
       class="flex justify-center gap-8 shadow-md border border-gray-300 rounded-full px-8"
