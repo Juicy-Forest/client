@@ -2,13 +2,14 @@
   import type { Channel, Message } from '$lib/components/Chat/types';
   import ChannelItem from '$lib/components/Chat/ChannelItem.svelte';
   import MessageItem from '$lib/components/Chat/MessageItem.svelte';
+  import Modal from '$lib/components/UI/Modal.svelte';
 
-  const channels: Channel[] = [
+  let channels: Channel[] = $state([
     { id: 'general', label: 'general', topic: 'Announcements & hangouts', unread: 3 },
     { id: 'expeditions', label: 'expeditions', topic: 'Field coordination & reports' },
     { id: 'lab-notes', label: 'lab-notes', topic: 'Research documentation & drafts' },
     { id: 'supplies', label: 'supplies', topic: 'Requests & inventory updates', unread: 1 }
-  ];
+  ]);
 
   let messages: Record<string, Message[]> = $state({
     general: [
@@ -76,7 +77,16 @@
     ]
   });
 
-  let activeChannelId = $state(channels[0].id);
+  let activeChannelId = $state('');
+  let showCreateModal = $state(false);
+  let newChannelName = $state('');
+  let newChannelTopic = $state('');
+
+  $effect(() => {
+    if (!activeChannelId && channels.length > 0) {
+      activeChannelId = channels[0].id;
+    }
+  });
   let draftMessage = $state('');
 
   const setActiveChannel = (channelId: string) => {
@@ -106,6 +116,37 @@
     draftMessage = '';
   };
 
+  const openCreateModal = () => {
+    newChannelName = '';
+    newChannelTopic = '';
+    showCreateModal = true;
+  };
+
+  const closeCreateModal = () => {
+    showCreateModal = false;
+  };
+
+  const handleCreateChannel = () => {
+    if (newChannelName.trim()) {
+      const id = newChannelName.toLowerCase().replace(/\s+/g, '-');
+      if (channels.some((c) => c.id === id)) {
+        alert('Channel already exists!');
+        return;
+      }
+      
+      const newChannel: Channel = {
+        id,
+        label: newChannelName,
+        topic: newChannelTopic || 'New channel',
+      };
+      
+      channels = [...channels, newChannel];
+      messages[id] = [];
+      setActiveChannel(id);
+      closeCreateModal();
+    }
+  };
+
   let activeChannel = $derived(channels.find((channel) => channel.id === activeChannelId) ?? channels[0]);
   let activeMessages = $derived(messages[activeChannelId] ?? []);
   let activeMembers = $derived(Array.from(
@@ -132,9 +173,18 @@
     
     <!-- Sidebar -->
     <aside class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-3xl border border-stone-200/60 bg-white/60 px-5 py-6 shadow-sm backdrop-blur-xl transition-colors hover:bg-white/80">
-      <header class="mb-6 px-2">
-        <p class="text-xs font-bold uppercase tracking-widest text-stone-400">Channels</p>
-        <h1 class="mt-1 text-lg font-bold tracking-tight text-stone-800">Camp Atlas</h1>
+      <header class="mb-6 flex items-center justify-between px-2">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-widest text-stone-400">Channels</p>
+          <h1 class="mt-1 text-lg font-bold tracking-tight text-stone-800">Camp Atlas</h1>
+        </div>
+        <button 
+          class="flex h-8 w-8 items-center justify-center rounded-full bg-stone-100 text-stone-500 transition-colors hover:bg-lime-100 hover:text-lime-700"
+          onclick={openCreateModal}
+          aria-label="Create channel"
+        >
+          <i class="fa-solid fa-plus text-sm"></i>
+        </button>
       </header>
 
       <nav class="flex-1 overflow-y-auto pr-1">
@@ -228,4 +278,53 @@
       </div>
     </div>
   </div>
+
+  <!-- Create Channel Modal -->
+  <Modal isOpen={showCreateModal} title="Create Channel" on:close={closeCreateModal}>
+    <form onsubmit={(e) => { e.preventDefault(); handleCreateChannel(); }} class="space-y-5">
+      <div>
+        <label for="channel-name" class="mb-1.5 block text-sm font-semibold text-stone-700">
+          Channel Name
+        </label>
+        <input
+          id="channel-name"
+          type="text"
+          bind:value={newChannelName}
+          placeholder="e.g. exploration"
+          class="w-full rounded-xl border-stone-200 bg-stone-50 px-4 py-2.5 text-sm text-stone-800 placeholder:text-stone-400 focus:border-lime-300 focus:bg-white focus:ring-2 focus:ring-lime-100"
+          required
+        />
+      </div>
+      
+      <div>
+        <label for="channel-topic" class="mb-1.5 block text-sm font-semibold text-stone-700">
+          Topic <span class="font-normal text-stone-400">(Optional)</span>
+        </label>
+        <input
+          id="channel-topic"
+          type="text"
+          bind:value={newChannelTopic}
+          placeholder="What's this channel about?"
+          class="w-full rounded-xl border-stone-200 bg-stone-50 px-4 py-2.5 text-sm text-stone-800 placeholder:text-stone-400 focus:border-lime-300 focus:bg-white focus:ring-2 focus:ring-lime-100"
+        />
+      </div>
+
+      <div class="flex justify-end gap-3 pt-2">
+        <button
+          type="button"
+          class="rounded-xl px-4 py-2.5 text-sm font-semibold text-stone-500 transition-colors hover:bg-stone-100 hover:text-stone-700"
+          onclick={closeCreateModal}
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="rounded-xl bg-lime-600 px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-lime-700 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={!newChannelName.trim()}
+        >
+          Create Channel
+        </button>
+      </div>
+    </form>
+  </Modal>
 </section>
