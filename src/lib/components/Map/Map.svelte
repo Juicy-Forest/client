@@ -81,7 +81,7 @@
       }
     }
 
-    // Place new item in edit mode
+    // place new item in edit mode
     if (isEditMode) {
       placeAt(mapX, mapY);
     }
@@ -115,7 +115,8 @@
   {/if}
 
 
-</div>
+</div>    
+
 
 <ItemDetails bind:item={selectedItem} {emojiMap} />
 
@@ -132,7 +133,12 @@
     overflow: hidden;
     user-select: none;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    transition: transform 150ms ease-out;
     cursor: pointer;
+  }
+
+  .rectangle:active {
+    cursor: grabbing;
   }
 
   .placed-emoji {
