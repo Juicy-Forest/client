@@ -168,7 +168,7 @@
   ));
 </script>
 
-<section class="box-border min-h-screen bg-[#fdfcf8] px-4 pb-8 pt-36 text-stone-800 sm:px-8 lg:px-12">
+<section class="box-border min-h-screen bg-[#fdfcf8] px-4 pb-8 pt-12 text-stone-800 sm:px-8 lg:px-12">
   <div class="mx-auto grid w-full max-w-none items-start gap-8 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)]">
     
     <!-- Sidebar -->
