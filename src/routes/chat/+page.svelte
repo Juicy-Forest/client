@@ -1,22 +1,7 @@
 <script lang="ts">
-  type Channel = {
-    id: string;
-    label: string;
-    topic: string;
-    unread?: number;
-  };
-
-  type Message = {
-    id: string;
-    author: {
-      name: string;
-      role: string;
-      color: string;
-      avatarColor: string;
-    };
-    timestamp: string;
-    content: string;
-  };
+  import type { Channel, Message } from '$lib/components/Chat/types';
+  import ChannelItem from '$lib/components/Chat/ChannelItem.svelte';
+  import MessageItem from '$lib/components/Chat/MessageItem.svelte';
 
   const channels: Channel[] = [
     { id: 'general', label: 'general', topic: 'Announcements & hangouts', unread: 3 },
@@ -25,7 +10,7 @@
     { id: 'supplies', label: 'supplies', topic: 'Requests & inventory updates', unread: 1 }
   ];
 
-  const messages: Record<string, Message[]> = {
+  let messages: Record<string, Message[]> = $state({
     general: [
       {
         id: 'm1',
@@ -89,22 +74,41 @@
         content: 'Need confirmation on bio-filters by noon so we can add them to the convoy manifest.'
       }
     ]
-  };
+  });
 
-  let activeChannelId = channels[0].id;
-  let draftMessage = '';
+  let activeChannelId = $state(channels[0].id);
+  let draftMessage = $state('');
 
   const setActiveChannel = (channelId: string) => {
     activeChannelId = channelId;
   };
 
   const handleSend = () => {
+    if (!draftMessage.trim()) return;
+
+    const newMessage: Message = {
+      id: crypto.randomUUID(),
+      author: {
+        name: 'You',
+        role: 'Team Member',
+        color: 'text-stone-800',
+        avatarColor: 'bg-stone-200 text-stone-600'
+      },
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      content: draftMessage
+    };
+
+    if (!messages[activeChannelId]) {
+      messages[activeChannelId] = [];
+    }
+
+    messages[activeChannelId] = [...messages[activeChannelId], newMessage];
     draftMessage = '';
   };
 
-  $: activeChannel = channels.find((channel) => channel.id === activeChannelId) ?? channels[0];
-  $: activeMessages = messages[activeChannelId] ?? [];
-  $: activeMembers = Array.from(
+  let activeChannel = $derived(channels.find((channel) => channel.id === activeChannelId) ?? channels[0]);
+  let activeMessages = $derived(messages[activeChannelId] ?? []);
+  let activeMembers = $derived(Array.from(
     activeMessages.reduce((map, message) => {
       if (!map.has(message.author.name)) {
         map.set(message.author.name, {
@@ -120,7 +124,7 @@
       }
       return map;
     }, new Map()).values()
-  );
+  ));
 </script>
 
 <section class="box-border min-h-screen bg-[#fdfcf8] px-4 pb-8 pt-36 text-stone-800 sm:px-8 lg:px-12">
@@ -136,28 +140,11 @@
       <nav class="flex-1 overflow-y-auto pr-1">
         <ul class="space-y-2">
           {#each channels as channel}
-            <li>
-              <button
-                class={`group flex w-full items-center justify-between rounded-2xl px-4 py-3 text-sm transition-all duration-200 ${
-                  activeChannelId === channel.id
-                    ? 'bg-lime-100/50 text-lime-900 shadow-sm ring-1 ring-lime-200/50'
-                    : 'text-stone-500 hover:bg-stone-100/50 hover:text-stone-700'
-                }`}
-                on:click={() => setActiveChannel(channel.id)}
-              >
-                <div class="flex flex-col text-left">
-                  <span class={`font-semibold ${activeChannelId === channel.id ? 'text-lime-950' : 'text-stone-700 group-hover:text-stone-900'}`}>
-                    #{channel.label}
-                  </span>
-                  <span class="text-xs opacity-70">{channel.topic}</span>
-                </div>
-                {#if channel.unread}
-                  <span class="rounded-full bg-lime-200 px-2 py-0.5 text-[10px] font-bold text-lime-800 shadow-sm">
-                    {channel.unread}
-                  </span>
-                {/if}
-              </button>
-            </li>
+            <ChannelItem
+              {channel}
+              isActive={activeChannelId === channel.id}
+              on:click={() => setActiveChannel(channel.id)}
+            />
           {/each}
         </ul>
       </nav>
@@ -190,7 +177,7 @@
       <!-- Messages -->
       <div class="flex flex-1 flex-col overflow-hidden bg-stone-50/30">
         <div class="flex-1 overflow-y-auto px-8 py-6">
-          <div class="space-y-8">
+          <div class="flex flex-col">
             {#if activeMessages.length === 0}
               <div class="flex flex-col items-center justify-center gap-2 rounded-3xl border border-dashed border-stone-200 bg-stone-50/50 px-6 py-12 text-center text-sm text-stone-500">
                 <div class="rounded-full bg-stone-100 p-3 text-stone-400">
@@ -199,34 +186,20 @@
                 <p>No messages yet. Start the conversation!</p>
               </div>
             {:else}
-              {#each activeMessages as message}
-                <article class="group flex gap-5">
-                  <div class={`mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-xs font-bold shadow-sm transition-transform group-hover:scale-105 ${message.author.avatarColor}`}>
-                    {message.author.name
-                      .split(' ')
-                      .map((part) => part[0])
-                      .join('')
-                      .slice(0, 2)
-                      .toUpperCase()}
-                  </div>
-                  <div class="max-w-[85%] flex-1">
-                    <header class="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
-                      <p class={`font-bold ${message.author.color}`}>{message.author.name}</p>
-                      <span class="rounded-md bg-stone-100 px-1.5 py-0.5 text-[10px] font-medium text-stone-500">{message.author.role}</span>
-                      <span class="text-xs text-stone-400">{message.timestamp}</span>
-                    </header>
-                    <div class="mt-2 inline-block rounded-2xl rounded-tl-sm border border-stone-100 bg-white px-6 py-3.5 text-[15px] leading-relaxed text-stone-700 shadow-sm ring-1 ring-stone-900/5">
-                      {message.content}
-                    </div>
-                  </div>
-                </article>
+              {#each activeMessages as message, i}
+                {@const isRepeated = i > 0 && activeMessages[i - 1].author.name === message.author.name}
+                <MessageItem 
+                  {message} 
+                  isSelf={message.author.name === 'You'} 
+                  {isRepeated}
+                />
               {/each}
             {/if}
           </div>
         </div>
 
         <!-- Input -->
-        <form class="border-t border-stone-100 bg-white px-8 py-5" on:submit|preventDefault={handleSend}>
+        <form class="border-t border-stone-100 bg-white px-8 py-5" onsubmit={(e) => { e.preventDefault(); handleSend(); }}>
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
             <div class="flex flex-1 items-center gap-3 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-2 transition-all">
               <button
