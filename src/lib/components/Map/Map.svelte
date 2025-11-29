@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import ItemDetails from './ItemDetails.svelte';
 
   export let selectedIcon: string | null = null;
   export let isEditMode = false; 
@@ -9,10 +10,19 @@
 
   let preview: { x: number; y: number; visible: boolean } = { x: -1000, y: -1000, visible: false };
   let placed: Array<{ icon: string; x: number; y: number; id: number }> = [];
+  let selectedItem: { icon: string; x: number; y: number; id: number } | null = null;
 
   let zoom = 1;
   const minZoom = 0.3;
   const maxZoom = 5;
+
+  let emojiMap: Record<string, string> = {
+    water: '💧',
+    plant: '🌱',
+    plants: '🌿',
+    bush: '🌾',
+    tree: '🌳'
+  };
 
   let offsetX = 0;
   let offsetY = 0;
@@ -42,8 +52,11 @@
     if (!isEditMode) return; 
     updateRect();
     preview.visible = true;
-    preview.x = e.clientX - rect.left;
-    preview.y = e.clientY - rect.top;
+    // Calculate position in unscaled coordinate space
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    preview.x = (x - offsetX) / zoom;
+    preview.y = (y - offsetY) / zoom;
   }
 
   function handleMouseLeave() {
@@ -76,7 +89,26 @@
     updateRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    placeAt(x, y);
+    // Convert to unscaled coordinate space
+    const mapX = (x - offsetX) / zoom;
+    const mapY = (y - offsetY) / zoom;
+
+    // Check if clicking on an existing item (hit radius of 30px)
+    if (!isEditMode) {
+      const hitRadius = 30;
+      const clickedItem = placed.find(item => 
+        Math.abs(item.x - mapX) < hitRadius && Math.abs(item.y - mapY) < hitRadius
+      );
+      if (clickedItem) {
+        selectedItem = clickedItem;
+        return;
+      }
+    }
+
+    // Place new item in edit mode
+    if (isEditMode) {
+      placeAt(mapX, mapY);
+    }
   }
 
   function handleKeyDown(e: KeyboardEvent) {
@@ -88,6 +120,7 @@
   }
 
   function handleWheel(e: WheelEvent) {
+    if (isEditMode) return;
     e.preventDefault();
     const delta = e.deltaY > 0 ? -0.1 : 0.1;
     zoom = Math.max(minZoom, Math.min(maxZoom, zoom + delta));
@@ -114,20 +147,22 @@
   style="transform: translate({offsetX}px, {offsetY}px) scale({zoom}); transform-origin: center top;"
 >
   {#each placed as p (p.id)}
-    <i class={p.icon + ' placed'} style="left: {p.x}px; top: {p.y}px;" aria-hidden="true"></i>
+    <span class="placed-emoji" style="left: {p.x}px; top: {p.y}px;" aria-hidden="true">{emojiMap[p.icon] || p.icon}</span>
   {/each}
 
   {#if preview.visible && selectedIcon}
-    <i class={selectedIcon + ' preview'} style="left: {preview.x}px; top: {preview.y}px;" aria-hidden="true"></i>
+    <span class="preview-emoji" style="left: {preview.x}px; top: {preview.y}px;" aria-hidden="true">{emojiMap[selectedIcon] || selectedIcon}</span>
   {/if}
 
 
 </div>
 
+<ItemDetails bind:item={selectedItem} {emojiMap} />
+
 <style>
   .rectangle {
-    width: 1000px;
-    height: 500px;
+    width: 1400px;
+    height: 700px;
     background-image: url('https://www.spier.co.za/wp-content/uploads/2025/01/Spier-Food-Garden-aerial-06_EY-1-2.jpg');
     background-size: cover;
     background-position: center;
@@ -145,23 +180,38 @@
     cursor: grabbing;
   }
 
-  .rectangle i {
+  .placed-emoji {
     position: absolute;
     transform: translate(-50%, -50%);
-    pointer-events: none; 
-    color: #92400e;
+    pointer-events: none;
+    font-size: 48px;
+    line-height: 1;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #b45309;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
   }
 
-  .rectangle i.preview {
-    opacity: 0.6;
-    font-size: 40px;
-    color: rgba(146, 64, 14, 0.5);
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-  }
-
-  .rectangle i.placed {
-    font-size: 32px;
-    color: #b45309;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  .preview-emoji {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    font-size: 56px;
+    line-height: 1;
+    opacity: 0.85;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #d97706;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.25)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
   }
 </style>

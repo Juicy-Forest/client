@@ -50,28 +50,44 @@
     {#if isEditMode}
     <div class="flex gap-3 bg-amber-100 rounded-lg p-4 shadow-md border-2 border-amber-200" role="list">
         <button type="button" 
-            class:selected={selectedIcon === 'fa-solid fa-fan'} 
-            on:click={() => select('fa-solid fa-fan')} 
-            aria-label="Fan"
+            class:selected={selectedIcon === 'water'} 
+            on:click={() => select('water')} 
+            aria-label="Water"
             class="item-btn">
-            <i class="fa-solid fa-fan" aria-hidden="true"></i>
-            <span class="text-xs mt-1">Fan</span>
+            <span class="text-4xl">💧</span>
+            <span class="text-xs mt-1">Water</span>
         </button>
         <button type="button" 
-            class:selected={selectedIcon === 'fa-solid fa-box'} 
-            on:click={() => select('fa-solid fa-box')} 
-            aria-label="Box"
+            class:selected={selectedIcon === 'plant'} 
+            on:click={() => select('plant')} 
+            aria-label="Plant"
             class="item-btn">
-            <i class="fa-solid fa-box" aria-hidden="true"></i>
-            <span class="text-xs mt-1">Box</span>
+            <span class="text-4xl">🌱</span>
+            <span class="text-xs mt-1">Plant</span>
         </button>
         <button type="button" 
-            class:selected={selectedIcon === 'fa-solid fa-heart'} 
-            on:click={() => select('fa-solid fa-heart')} 
-            aria-label="Heart"
+            class:selected={selectedIcon === 'plants'} 
+            on:click={() => select('plants')} 
+            aria-label="Plants Group"
             class="item-btn">
-            <i class="fa-solid fa-heart" aria-hidden="true"></i>
-            <span class="text-xs mt-1">Heart</span>
+            <span class="text-4xl">🌿</span>
+            <span class="text-xs mt-1">Plants</span>
+        </button>
+        <button type="button" 
+            class:selected={selectedIcon === 'bush'} 
+            on:click={() => select('bush')} 
+            aria-label="Bush"
+            class="item-btn">
+            <span class="text-4xl">🌾</span>
+            <span class="text-xs mt-1">Bush</span>
+        </button>
+        <button type="button" 
+            class:selected={selectedIcon === 'tree'} 
+            on:click={() => select('tree')} 
+            aria-label="Tree"
+            class="item-btn">
+            <span class="text-4xl">🌳</span>
+            <span class="text-xs mt-1">Tree</span>
         </button>
     </div>
     {/if}
