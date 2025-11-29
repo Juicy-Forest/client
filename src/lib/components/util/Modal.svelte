@@ -3,34 +3,33 @@
 </script>
 
 {#if isOpen}
-	<div class="fixed inset-0 flex justify-center items-center z-50">
-
-		<button 
-			class="absolute inset-0 w-full h-full bg-black/50 backdrop-blur-xs cursor-default"
-			onclick={close}
-			aria-label="Close modal"
-			type="button"
-		></button>
+	<div class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden p-4 sm:p-0">
+		<div 
+			class="fixed inset-0 transition-opacity"
+			aria-hidden="true"
+		>
+			<div class="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onclick={close}></div>
+		</div>
 
 		<div
-			class="relative bg-white rounded-lg shadow-xl p-6 w-96 max-w-full mx-4 transform transition-all"
+			class="relative w-full max-w-md transform overflow-hidden rounded-3xl bg-white p-6 shadow-2xl transition-all sm:w-full"
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="modal-title"
 		>
-			<div class="flex justify-between items-center mb-6 border-b pb-2">
-				<h2 id="modal-title" class="text-xl font-bold text-gray-800">{title}</h2>
-				<button 
-					onclick={close} 
-					class="text-gray-400 hover:text-red-500 transition-colors text-2xl leading-none"
-					aria-label="Close modal"
-					type="button"
-				>
-					&times;
-				</button>
-			</div>
+            <div class="mb-6 flex items-center justify-between">
+                <h2 id="modal-title" class="text-xl font-bold text-stone-800">{title}</h2>
+                <button 
+                    onclick={close} 
+                    class="flex h-8 w-8 items-center justify-center rounded-full bg-stone-100 text-stone-500 transition-colors hover:bg-stone-200 hover:text-stone-700"
+                    aria-label="Close modal"
+                    type="button"
+                >
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
 
-			<div class="mt-2">
+			<div>
 				{@render children()}
 			</div>
 		</div>

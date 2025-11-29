@@ -42,53 +42,93 @@
     ]
 </script>
 
-<!-- <Construction text={"Juicy Forest"}/> -->
-<div class="w-full h-screen">
-    <div class="w-full bg-[#f9fafb] border-t border-[#e5e5e5] h-[100%] p-4 sm:p-10 md:p-12 flex flex-col md:flex-row gap-6 md:justify-center ">
-        <!-- Left container (top) -->
-        <div class="w-[100%] md:w-[65%] h-[full] flex flex-col gap-2 max-w-[700px]">
-            <!-- Secondary header -->
-            <div class="w-full flex items-center justify-between mb-4">
-                <h2 class="text-3xl">Greetings, {user}</h2>
-                <button class="rounded-md flex items-center gap-2 p-2 border-[#e5e5e5] border bg-white cursor-pointer text-md "> <i class={'fa-solid fa-gear text-neutral-600 '}></i> Garden Settings</button>
+<section class="box-border min-h-screen bg-[#fdfcf8] px-4 pb-8 pt-12 text-stone-800 sm:px-8 lg:px-12">
+  <div class="mx-auto grid w-full max-w-none items-start gap-8 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)]">
+    
+    <!-- Sidebar -->
+    <aside class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-3xl border border-stone-200/60 bg-white/60 px-5 py-6 shadow-sm backdrop-blur-xl transition-colors hover:bg-white/80">
+      <header class="mb-6 px-2">
+        <p class="text-xs font-bold uppercase tracking-widest text-stone-400">Overview</p>
+        <h1 class="mt-1 text-lg font-bold tracking-tight text-stone-800">Garden Stats</h1>
+      </header>
+
+      <div class="flex-1 overflow-y-auto pr-1">
+        <div class="flex flex-col gap-3">
+            {#each generalInformation as stats (stats.statName)}
+                <div class="p-3 rounded-2xl border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50">
+                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700">
+                        <i class="fa-solid fa-leaf text-sm"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium text-stone-400 uppercase tracking-wide">{stats.statName}</p>
+                        <p class="text-sm font-bold text-stone-700">{stats.statValue}</p>
+                    </div>
+                </div>
+            {/each}
+        </div>
+        
+        <div class="mt-8 px-2">
+            <p class="text-xs font-bold uppercase tracking-widest text-stone-400 mb-3">Status Key</p>
+            <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                    <div class="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]"></div>
+                    <span class="text-sm text-stone-600">Good Condition</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="h-2 w-2 rounded-full bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.4)]"></div>
+                    <span class="text-sm text-stone-600">Requires Attention</span>
+                </div>
             </div>
-            <div class="w-full h-fit relative  ">
-                <img src="/images/JUICY_FOREST_FOOD_GARDEN.png" alt="Birds-eye-view food garden" height="100" width="100" class="aspect-square w-full rounded-md"> 
-                <div class="absolute top-0 left-0 z-[50] w-full p-1 h-full flex flex-wrap gap-y-0 gap-x-1 leading-none items-center justify-center">
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-[2.5rem] border border-stone-200/60 bg-white/80 shadow-xl shadow-stone-200/20 backdrop-blur-xl">
+      
+      <!-- Header -->
+      <header class="flex flex-wrap items-center justify-between gap-4 border-b border-stone-100 bg-white/50 px-8 py-5 backdrop-blur-sm">
+        <div>
+          <h2 class="text-lg font-bold text-stone-800">Greetings, {user}</h2>
+          <p class="mt-0.5 text-sm text-stone-500">Here's your daily garden overview.</p>
+        </div>
+        <button class="flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2 text-sm font-medium text-stone-600 transition-all hover:bg-stone-50 hover:text-stone-800 hover:border-stone-300 shadow-sm">
+            <i class="fa-solid fa-gear text-stone-400"></i>
+            <span>Settings</span>
+        </button>
+      </header>
+
+      <!-- Content -->
+      <div class="flex flex-1 flex-col overflow-hidden bg-stone-50/30">
+        <div class="flex-1 overflow-y-auto px-8 py-6">
+            <div class="w-full relative rounded-3xl overflow-hidden shadow-lg border border-stone-200">
+                <img src="/images/JUICY_FOREST_FOOD_GARDEN.png" alt="Birds-eye-view food garden" class="w-full h-auto object-cover block" /> 
+                <div class="absolute inset-0 z-10 p-2 flex flex-wrap content-start">
                     {#each sectionInfo as sectionItem (sectionItem.sectionName)}
-                        <div class={`w-[49%] h-[49%] rounded-md border-2 relative p-2 flex flex-col justify-between ${sectionItem.issue ? "bg-rose-400/15 border-rose-400 hover:border-rose-500 hover:bg-rose-400/25" : "bg-green-600/15 border-green-600 hover:border-green-500 hover:bg-green-600/25"} transform hover:scale-[0.99] duration-100 cursor-pointer ` }>
-                            <div class="w-full flex items-center justify-between ">
-                                <div class="rounded-full w-fit px-2 py-1 bg-white">
-                                    <p class="text-sm">{sectionItem.assignedTo}</p>
+                        <div class="w-1/2 h-1/2 p-1">
+                            <div class={`w-full h-full rounded-2xl border-2 p-4 flex flex-col justify-between transition-all duration-200 hover:scale-[0.98] cursor-pointer ${sectionItem.issue ? "bg-rose-500/20 border-rose-400 hover:border-rose-500 hover:bg-rose-500/30" : "bg-green-600/20 border-green-500 hover:border-green-400 hover:bg-green-600/30"}`}>
+                                <div class="flex items-center justify-between">
+                                    <div class="rounded-full bg-white px-3 py-1 shadow-sm">
+                                        <p class="text-xs font-bold text-stone-700">{sectionItem.assignedTo}</p>
+                                    </div>
+                                    {#if sectionItem.issue}
+                                        <div class="flex h-6 w-6 items-center justify-center rounded-full bg-rose-100 text-rose-600 shadow-sm">
+                                            <i class="fa-solid fa-exclamation text-xs"></i>
+                                        </div>
+                                    {:else}
+                                        <div class="flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-green-600 shadow-sm">
+                                            <i class="fa-solid fa-check text-xs"></i>
+                                        </div>
+                                    {/if}
                                 </div>
-                                <div class={`h-[15px] w-[15px] rounded-full ${sectionItem.issue ? "bg-rose-400" : "bg-green-600"}`}></div>
+                                <p class="text-white font-bold text-lg drop-shadow-md">{sectionItem.sectionName}</p>
                             </div>
-                            <p class="text-white">{sectionItem.sectionName}</p>
                         </div>
                     {/each}
                 </div>
             </div>
-            <div class="flex items-center gap-2">
-                <div class="rounded-sm h-[15px] w-[15px] bg-green-600"></div>
-                <p>Good</p>
-                <div class="rounded-sm h-[15px] w-[15px] bg-rose-400"></div>
-                <p>Issue</p>
-            </div>
         </div>
-        
-        <!-- Right container (bottom) -->
-        <div class="w-[100%] md:w-[35%] rounded-md border-[#e5e5e5] border h-fit bg-white md:max-w-[350px]">
-            <div class="border-[#e5e5e5] p-4 flex flex-col gap-2">
-                <p>General Information</p>
-                {#each generalInformation as stats (stats.statName)}
-                    <div class="p-3 rounded-md border border-[#e5e5e5]/70 bg-[#F9FAFB] flex items-center gap-2">
-                        <i class="fa-leaf fa-solid text-green-600"></i>
-                        <p class="text-sm text-neutral-600">    
-                            {stats.statName}: {stats.statValue}
-                        </p>
-                    </div>
-                {/each}
-            </div>
-        </div>
+      </div>
     </div>
-</div>
+  </div>
+</section>
