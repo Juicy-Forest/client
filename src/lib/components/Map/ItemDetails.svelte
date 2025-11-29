@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let item: { icon: string; x: number; y: number; id: number } | null = null;
+  export let item: { icon: string; x: number; y: number; id: number; condition: 'good' | 'fair' | 'poor' } | null = null;
   export let emojiMap: Record<string, string>;
 
   const itemNames: Record<string, string> = {
@@ -16,6 +16,18 @@
     plants: 'Group of plants in the garden area',
     bush: 'Mature bush providing coverage',
     tree: 'Large tree offering shade and fruit'
+  };
+
+  const conditionLabels: Record<'good' | 'fair' | 'poor', string> = {
+    good: 'Good',
+    fair: 'Fair',
+    poor: 'Poor'
+  };
+
+  const conditionColors: Record<'good' | 'fair' | 'poor', { bg: string; text: string }> = {
+    good: { bg: '#dcfce7', text: '#166534' },
+    fair: { bg: '#fef3c7', text: '#92400e' },
+    poor: { bg: '#fee2e2', text: '#991b1b' }
   };
 
   function close() {
@@ -59,6 +71,15 @@
         <div class="stat">
           <span class="stat-label">Position</span>
           <span class="stat-value">{Math.round(item.x)}, {Math.round(item.y)}</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Condition</span>
+          <span 
+            class="condition-badge" 
+            style="background-color: {conditionColors[item.condition].bg}; color: {conditionColors[item.condition].text};"
+          >
+            {conditionLabels[item.condition]}
+          </span>
         </div>
         <div class="stat">
           <span class="stat-label">ID</span>
@@ -169,5 +190,14 @@
     color: #92400e;
     font-family: monospace;
     font-size: 13px;
+  }
+
+  .condition-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 13px;
+    min-width: 60px;
+    text-align: center;
   }
 </style>

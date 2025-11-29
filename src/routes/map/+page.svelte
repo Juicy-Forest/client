@@ -29,6 +29,24 @@
 <div class="flex flex-col items-center justify-center min-h-screen gap-6 p-6">
     <div class="flex flex-col items-center gap-4">
         <h1 class="text-3xl font-bold text-amber-900">Map</h1>
+        <div class="location-badge">
+            <span class="location-icon">📍</span>
+            <div class="location-info">
+                <p class="location-name">Amsterdam Community Garden</p>
+                <p class="location-coords">Amsterdam, Netherlands</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="map-wrapper">
+        <div class="map-container">
+            <div class="rounded-xl overflow-hidden shadow-lg">
+                <Map {selectedIcon} {isEditMode} on:placed={handlePlaced} />
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-col items-center gap-3">
         <button
             on:click={toggleEditMode}
             class:active={isEditMode}
@@ -41,10 +59,6 @@
         <p class="text-sm text-amber-700">
             {isEditMode ? 'Select an item and click on the map to place it' : 'Drag to explore the map'}
         </p>
-    </div>
-    
-    <div class="rounded-xl overflow-hidden shadow-lg">
-        <Map {selectedIcon} {isEditMode} on:placed={handlePlaced} />
     </div>
 
     {#if isEditMode}
@@ -142,6 +156,53 @@
         border-color: #b45309;
         background-color: #fcd34d;
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .location-badge {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border: 2px solid #b45309;
+        border-radius: 12px;
+        padding: 12px 20px;
+        box-shadow: 0 4px 12px rgba(180, 83, 9, 0.15);
+    }
+
+    .location-icon {
+        font-size: 24px;
+        line-height: 1;
+    }
+
+    .location-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .location-name {
+        font-weight: 700;
+        color: #92400e;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .location-coords {
+        font-size: 12px;
+        color: #b45309;
+        margin: 0;
+    }
+
+    .map-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .map-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
     }
 
     :global(body) {
