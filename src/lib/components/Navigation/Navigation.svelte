@@ -70,39 +70,43 @@
     </ul>
   </div>
   <!-- Notifications -->
-   <div class="w-[200px] flex hidden md:flex justify-end relative">
-    <button on:click={() => showNotificationTab = !showNotificationTab} class="flex items-center gap-2 group p-2 active:scale-[0.95] duration-200 transform cursor-pointer relative hover:bg-[#e5e5e5] duration-300 rounded-full p-2">
+   <div class="w-[200px] flex hidden md:flex justify-end relative z-50">
+    <button on:click={() => showNotificationTab = !showNotificationTab} class="flex items-center gap-2 group active:scale-[0.95] duration-200 transform cursor-pointer relative hover:bg-stone-100 duration-300 rounded-full p-3">
         {#if notifications.length > 0}
-          <div class="bg-rose-500 h-[20px] rounded-full w-[20px] text-white flex items-center justify-center absolute -top-[5px] -right-[5px]">{notifications.length}</div>
+          <div class="bg-rose-500 h-4 w-4 rounded-full text-[10px] font-bold text-white flex items-center justify-center absolute top-1 right-1 ring-2 ring-white">{notifications.length}</div>
         {/if}
 
-      <i class="fa-solid fa-bell group-hover:text-yellow-500 text-neutral-600 duration-200"></i>
+      <i class="fa-solid fa-bell group-hover:text-stone-800 text-stone-500 duration-200 text-lg"></i>
     </button>
     {#if showNotificationTab}
-      <div class="absolute rounded-md shadow-sm border-[#e5e5e5] border w-[350px] h-fit bg-white top-[150%] ">
-        <div class="w-full p-4 border-b border-[#e5e5e5]">
-          <p class="font-semibold text-neutral-600 text-sm">
-            Notifications
-          </p>
-          <p class={`${notifications.length > 0 ? 'block' : 'hidden'} text-xs text-neutral-500 pt-1`}>{notifications.length} alerts require attention.</p>
+      <div class="absolute right-0 mt-14 w-80 origin-top-right rounded-3xl bg-white p-4 shadow-xl ring-1 ring-black/5 focus:outline-none border border-stone-100 z-50">
+        <div class="mb-4 flex items-center justify-between px-2">
+            <div>
+                <p class="text-sm font-bold text-stone-800">Notifications</p>
+                <p class={`${notifications.length > 0 ? 'block' : 'hidden'} text-xs text-stone-500`}>{notifications.length} alerts require attention</p>
+            </div>
+            {#if notifications.length > 0}
+                <span class="flex h-2 w-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.4)]"></span>
+            {/if}
         </div>
-        <div class="flex items-start flex-col">
+        
+        <div class="flex flex-col gap-2">
           {#each notifications as notif (notif.description)}
-            <div class="w-full flex h-fit p-5 items items-center gap-1 border-b border-[#e5e5e5] hover:cursor-pointer hover:bg-[#e5e5e5]/40 duration-200">
-              <div class="w-[10px] h-[10px] bg-rose-500 mr-4 rounded-full"></div>
-              <div class="flex flex-col items-start gap-1">
-                <p class="text-sm">{notif.section}</p>
-                <p class="text-xs">{notif.description}</p>
+            <div class="group flex items-start gap-3 rounded-2xl p-3 transition-colors hover:bg-stone-50 cursor-pointer">
+              <div class="mt-1 flex h-2 w-2 flex-none rounded-full bg-rose-500 shadow-sm group-hover:scale-110 transition-transform"></div>
+              <div class="flex flex-col gap-0.5">
+                <p class="text-xs font-bold text-stone-700">{notif.section}</p>
+                <p class="text-xs leading-relaxed text-stone-500">{notif.description}</p>
               </div>
             </div>
           {/each}
           {#if notifications.length == 0}
-          <div class="mx-auto flex flex-col gap-2 py-7">
-            <div class="rounded-full bg-green-200 flex items-center justify-center mx-auto h-[40px] w-[40px]">
-            <i class="fa-solid fa-seedling text-green-600"></i>
+          <div class="flex flex-col items-center justify-center py-8 text-center">
+            <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-lime-100 text-lime-600">
+                <i class="fa-solid fa-check text-lg"></i>
             </div>
-            <p class="text-base text-neutral-700 text-center mt-1">All systems healthy!</p>
-            <p class="text-xs text-neutral-500 text-center">No alerts at this time.</p>
+            <p class="text-sm font-bold text-stone-700">All Clear!</p>
+            <p class="text-xs text-stone-500">No new notifications.</p>
             </div>
           {/if}
         </div>
