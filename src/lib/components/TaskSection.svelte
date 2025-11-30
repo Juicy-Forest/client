@@ -58,7 +58,7 @@ $: completed = tasks.filter((t) => t.checked).length;
     />
 
     <button 
-    class="ml-2 px-4 py-2 bg-green-500 text-white rounded-ful"
+    class="ml-2 px-4 py-2 bg-green-500 text-white rounded-full"
     on:click={addTasks}
     >Add</button>
 </div>
