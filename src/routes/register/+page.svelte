@@ -1,20 +1,23 @@
 <script lang="ts">
+    import { enhance } from '$app/forms';
+    import { goto, resolve } from '$app/navigation';
+
     let firstName = '';
     let lastName = '';
     let email = '';
     let password = '';
     let confirmPassword = '';
     let error = '';
+    let success = '';
+    let loginRoute = resolve('/login');
 
     function submit() {
         error = '';
+        success = '';
         if (password !== confirmPassword) {
             error = 'Passwords do not match';
             return;
         }
-
-        // placeholder: wire this up to your registration logic
-        console.log('register', { firstName, lastName, email, password });
     }
 </script>
 
@@ -32,27 +35,38 @@
             <p class="text-gray-500 mt-2">Create your account</p>
         </div>
 
-        <form on:submit|preventDefault={submit} class="bg-white rounded-xl shadow-lg p-8">
+        <form method="POST" action="?/register" use:enhance={() => {
+            submit();
+            return async ({ update, result }) => {
+                if (result.type === 'success') {
+                    success = result.data?.message as string;
+                    setTimeout(() => goto(resolve('/login')), 2000);
+                } else if (result.type === 'failure') {
+                    error = result.data?.error as string;
+                }
+                update();
+            };
+        }} class="bg-white rounded-xl shadow-lg p-8">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <div>
                     <label class="block text-sm font-semibold text-gray-800 mb-2">First name</label>
-                    <input type="text" bind:value={firstName} placeholder="John" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" required />
+                    <input type="text" name="firstName" bind:value={firstName} placeholder="John" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" required />
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-800 mb-2">Last name</label>
-                    <input type="text" bind:value={lastName} placeholder="Doe" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" required />
+                    <input type="text" name="lastName" bind:value={lastName} placeholder="Doe" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" required />
                 </div>
             </div>
 
             <div class="mb-5">
                 <label class="block text-sm font-semibold text-gray-800 mb-2">Email</label>
-                <input type="email" bind:value={email} placeholder="your.email@example.com" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" required />
+                <input type="email" name="email" bind:value={email} placeholder="your.email@example.com" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" required />
             </div>
 
             <div class="mb-5">
                 <label class="block text-sm font-semibold text-gray-800 mb-2">Password</label>
-                <input type="password" bind:value={password} placeholder="••••••••" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" required />
+                <input type="password" name="password" bind:value={password} placeholder="••••••••" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" required />
             </div>
 
             <div class="mb-4">
@@ -64,9 +78,13 @@
                 <p class="text-red-600 text-sm mb-4">{error}</p>
             {/if}
 
+            {#if success}
+                <p class="text-green-600 text-sm mb-4">{success}</p>
+            {/if}
+
             <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:opacity-95">Sign Up</button>
 
-            <p class="text-center text-gray-500 mt-6">Already have an account? <a href="/login" class="text-emerald-600 font-semibold">Sign in</a></p>
+            <p class="text-center text-gray-500 mt-6">Already have an account? <a on:click={() => goto(resolve("/login"))} class="text-emerald-600 font-semibold">Sign in</a></p>
         </form>
     </div>
 </main>

@@ -115,13 +115,13 @@
 				<p class="text-gray-500 mt-2 mb-6">Choose a name for your garden and enter its location</p>
 
 				<div class="mb-5">
-					<label class="block text-sm font-semibold text-gray-800 mb-2">Name</label>
-					<input type="text" bind:value={gardenName} placeholder="e.g., Community Garden" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" />
+					<label for="gardenName" class="block text-sm font-semibold text-gray-800 mb-2">Name</label>
+					<input id="gardenName" type="text" bind:value={gardenName} placeholder="e.g., Community Garden" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" />
 				</div>
 
 				<div class="mb-6">
-					<label class="block text-sm font-semibold text-gray-800 mb-2">Location</label>
-					<input type="text" bind:value={gardenLocationText} placeholder="e.g., 123 Main Street, City" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" />
+					<label for="gardenLocation" class="block text-sm font-semibold text-gray-800 mb-2">Location</label>
+					<input id="gardenLocation" type="text" bind:value={gardenLocationText} placeholder="e.g., 123 Main Street, City" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" />
 				</div>
 
 				<div class="flex justify-end">
