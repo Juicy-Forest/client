@@ -1,6 +1,6 @@
 <script lang="ts">
     import { enhance } from '$app/forms';
-    import { goto, resolve } from '$app/navigation';
+    import { goto } from '$app/navigation';
 
     let firstName = '';
     let lastName = '';
@@ -9,7 +9,6 @@
     let confirmPassword = '';
     let error = '';
     let success = '';
-    let loginRoute = resolve('/login');
 
     function submit() {
         error = '';
@@ -40,7 +39,7 @@
             return async ({ update, result }) => {
                 if (result.type === 'success') {
                     success = result.data?.message as string;
-                    setTimeout(() => goto(resolve('/login')), 2000);
+                    setTimeout(() => goto('/login'), 2000);
                 } else if (result.type === 'failure') {
                     error = result.data?.error as string;
                 }
@@ -49,29 +48,29 @@
         }} class="bg-white rounded-xl shadow-lg p-8">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-800 mb-2">First name</label>
-                    <input type="text" name="firstName" bind:value={firstName} placeholder="John" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" required />
+                    <label for="firstName" class="block text-sm font-semibold text-gray-800 mb-2">First name</label>
+                    <input id="firstName" type="text" name="firstName" bind:value={firstName} placeholder="John" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" required />
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold text-gray-800 mb-2">Last name</label>
-                    <input type="text" name="lastName" bind:value={lastName} placeholder="Doe" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" required />
+                    <label for="lastName" class="block text-sm font-semibold text-gray-800 mb-2">Last name</label>
+                    <input id="lastName" type="text" name="lastName" bind:value={lastName} placeholder="Doe" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" required />
                 </div>
             </div>
 
             <div class="mb-5">
-                <label class="block text-sm font-semibold text-gray-800 mb-2">Email</label>
-                <input type="email" name="email" bind:value={email} placeholder="your.email@example.com" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" required />
+                <label for="email" class="block text-sm font-semibold text-gray-800 mb-2">Email</label>
+                <input id="email" type="email" name="email" bind:value={email} placeholder="your.email@example.com" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" required />
             </div>
 
             <div class="mb-5">
-                <label class="block text-sm font-semibold text-gray-800 mb-2">Password</label>
-                <input type="password" name="password" bind:value={password} placeholder="••••••••" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" required />
+                <label for="password" class="block text-sm font-semibold text-gray-800 mb-2">Password</label>
+                <input id="password" type="password" name="password" bind:value={password} placeholder="••••••••" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" required />
             </div>
 
             <div class="mb-4">
-                <label class="block text-sm font-semibold text-gray-800 mb-2">Confirm password</label>
-                <input type="password" bind:value={confirmPassword} placeholder="••••••••" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" required />
+                <label for="confirmPassword" class="block text-sm font-semibold text-gray-800 mb-2">Confirm password</label>
+                <input id="confirmPassword" type="password" bind:value={confirmPassword} placeholder="••••••••" class="w-full bg-gray-100 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-200" required />
             </div>
 
             {#if error}
@@ -84,7 +83,7 @@
 
             <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:opacity-95">Sign Up</button>
 
-            <p class="text-center text-gray-500 mt-6">Already have an account? <a on:click={() => goto(resolve("/login"))} class="text-emerald-600 font-semibold">Sign in</a></p>
+            <p class="text-center text-gray-500 mt-6">Already have an account? <button type="button" on:click={() => goto('/login')} class="text-emerald-600 font-semibold bg-transparent border-none cursor-pointer hover:underline">Sign in</button></p>
         </form>
     </div>
 </main>

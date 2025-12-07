@@ -1,16 +1,11 @@
 import { fail } from "@sveltejs/kit";
 import type { Actions } from "./$types";
-import User from "$lib/models/User";
-import initDatabase from "$lib/db";
-import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3000/api";
 
 export const actions: Actions = {
   login: async ({ request, cookies }) => {
     try {
-      await initDatabase();
-
       const data = await request.formData();
       const email = data.get("email") as string;
       const password = data.get("password") as string;
@@ -19,30 +14,35 @@ export const actions: Actions = {
         return fail(400, { error: "Email and password are required" });
       }
 
-      const user = await User.findOne({ email });
-      if (!user) {
-        return fail(401, { error: "Invalid email or password" });
-      }
-
-      const isValidPassword = await user.comparePassword(password);
-      if (!isValidPassword) {
-        return fail(401, { error: "Invalid email or password" });
-      }
-
-      const token = jwt.sign(
-        { userId: user._id, email: user.email },
-        JWT_SECRET,
-        { expiresIn: "7d" },
-      );
-
-      cookies.set("auth-token", token, {
-        path: "/",
-        httpOnly: true,
-        secure: false, // Set to true in production with HTTPS
-        maxAge: 60 * 60 * 24 * 7, // 7 days
+      // Make API call to external server
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
       });
 
-      return { success: true, message: "Login successful" };
+      const result = await response.json();
+
+      if (!response.ok) {
+        return fail(response.status, { error: result.message || "Login failed" });
+      }
+
+      // Store the token from the server response
+      if (result.token) {
+        cookies.set("auth-token", result.token, {
+          path: "/",
+          httpOnly: true,
+          secure: false, // Set to true in production with HTTPS
+          maxAge: 60 * 60 * 24 * 7, // 7 days
+        });
+      }
+
+      return { success: true, message: result.message || "Login successful" };
     } catch (error) {
       console.error("Login error:", error);
       return fail(500, { error: "Internal server error" });

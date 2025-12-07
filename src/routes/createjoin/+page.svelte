@@ -143,7 +143,7 @@
 				</div>
 
 				<div class="bg-white border border-gray-200 rounded-md overflow-hidden mb-4">
-					<div on:click={onMapClick} class="h-64 bg-gradient-to-br from-sky-100 to-sky-200 cursor-pointer flex items-center justify-center">
+					<div on:click={onMapClick} role="button" tabindex="0" class="h-64 bg-gradient-to-br from-sky-100 to-sky-200 cursor-pointer flex items-center justify-center">
 						{#if mapCoords}
 							<div class="text-sm text-gray-700">Selected: {mapCoords.lat.toFixed(4)}, {mapCoords.lng.toFixed(4)}</div>
 						{:else}
@@ -170,7 +170,7 @@
 			{/if}
 		</div>
 
-		<p class="text-center text-gray-500 mt-6">Need help? <a href="#" class="text-emerald-600 font-semibold">Contact support</a></p>
+		<p class="text-center text-gray-500 mt-6">Need help? <a href="/contact" class="text-emerald-600 font-semibold">Contact support</a></p>
 	</div>
 </main>
 *** End Patch
