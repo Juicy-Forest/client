@@ -18,12 +18,7 @@ const UserSchema = new Schema<IUser>({
   createdAt: { type: Date, default: Date.now },
 });
 
-UserSchema.pre<IUser>("save", async function(this: IUser, next: (err?: Error) => void) {
-  if (!this.isModified("password")) return next();
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
-});
+
 
 UserSchema.methods.comparePassword = async function (
   candidatePassword: string,

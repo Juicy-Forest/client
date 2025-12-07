@@ -1,12 +1,10 @@
 import { fail, type Actions } from "@sveltejs/kit";
-import User from "$lib/models/User";
-import initDatabase from "$lib/db";
+
+const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3000/api";
 
 export const actions: Actions = {
   register: async ({ request }) => {
     try {
-      await initDatabase();
-
       const data = await request.formData();
       const firstName = data.get("firstName") as string;
       const lastName = data.get("lastName") as string;
@@ -17,21 +15,25 @@ export const actions: Actions = {
         return fail(400, { error: "All fields are required" });
       }
 
-      // Check if user already exists
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        return fail(400, { error: "User with this email already exists" });
-      }
-
-      // Create new user
-      const user = new User({
-        firstName,
-        lastName,
-        email,
-        password,
+      // Make API call to backend
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          password,
+        }),
       });
 
-      await user.save();
+      const result = await response.json();
+
+      if (!response.ok) {
+        return fail(response.status, { error: result.error || "Registration failed" });
+      }
 
       return {
         success: true,
