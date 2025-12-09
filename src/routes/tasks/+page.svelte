@@ -1,5 +1,5 @@
 <script>
- 
+  //@ts-nocheck
   import { invalidateAll } from "$app/navigation";
   import Task from "$lib/components/Tasks/Task.svelte";
   import Modal from "$lib/components/util/Modal.svelte";
@@ -83,16 +83,72 @@
   }
 </script>
 
-<h1 class="text-xl">Weekly Tasks</h1>
+<section class="box-border min-h-screen bg-[#fdfcf8] px-4 pb-8 pt-12 text-stone-800 sm:px-8 lg:px-12">
+  <div class="mx-auto grid w-full max-w-none items-start gap-8 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)]">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white border-r border-gray-200 p-8 ">
+      <header class="mb-6 px-2">
+        <p class="text-xs font-bold uppercase tracking-widest text-stone-400">
+          Planning
+        </p>
+        <h1 class="mt-1 text-lg font-bold tracking-tight text-stone-800">
+          Weekly Tasks
+        </h1>
+        <p class="text-sm text-gray-600 leading-relaxed">
+          Manage weekly garden tasks. All tasks are listed here for tracking.
+        </p>
+      </header>
+      <div>
+        <div class="text-xs font-semibold text-gray-400 tracking-wider mb-3">
+          ACTIONS
+        </div>
+        <div
+          class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center mb-3"
+        >
+          <div class="text-xs text-gray-400 mb-2">NEXT RESET</div>
+          <div class="text-lg font-semibold text-gray-900">7 days</div>
+        </div>
+        <button
+          class="w-full py-2.5 px-4 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all"
+        >
+          Reset All Tasks
+        </button>
+      </div>
+    </aside>
 
-<button class="w-auto h-auto p-5 bg-green-400" onclick={openCreateModal}
-  >Create</button
->
-
-{#each data.tasks as task}
-  <Task {task} onEdit={openEditModal} onDelete={openDeleteModal} />
-{/each}
-
+    <main class="flex-1 p-8">
+      <div class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-[2.5rem] border border-stone-200/60 bg-white/80 shadow-xl shadow-stone-200/20 backdrop-blur-xl">
+        <!-- Header -->
+        <header class="flex flex-wrap items-center justify-between gap-4 border-b border-stone-100 bg-white/50 px-8 py-5 backdrop-blur-sm">
+          <div class="flex justify-between items-start mb-8">
+            <div>
+              <h2 class="text-2xl font-semibold text-gray-900 mb-2">
+                All Tasks <span class="text-gray-400">/ Garden 1</span>
+              </h2>
+              <p class="text-sm text-gray-600">
+                Overview of all active and completed tasks.
+              </p>
+            </div>
+            <button
+              class="flex items-center gap-2 rounded-xl bg-lime-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-lime-700 hover:shadow-md"
+              onclick={openCreateModal}>
+              + Add Task
+            </button>
+          </div>
+        </header>
+        <div class="flex flex-1 flex-col overflow-hidden bg-stone-50/30">
+          <div class="flex-1 overflow-y-auto px-8 py-6">
+            <div class="flex flex-col gap-2 bg-gray-100 p-5 rounded-2xl">
+              {#each data.tasks as task}
+                <Task {task} onEdit={openEditModal} onDelete={openDeleteModal} />
+              {/each}
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
 <Modal
   isOpen={isModalOpen}
   close={closeModal}
