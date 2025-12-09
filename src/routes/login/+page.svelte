@@ -26,7 +26,7 @@
             return async ({ update, result }) => {
                 if (result.type === 'success') {
                     success = result.data?.message as string;
-                    setTimeout(() => goto('/'), 2000);
+                    setTimeout(() => goto('/createjoin'), 2000);
                 } else if (result.type === 'failure') {
                     error = result.data?.error as string;
                 }

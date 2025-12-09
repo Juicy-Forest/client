@@ -3,7 +3,7 @@ import type { LayoutServerLoad } from './$types';
 
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3000/api";
 
-export const load: LayoutServerLoad = async ({ cookies, url }) => {
+export const load: LayoutServerLoad = async ({ cookies, url, fetch }) => {
   // Skip authentication check for login and register pages
   if (url.pathname === '/login' || url.pathname === '/register') {
     return {};
@@ -20,7 +20,7 @@ export const load: LayoutServerLoad = async ({ cookies, url }) => {
     const response = await fetch(`${API_BASE_URL}/auth/verify`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        'x-authorization': token,
       },
     });
 

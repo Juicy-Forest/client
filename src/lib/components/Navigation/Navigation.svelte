@@ -8,7 +8,6 @@
       class="flex justify-center gap-8 shadow-md border border-gray-300 rounded-full px-8"
     >
       <NavLink route="/" text="Home" icon="fa-solid fa-home" />
-      <NavLink route="/map" text="Map" icon="fa-solid fa-map" />
       <NavLink route="/tasks" text="Tasks" icon="fa-solid fa-tasks" />
       <NavLink route="/chat" text="Chat" icon="fa-solid fa-message" />
       <NavLink route="/inventory" text="Inventory" icon="fa-solid fa-box" />
