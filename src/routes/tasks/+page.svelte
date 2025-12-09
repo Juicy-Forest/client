@@ -1,114 +1,184 @@
 <script>
-    import TaskSection from "$lib/components/TaskSection.svelte";
+ 
+  import { invalidateAll } from "$app/navigation";
+  import Task from "$lib/components/Tasks/Task.svelte";
+  import Modal from "$lib/components/util/Modal.svelte";
 
-    let tasks;
-    let currentGarden = "Garden 1";
-    let sections = [
-        {
-        color: "bg-blue-500",
-        initials: "S",
-        title: "North Section - Vegetables",
-        assigned: "Sam",
-        tasks: tasks,
-        },
+  let { data } = $props();
 
-        {
-        color: "bg-purple-500",
-        initials: "A",
-        title: "East Section - Herbs",
-        assigned: "Alex",
-        tasks: tasks,
-        },
+  let modalMode = $state("create");
+  let selectedTask = $state(null);
+  let isModalOpen = $state(false);
 
-        {
-        color: "bg-green-500",
-        initials: "J",
-        title: "South Section - Flowers",
-        assigned: "Jordan",
-        tasks: tasks,
-        },
+  let formDataTask = $state({
+    name: "",
+    isComplete: false,
+  });
 
-        {
-        color: "bg-orange-500",
-        initials: "T",
-        title: "West Section - Fruits",
-        assigned: "Taylor",
-        tasks: tasks,
-        },
-    ];
+  function resetForm() {
+    formDataTask = {
+      name: "",
+      isComplete: false,
+    };
+    selectedTask = null;
+  }
 
+  function openCreateModal() {
+    resetForm();
+    modalMode = "create";
+    isModalOpen = true;
+  }
+
+  function openEditModal(task) {
+    selectedTask = task;
+    formDataTask = {
+      name: task.name,
+      isComplete: task.isComplete,
+    };
+    modalMode = "edit";
+    isModalOpen = true;
+  }
+
+  function openDeleteModal(task) {
+    selectedTask = task;
+    modalMode = "delete";
+    isModalOpen = true;
+  }
+
+  function closeModal() {
+    isModalOpen = false;
+  }
+
+  async function handleSubmit() {
+    const baseUrl = "http://localhost:3030/tasks/";
+    try {
+      let response;
+      if (modalMode === "create") {
+        response = await fetch(baseUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formDataTask),
+        });
+      } else if (modalMode === "edit") {
+        response = await fetch(`${baseUrl}${selectedTask._id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formDataTask),
+        });
+      } else if (modalMode === "delete") {
+        response = await fetch(`${baseUrl}${selectedTask._id}`, {
+          method: "DELETE",
+        });
+      }
+
+      if (response.ok) {
+        closeModal();
+        await invalidateAll(); // refreshes page data
+      } else {
+        closeModal();
+      }
+    } catch (error) {
+      console.error("Network Error", error);
+    }
+  }
 </script>
 
-<section class="box-border min-h-screen bg-[#fdfcf8] px-4 pb-8 pt-12 text-stone-800 sm:px-8 lg:px-12">
-  <div class="mx-auto grid w-full max-w-none items-start gap-8 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)]">
-    
-    <!-- Sidebar -->
-    <aside class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-3xl border border-stone-200/60 bg-white/60 px-5 py-6 shadow-sm backdrop-blur-xl transition-colors hover:bg-white/80">
-      <header class="mb-6 px-2">
-        <p class="text-xs font-bold uppercase tracking-widest text-stone-400">Planning</p>
-        <h1 class="mt-1 text-lg font-bold tracking-tight text-stone-800">Weekly Tasks</h1>
-      </header>
+<h1 class="text-xl">Weekly Tasks</h1>
 
-      <div class="flex-1 overflow-y-auto pr-1">
-        <div class="flex flex-col gap-6">
-            <div class="px-2">
-                <p class="text-sm text-stone-500 leading-relaxed">
-                    Manage weekly garden tasks for each section. Tasks are assigned to team members and tracked here.
-                </p>
-            </div>
+<button class="w-auto h-auto p-5 bg-green-400" onclick={openCreateModal}
+  >Create</button
+>
 
-            <div class="border-t border-stone-100"></div>
+{#each data.tasks as task}
+  <Task {task} onEdit={openEditModal} onDelete={openDeleteModal} />
+{/each}
 
-            <div class="px-2 flex flex-col gap-3">
-                 <p class="text-xs font-bold uppercase tracking-widest text-stone-400">Actions</p>
-                 
-                 <div class="rounded-2xl border border-stone-200 bg-stone-50/50 p-4 text-center">
-                    <p class="text-xs font-bold text-stone-400 uppercase">Next Reset</p>
-                    <p class="text-lg font-bold text-stone-700 mt-1">7 days</p>
-                 </div>
-
-                 <button class="w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm font-bold text-stone-600 shadow-sm transition-all hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200">
-                    Reset All Tasks
-                </button>
-            </div>
-        </div>
+<Modal
+  isOpen={isModalOpen}
+  close={closeModal}
+  title={modalMode === "delete"
+    ? "Delete Task"
+    : modalMode === "create"
+      ? "Add New Item"
+      : "Edit Item"}
+>
+  {#if modalMode === "delete"}
+    <div class="text-center">
+      <div
+        class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-red-600"
+      >
+        <i class="fa-solid fa-trash-can text-lg"></i>
       </div>
-    </aside>
-
-    <!-- Main Content -->
-    <div class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-[2.5rem] border border-stone-200/60 bg-white/80 shadow-xl shadow-stone-200/20 backdrop-blur-xl">
-      
-      <!-- Header -->
-      <header class="flex flex-wrap items-center justify-between gap-4 border-b border-stone-100 bg-white/50 px-8 py-5 backdrop-blur-sm">
-        <div>
-          <div class="flex items-center gap-2">
-            <h2 class="text-lg font-bold text-stone-800">Task Board</h2>
-            <span class="text-stone-400">/</span>
-            <span class="text-sm font-medium text-stone-500">{currentGarden}</span>
-          </div>
-          <p class="mt-0.5 text-sm text-stone-500">Overview of all active tasks by section.</p>
-        </div>
-        <div class="flex -space-x-2">
-            {#each sections as section}
-                <div class={`flex h-8 w-8 items-center justify-center rounded-full border-2 border-white text-white text-xs font-bold shadow-sm ${section.color}`}>
-                    {section.initials}
-                </div>
-            {/each}
-        </div>
-      </header>
-
-      <!-- Content -->
-      <div class="flex flex-1 flex-col overflow-hidden bg-stone-50/30">
-        <div class="flex-1 overflow-y-auto px-8 py-6">
-             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {#each sections as section}
-                    <div class="rounded-3xl border border-stone-200 bg-white p-2 shadow-sm transition-all hover:shadow-md">
-                        <TaskSection {...section} />
-                    </div>
-                {/each}
-            </div>
-        </div>
+      <p class="mb-6 text-stone-600">
+        Are you sure you want to delete <strong class="text-stone-900"
+          >{selectedTask.name}</strong
+        >? This action cannot be undone.
+      </p>
+      <div class="flex justify-end gap-3">
+        <button
+          onclick={closeModal}
+          class="rounded-xl px-4 py-2.5 text-sm font-semibold text-stone-500 transition-colors hover:bg-stone-100 hover:text-stone-700"
+        >
+          Cancel
+        </button>
+        <button
+          onclick={handleSubmit}
+          class="rounded-xl bg-red-500 px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-red-600 hover:shadow-md"
+        >
+          Delete Item
+        </button>
       </div>
     </div>
-  </div>
-</section>
+  {:else}
+    <form
+      onsubmit={(e) => {
+        e.preventDefault();
+        handleSubmit();
+      }}
+      class="space-x-4"
+    >
+      <div>
+        <label
+          for="name"
+          class="mb-1.5 block text-sm font-semibold text-stone-700">Name</label
+        >
+        <input
+          type="text"
+          id="name"
+          bind:value={formDataTask.name}
+          required
+          class="w-full rounded-xl border-stone-200 bg-stone-50 px-4 py-2.5 text-sm text-stone-800 placeholder:text-stone-400 focus:border-lime-300 focus:bg-white focus:ring-2 focus:ring-lime-100 focus:outline-none transition-all"
+          placeholder="e.g. Watering plants"
+        />
+      </div>
+      <div>
+        <label
+          for="isComplete"
+          class="mb-1.5 block text-sm font-semibold text-stone-700"
+          >isComplete</label
+        >
+        <input
+          type="checkbox"
+          id="isComplete"
+          bind:checked={formDataTask.isComplete}
+          class="h-5 w-5 rounded-md border-stone-300 text-lime-600 focus:ring-lime-500 transition-all cursor-pointer"
+        />
+      </div>
+      <div class="flex justify-end gap-3 pt-2">
+        <button
+          type="button"
+          onclick={closeModal}
+          class="rounded-xl px-4 py-2.5 text-sm font-semibold text-stone-500 transition-colors hover:bg-stone-100 hover:text-stone-700"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="rounded-xl bg-lime-600 px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-lime-700 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {modalMode === "create" ? "Add Item" : "Save Changes"}
+        </button>
+      </div>
+    </form>
+  {/if}
+</Modal>
