@@ -1,6 +1,6 @@
 import { fail, type Actions } from "@sveltejs/kit";
 
-const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3030/api";
+const API_BASE_URL = process.env.API_BASE_URL || "http://127.0.0.1:3030/api";
 
 export const actions: Actions = {
   register: async ({ request, fetch }) => {
