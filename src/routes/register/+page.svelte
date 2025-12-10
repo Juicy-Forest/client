@@ -2,12 +2,12 @@
     import { enhance } from '$app/forms';
     import { goto } from '$app/navigation';
 
-    let username = '';
-    let email = '';
-    let password = '';
-    let confirmPassword = '';
-    let error = '';
-    let success = '';
+    let username = $state('');
+    let email = $state('');
+    let password = $state('');
+    let confirmPassword = $state('');
+    let error = $state('');
+    let success = $state('');
 
     function submit() {
         error = '';

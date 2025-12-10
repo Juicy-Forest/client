@@ -2,10 +2,10 @@
     import { goto } from '$app/navigation';
     import { enhance } from '$app/forms';
 
-    let email = '';
-    let password = '';
-    let error = '';
-    let success = '';
+    let email = $state('');
+    let password = $state('');
+    let error = $state('');
+    let success = $state('');
 </script>
 
 <main class="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 to-emerald-100 px-4">
