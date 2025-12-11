@@ -12,12 +12,36 @@
 
   let formDataTask = $state({
     name: "",
+    description: "",
     isComplete: false,
   });
+
+  async function toggleCheck(task){
+    const baseUrl = "http://localhost:3030/tasks/";
+      try {
+        let response;
+          response = await fetch(`${baseUrl}${task._id}/toggle`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" }
+          });
+          if(response.ok) {
+            invalidateAll();
+          }
+      } catch (error) {
+        console.error(error)
+      }
+  }
+
+  function openDescModal(task){
+    selectedTask = task;
+    modalMode = "description";
+    isModalOpen = true;
+  }
 
   function resetForm() {
     formDataTask = {
       name: "",
+      description: "",
       isComplete: false,
     };
     selectedTask = null;
@@ -33,6 +57,7 @@
     selectedTask = task;
     formDataTask = {
       name: task.name,
+      description: task.description,
       isComplete: task.isComplete,
     };
     modalMode = "edit";
@@ -86,7 +111,7 @@
 <section class="box-border min-h-screen bg-[#fdfcf8] px-4 pb-8 pt-12 text-stone-800 sm:px-8 lg:px-12">
   <div class="mx-auto grid w-full max-w-none items-start gap-8 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)]">
     <!-- Sidebar -->
-    <aside class="w-64 bg-white border-r border-gray-200 p-8 ">
+    <aside class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-3xl border border-stone-200/60 bg-white/60 px-5 py-6 shadow-sm backdrop-blur-xl transition-colors hover:bg-white/80">
       <header class="mb-6 px-2">
         <p class="text-xs font-bold uppercase tracking-widest text-stone-400">
           Planning
@@ -109,20 +134,19 @@
           <div class="text-lg font-semibold text-gray-900">7 days</div>
         </div>
         <button
-          class="w-full py-2.5 px-4 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all"
-        >
+          class="w-full py-2.5 px-4 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all">
           Reset All Tasks
         </button>
       </div>
     </aside>
-
+    <!--Main Content-->
     <main class="flex-1 p-8">
       <div class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-[2.5rem] border border-stone-200/60 bg-white/80 shadow-xl shadow-stone-200/20 backdrop-blur-xl">
         <!-- Header -->
         <header class="flex flex-wrap items-center justify-between gap-4 border-b border-stone-100 bg-white/50 px-8 py-5 backdrop-blur-sm">
-          <div class="flex justify-between items-start mb-8">
+          <div class="w-full flex justify-between items-start mb-8">
             <div>
-              <h2 class="text-2xl font-semibold text-gray-900 mb-2">
+              <h2 class="text-2xl font-semibold text-gray-900">
                 All Tasks <span class="text-gray-400">/ Garden 1</span>
               </h2>
               <p class="text-sm text-gray-600">
@@ -130,17 +154,17 @@
               </p>
             </div>
             <button
-              class="flex items-center gap-2 rounded-xl bg-lime-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-lime-700 hover:shadow-md"
+              class="flex gap-2 rounded-xl bg-lime-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-lime-700 hover:shadow-md"
               onclick={openCreateModal}>
-              + Add Task
+              <i class="fa-solid fa-plus"></i>Add Task
             </button>
           </div>
         </header>
         <div class="flex flex-1 flex-col overflow-hidden bg-stone-50/30">
           <div class="flex-1 overflow-y-auto px-8 py-6">
-            <div class="flex flex-col gap-2 bg-gray-100 p-5 rounded-2xl">
+            <div class="flex flex-col gap-2 shadow-xl p-5 rounded-2xl">
               {#each data.tasks as task}
-                <Task {task} onEdit={openEditModal} onDelete={openDeleteModal} />
+                <Task {task} onEdit={openEditModal} onDelete={openDeleteModal} onCheck={toggleCheck} onDesc={openDescModal}/>
               {/each}
             </div>
           </div>
@@ -156,7 +180,8 @@
     ? "Delete Task"
     : modalMode === "create"
       ? "Add New Item"
-      : "Edit Item"}
+      : modalMode === "edit" ? "Edit Item"
+      : "Description"}
 >
   {#if modalMode === "delete"}
     <div class="text-center">
@@ -179,44 +204,38 @@
         </button>
         <button
           onclick={handleSubmit}
-          class="rounded-xl bg-red-500 px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-red-600 hover:shadow-md"
-        >
+          class="rounded-xl bg-red-500 px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-red-600 hover:shadow-md">
           Delete Item
         </button>
       </div>
     </div>
+  {:else if modalMode === "description"}
+      <div class="overflow-hidden rounded-lg border border-stone-200/60 shadow-xl shadow-stone-200/20 backdrop-blur- bg-stone-50 px-4 py-2.5 text-sm text-stone-800 placeholder:text-stone-400 focus:border-lime-300 focus:bg-white focus:ring-2 focus:ring-lime-100 focus:outline-none transition-all resize-y">
+        <label for="description">{selectedTask.description}</label>
+      </div>
   {:else}
-    <form
-      onsubmit={(e) => {
-        e.preventDefault();
-        handleSubmit();
-      }}
-      class="space-x-4"
-    >
+    <form onsubmit={(e) => {e.preventDefault();handleSubmit();}} class="space-x-4">
       <div>
-        <label
-          for="name"
-          class="mb-1.5 block text-sm font-semibold text-stone-700">Name</label
-        >
-        <input
-          type="text"
-          id="name"
-          bind:value={formDataTask.name}
-          required
-          class="w-full rounded-xl border-stone-200 bg-stone-50 px-4 py-2.5 text-sm text-stone-800 placeholder:text-stone-400 focus:border-lime-300 focus:bg-white focus:ring-2 focus:ring-lime-100 focus:outline-none transition-all"
+        <label for="name" class="mb-1.5 block text-sm font-semibold text-stone-700">Name</label>
+        <input type="text" id="name" bind:value={formDataTask.name} required
+          class="w-full rounded-lg border-stone-200 bg-stone-50 px-4 py-2.5 text-sm text-stone-800 placeholder:text-stone-400 focus:border-lime-300 focus:bg-white focus:ring-2 focus:ring-lime-100 focus:outline-none transition-all"
           placeholder="e.g. Watering plants"
         />
+        <label for="description"class="mb-1.5 mt-1.5 block text-sm font-semibold text-stone-700">Description</label>
+        <textarea id="description" bind:value={formDataTask.description} rows="4"
+          class="w-full rounded-lg border-stone-200 bg-stone-50 px-4 py-2.5 text-sm text-stone-800 placeholder:text-stone-400 focus:border-lime-300 focus:bg-white focus:ring-2 focus:ring-lime-100 focus:outline-none transition-all resize-y"
+          placeholder="e.g. Describe what is the task about ..."
+        ></textarea>
       </div>
       <div>
-        <label
-          for="isComplete"
-          class="mb-1.5 block text-sm font-semibold text-stone-700"
-          >isComplete</label
-        >
+        <label for="isComplete" class="mb-1.5 block text-sm font-semibold text-stone-700">
+          Is your task already <span class="font-extrabold">completed</span> ??
+        </label>
         <input
           type="checkbox"
           id="isComplete"
           bind:checked={formDataTask.isComplete}
+          onclick={toggleCheck}
           class="h-5 w-5 rounded-md border-stone-300 text-lime-600 focus:ring-lime-500 transition-all cursor-pointer"
         />
       </div>
