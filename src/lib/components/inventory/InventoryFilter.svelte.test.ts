@@ -12,7 +12,8 @@ describe('InventoryFilter', () => {
       context: new Map([['selectedInventoryType', selectedInventoryType]])
     });
 
-    expect(screen.getByText('All items')).toBeInTheDocument();
+    expect(screen.getByText('All Items')).toBeInTheDocument();
+    expect(screen.getByText('Important items')).toBeInTheDocument();
     expect(screen.getByText('Plants')).toBeInTheDocument();
     expect(screen.getByText('Seeds')).toBeInTheDocument();
     expect(screen.getByText('Tools')).toBeInTheDocument();
@@ -30,7 +31,7 @@ describe('InventoryFilter', () => {
 
     const plantsButton = screen.getByText('Plants');
     await user.click(plantsButton);
-
+    
     expect(selectedInventoryType.selectedInventoryType).toBe('plant');
   });
 
@@ -45,11 +46,24 @@ describe('InventoryFilter', () => {
 
     await user.click(screen.getByText('Seeds'));
     expect(selectedInventoryType.selectedInventoryType).toBe('seed');
-
+    
     await user.click(screen.getByText('Tools'));
     expect(selectedInventoryType.selectedInventoryType).toBe('tool');
-
+    
     await user.click(screen.getByText('Supplies'));
     expect(selectedInventoryType.selectedInventoryType).toBe('supply');
+  });
+
+  it('filters by important items', async () => {
+    const user = userEvent.setup();
+    const selectedInventoryType = { selectedInventoryType: 'all' };
+    
+    render(InventoryFilter, {
+      props: {},
+      context: new Map([['selectedInventoryType', selectedInventoryType]])
+    });
+
+    await user.click(screen.getByText('Important items'));
+    expect(selectedInventoryType.selectedInventoryType).toBe(true);
   });
 });

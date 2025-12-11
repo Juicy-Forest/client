@@ -6,7 +6,7 @@
 	<div>
 		<div class="flex items-center gap-2 mb-1">
 			<span class="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded uppercase font-bold">
-				{item.type}
+				{item.isImportant ? "⭐ " + item.type : item.type}
 			</span>
 		</div>
 		<h3 class="text-lg font-semibold text-gray-800">{item.name}</h3>
