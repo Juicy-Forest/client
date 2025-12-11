@@ -334,6 +334,7 @@
 					<input
 						type="number"
 						id="quantity"
+						min=0
 						bind:value={formData.quantity}
 						class={`w-full rounded-xl border bg-stone-50 px-4 py-2.5 text-sm text-stone-800 placeholder:text-stone-400 focus:bg-white focus:outline-none focus:ring-2 transition-all ${
 							errors.quantity
@@ -415,7 +416,7 @@
 									<label
 										for="desiredQuantity"
 										class="whitespace-nowrap text-xs font-semibold uppercase tracking-wider text-stone-500"
-										>Desired Quantity</label
+										>Desired Qty</label
 									>
 									<input
 										type="number"
