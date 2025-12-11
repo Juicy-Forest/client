@@ -30,6 +30,7 @@
       text: "Inventory",
       icon: "fa solid fa-box"
     },
+    
   ]
 
   let notifications: {section: string, description: string}[] = [
