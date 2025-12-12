@@ -208,8 +208,5 @@
 				<p class="text-center text-gray-500 text-sm mt-3">Ask your garden admin for the access code</p>
 			{/if}
 		</div>
-
-		<p class="text-center text-gray-500 mt-6">Need help? <a href="/contact" class="text-emerald-600 font-semibold">Contact support</a></p>
 	</div>
 </main>
-*** End Patch
