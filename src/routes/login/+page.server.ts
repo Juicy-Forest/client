@@ -34,7 +34,6 @@ export const actions: Actions = {
 
       // Store the token from the server response
       if (result.accessToken) {
-        console.log('hello')
         cookies.set("auth-token", result.accessToken, {
           path: "/",
           httpOnly: true,
@@ -48,7 +47,6 @@ export const actions: Actions = {
     }
 
     // Redirect to createjoin page after successful login
-    console.log('we\'re redirecting baby')
     redirect(308, '/createjoin');
   },
 };
