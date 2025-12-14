@@ -56,7 +56,6 @@ export const load = async ({ cookies, url, fetch }) => {
 
     const resolvedSectionPromises = await Promise.all(sectionResponsePromises)
     // Get section data, get grid data
-    console.log("Garden sections:", resolvedSectionPromises)
     return {
       user: userData,
       gardenData: parsedGardens,

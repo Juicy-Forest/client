@@ -23,7 +23,6 @@ export async function PUT({params, cookies, fetch, request}) {
             return json({status: parsedResponse.status, messsage: "Error updating garden"})
         }
     } catch (err) {
-        console.log("ERROR:", err)
         return json({status: 500, message: err})
     }
 }

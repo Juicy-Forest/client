@@ -46,7 +46,6 @@ export const load = async ({ cookies, url, fetch, depends }) => {
 
     // get section data
       const sectionPromises = parsedGardens.map(async (g) => {
-        // console.log("Checking for garden sections:", g)
       const secRes = await fetch(`${API_BASE_URL}/section/${g._id}`, {
         credentials: "include",
         headers: { 'x-authorization': token }

@@ -103,7 +103,6 @@
     })
     const parsedSectionResponse = await sectionResponse.json()
     if(parsedSectionResponse._id) {
-        // console.log(parsedSectionResponse)
         await invalidate("data:sections") 
   
     }   else {    
@@ -145,19 +144,15 @@ const saveEdit = async function() {
       ...data.gardenData![0],
       grid: editingGrid.map(cell => ({ ...cell }))
     };    
-    console.log(newGarden)
-    const updateGridResponse = await fetch(`api/garden/${data.gardenData![0]._id}`, {
+    await fetch(`api/garden/${data.gardenData![0]._id}`, {
       method: "PUT",
       headers:  {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({updatedGarden: newGarden})
     })
-    const parsedUpdateGrid = await updateGridResponse.json()
-    console.log(parsedUpdateGrid)
-  } else {
-    console.log("The same")
-  }
+
+  } 
   grid = cloneGrid(editingGrid);
   exitEditMode();
 }
@@ -194,7 +189,6 @@ const typeToIcon = function(type: string) {
 
 const handleIconPlacement = function(grid: GridBoxType) {
   if(selectedIcon) {
-    console.log({...selectedIcon})
     const updatedGrid = gridToShow.map((tile: GridBoxType) => {
       if(tile.index === grid.index) {
         return {...tile, plant: selectedIcon!.type}
@@ -202,7 +196,6 @@ const handleIconPlacement = function(grid: GridBoxType) {
         return tile
       }
     })
-    // console.log([...updatedGrid])
     gridToShow = updatedGrid
   }
 }

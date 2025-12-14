@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { GardenData, GridBoxType, IconType } from "$lib/types/garden.js";
   import type { SectionData, SectionInfo } from "$lib/types/section.js";
-  import type { UserType } from "$lib/types/user.js";
   import { handleReturnGridClasses } from "$lib/utils/grid.js";
 
   // State variables
@@ -12,19 +11,14 @@
   const gardenGrid = gardenData ? gardenData[0].grid : []; // find way to fix, will always exist, made with garden init
   let grid: GridBoxType[] = $state(gardenGrid);
 
-  console.log(data);
   let gardens = $state(data?.gardenData ?? []);
   let sectionToDisplay: null | SectionInfo = $state(null);
   let user: any = $state(data.user);
-  let sectionInfo: SectionInfo[] = $state([]);
-
   $inspect(grid);
 
   const handleInspectSection = function (sectionId: string | null) {
     if (!sectionId) return;
-    console.log(sectionId)
     const section = sectionData.find((s: SectionInfo) => s._id === sectionId);
-    console.log(section)
     if (!section) return;
     sectionToDisplay = section;
   };

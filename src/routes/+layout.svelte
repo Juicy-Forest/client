@@ -4,8 +4,6 @@
   	import Navigation from '$lib/components/Navigation/Navigation.svelte';
 
 	const { data, children } = $props();
-	console.log('Layout data:', data)
-
 </script>
 
 <svelte:head>
