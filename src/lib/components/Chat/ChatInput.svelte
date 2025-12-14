@@ -1,10 +1,5 @@
 <script lang="ts">
-  interface Props {
-    activeChannelLabel: string;
-    onSendMessage: (message: string) => void;
-  }
-
-  let { activeChannelLabel, onSendMessage }: Props = $props();
+  let { activeChannelLabel, onSendMessage } = $props();
   let draftMessage = $state('');
 
   function handleSubmit(e: Event) {

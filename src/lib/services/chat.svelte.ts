@@ -51,7 +51,17 @@ export class ChatService {
     this.activeChannelId = channelId;
   }
 
-  sendMessage(content: string) {
+  sendMessage(ws: WebSocket | undefined, content:string) {
+    const load = JSON.stringify({
+      message: content,
+    });
+
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(load);
+    }
+  }
+  
+  sendMessageAI(content: string) {
     if (!content.trim()) return;
 
     const newMessage: Message = {

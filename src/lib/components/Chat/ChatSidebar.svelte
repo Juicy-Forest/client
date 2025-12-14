@@ -6,10 +6,9 @@
     channels: Channel[];
     activeChannelId: string;
     onSelectChannel: (id: string) => void;
-    onOpenCreateModal: () => void;
   }
 
-  let { channels, activeChannelId, onSelectChannel, onOpenCreateModal }: Props = $props();
+  let { channels, activeChannelId, onSelectChannel}: Props = $props();
 </script>
 
 <aside class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-3xl border border-stone-200/60 bg-white/60 px-5 py-6 shadow-sm backdrop-blur-xl transition-colors hover:bg-white/80">
@@ -20,7 +19,6 @@
     </div>
     <button 
       class="flex h-8 w-8 items-center justify-center rounded-full bg-stone-100 text-stone-500 transition-colors hover:bg-lime-100 hover:text-lime-700"
-      onclick={onOpenCreateModal}
       aria-label="Create channel"
     >
       <i class="fa-solid fa-plus text-sm"></i>
