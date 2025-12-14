@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ cookies, fetch }) => {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/gardens/user`, {
+    const response = await fetch(`${API_BASE_URL}/garden/user`, {
       headers: {
         'x-authorization': token,
       },
@@ -44,7 +44,7 @@ export const actions: Actions = {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/gardens`, {
+      const response = await fetch(`${API_BASE_URL}/garden`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -87,7 +87,7 @@ export const actions: Actions = {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/gardens/join`, {
+      const response = await fetch(`${API_BASE_URL}/garden/join`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

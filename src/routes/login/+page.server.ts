@@ -15,7 +15,7 @@ export const actions: Actions = {
 
     try {
       // Make API call to external server
-      const response = await fetch(`${API_BASE_URL}/users/login`, {
+      const response = await fetch(`${API_BASE_URL}/user/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

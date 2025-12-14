@@ -1,175 +1,72 @@
 <script lang="ts">
-  type SectionInfo = {
-    id: number;
-    assignedTo: string;
-    sectionName: string;
-    temperature: string;
-    humidityLevel: number;
-    soilMoisture: string;
-    lastWatered: string;
-    issues: IssueType[] | [];
-    plants: string[];
-    color: string;
-  };
+  import type { GardenData, GridBoxType, IconType } from "$lib/types/garden.js";
+  import type { SectionData, SectionInfo } from "$lib/types/section.js";
+  import type { UserType } from "$lib/types/user.js";
+  import { handleReturnGridClasses } from "$lib/utils/grid.js";
 
-  type GeneralInfo = {
-    statName: string;
-    statValue: string;
-  };
+  // State variables
+  let { data } = $props();
+  // from server
+  let gardenData: GardenData = data.gardenData;
+  let sectionData: SectionData = data.sectionData.flat();
+  const gardenGrid = gardenData ? gardenData[0].grid : []; // find way to fix, will always exist, made with garden init
+  let grid: GridBoxType[] = $state(gardenGrid);
 
-  type IssueType = {
-    solved: boolean;
-    issueDescription: string;
-    criticalLevel: string;
-  };
+  console.log(data);
+  let gardens = $state(data?.gardenData ?? []);
+  let sectionToDisplay: null | SectionInfo = $state(null);
+  let user: any = $state(data.user);
+  let sectionInfo: SectionInfo[] = $state([]);
 
-  // Placeholder
-  let user: string = "Jon Snow";
-  let sectionInfo: SectionInfo[] = [
-    {
-      id: 1,
-      assignedTo: "Tyrion",
-      sectionName: "Section A - Vegetables",
-      temperature: "23 degrees C",
-      humidityLevel: 45,
-      soilMoisture: "Low 35%",
-      lastWatered: "8 hours ago",
-      issues: [
-        {
-          solved: false,
-          issueDescription: "Needs watering - soil moisture is low",
-          criticalLevel: "Critical",
-        },
-      ],
-      plants: ["Tomatoes", "Bell Peppers", "Cucumbers", "Zucchini"],
-      color: "bg-blue-400/65",
-    },
-    {
-      id: 2,
-      assignedTo: "Jon",
-      sectionName: "Section B - Herbs",
-      temperature: "23 degrees C",
-      humidityLevel: 45,
-      soilMoisture: "Low 35%",
-      lastWatered: "8 hours ago",
-      issues: [],
-      plants: ["Basil", "Rosemary", "Thyme", "Mint", "Oregano"],
-      color: "bg-green-400/40",
-    },
-    {
-      id: 3,
-      assignedTo: "Marco Polo",
-      sectionName: "Section C - Fruits",
-      temperature: "23 degrees C",
-      humidityLevel: 45,
-      soilMoisture: "Low 35%",
-      lastWatered: "8 hours ago",
-      issues: [],
-      plants: ["Roses", "Sunflowers", "Marigolds", "Petunias"],
-      color: "bg-purple-400/40",
-    },
-    {
-      id: 4,
-      assignedTo: "Tyrell",
-      sectionName: "Section D - Flowers",
-      temperature: "23 degrees C",
-      humidityLevel: 45,
-      soilMoisture: "Low 35%",
-      lastWatered: "8 hours ago",
-      issues: [],
-      plants: ["Strawberries", "Blueberries", "Raspberries"],
-      color: "bg-yellow-400/40",
-    },
-  ];
+  $inspect(grid);
 
-  let generalInformation: GeneralInfo[] = [
-    {
-      statName: "Temperature",
-      statValue: "23°C",
-    },
-    {
-      statName: "Humidity",
-      statValue: "18%",
-    },
-    {
-      statName: "Last watered",
-      statValue: "2 hours ago",
-    },
-  ];
-
-  let clientX: number | null = null;
-  let clientY: number | null = null;
-
-  // const handleClick = function (event: MouseEvent, quartile: any) {
-  //     console.log(clientX, clientY)
-  //     const container = event.currentTarget as HTMLDivElement;
-
-  //     const rect: any = container.getBoundingClientRect()
-  //     console.log(rect)
-
-  //     clientX = event.clientX - rect.left
-  //     clientY = event.clientY - rect.top
-  //     // Handle
-  // }
-
-  let sectionToDisplay: null | SectionInfo = null;
-  const handleInspectSection = function (section: SectionInfo) {
+  const handleInspectSection = function (sectionId: string | null) {
+    if (!sectionId) return;
+    console.log(sectionId)
+    const section = sectionData.find((s: SectionInfo) => s._id === sectionId);
+    console.log(section)
+    if (!section) return;
     sectionToDisplay = section;
-    console.log("show");
   };
 
-  let showSettings = false;
-
-  let activeTab = "divisions";
-  let uploadedImage = null;
-  let uploadedImageUrl = "";
-
-  let selectedSection: number | null = null;
-  const handleSelectSection = function (id: number) {
-    selectedSection = id;
+  export const plantTypes: IconType[] = [
+    {
+      type: "Plant",
+      icon: "🌱",
+    },
+    {
+      type: "Bush",
+      icon: "🌿",
+    },
+    {
+      type: "Tree",
+      icon: "🌾",
+    },
+    {
+      type: "Flower",
+      icon: "🌸",
+    },
+    {
+      type: "Greenhouse",
+      icon: "🏡",
+    },
+    {
+      type: "Pathway",
+      icon: "⬜",
+    },
+    {
+      type: "Pond",
+      icon: "🐸",
+    },
+    {
+      type: "Fence",
+      icon: "🪜",
+    },
+  ];
+  const typeToIcon = function (type: string) {
+    const res = plantTypes.find((obj) => obj.type === type) as IconType;
+    return res.icon;
   };
-
-  const switchTab = function (tab: string) {
-    activeTab = tab;
-  };
-
-  const handleImageUpload = function (event: any) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    uploadedImage = file;
-    uploadedImageUrl = URL.createObjectURL(file);
-  };
-
-  type GridBoxType = { id: number; section: number | null };
-  let grid: GridBoxType[] = [];
-  let gridToEdit: GridBoxType[] = grid
-
-  const editGrid = function (id: number) {
-    if (!selectedSection) return;
-    // Show error message or ensure it cant happen
-    gridToEdit[id].section = selectedSection;
-  };
-
-  const initializeGrid = function () {
-    for (let i = 0; i < 400; i++) {
-      const singleGrid: GridBoxType = { id: i, section: null };
-      gridToEdit.push(singleGrid);
-    }
-  };
-  initializeGrid();
-
-  const clearEntireGrid = function() {
-    const newGrid: GridBoxType[] = gridToEdit.map((tile) => {
-      const updatedTile = {...tile, section: null} 
-      return updatedTile})
-    gridToEdit = newGrid
-  }
-
-  const handleSaveGridChanges = function() {
-    grid = gridToEdit
-    showSettings = false
-  }
 </script>
 
 <section
@@ -182,38 +79,55 @@
     <aside
       class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-3xl border border-stone-200/60 bg-white/60 px-5 py-6 shadow-sm backdrop-blur-xl transition-colors hover:bg-white/80"
     >
-      <header class="mb-6 px-2">
+      <header class="mb-3 px-2">
         <p class="text-xs font-bold uppercase tracking-widest text-stone-400">
           Overview
         </p>
         <h1 class="mt-1 text-lg font-bold tracking-tight text-stone-800">
-          Garden Stats
+          Garden Information
         </h1>
       </header>
 
       <div class="flex-1 overflow-y-auto pr-1">
-        <div class="flex flex-col gap-3">
-          {#each generalInformation as stats (stats.statName)}
+        <div class="flex flex-col gap-2">
+          <div
+            class="p-3 rounded-2xl border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50"
+          >
             <div
-              class="p-3 rounded-2xl border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50"
+              class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
             >
-              <div
-                class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
-              >
-                <i class="fa-solid fa-leaf text-sm"></i>
-              </div>
-              <div>
-                <p
-                  class="text-xs font-medium text-stone-400 uppercase tracking-wide"
-                >
-                  {stats.statName}
-                </p>
-                <p class="text-sm font-bold text-stone-700">
-                  {stats.statValue}
-                </p>
-              </div>
+              <i class="fa-solid fa-location-pin"></i>
             </div>
-          {/each}
+            <div>
+              <p
+                class="text-xs font-medium text-stone-400 uppercase tracking-wide"
+              >
+                Location
+              </p>
+              <p class="text-sm font-bold text-stone-700">
+                {gardens[0].location.address}
+              </p>
+            </div>
+          </div>
+          <div
+            class="p-3 rounded-2xl border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50"
+          >
+            <div
+              class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
+            >
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <div>
+              <p
+                class="text-xs font-medium text-stone-400 uppercase tracking-wide"
+              >
+                Member count
+              </p>
+              <p class="text-sm font-bold text-stone-700">
+                {gardens[0].members.length} / {gardens[0].maxMembers} members
+              </p>
+            </div>
+          </div>
         </div>
 
         <div class="mt-8 px-2">
@@ -249,13 +163,14 @@
         class="flex flex-wrap items-center justify-between gap-4 border-b border-stone-100 bg-white/50 px-8 py-5 backdrop-blur-sm"
       >
         <div>
-          <h2 class="text-lg font-bold text-stone-800">Greetings, {user}</h2>
+          <h2 class="text-lg font-bold text-stone-800">
+            Greetings, {user.username}
+          </h2>
           <p class="mt-0.5 text-sm text-stone-500">
             Here's your daily garden overview.
           </p>
         </div>
         <button
-          on:click={() => (showSettings = true)}
           class="flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2 text-sm font-medium text-stone-600 transition-all hover:bg-stone-50 hover:text-stone-800 hover:border-stone-300 shadow-sm"
         >
           <i class="fa-solid fa-gear text-stone-400"></i>
@@ -267,24 +182,30 @@
       <div class="flex flex-1 flex-col overflow-hidden bg-stone-50/30">
         <div class="flex-1 overflow-hidden px-8 py-6">
           <div
-            class="relative mx-auto h-full w-fit overflow-hidden rounded-md  border-stone-200 "
+            class="relative mx-auto h-full w-fit overflow-hidden rounded-md border-stone-200"
           >
-              <div class="relative rounded-md overflow-hidden w-[600px]">
-  <img
-    src="/images/JUICY_FOREST_FOOD_GARDEN.png"
-    alt="Birds-eye-view food garden"
-    class="w-full h-auto object-contain rounded-md"
-  />
-
-  <div class="absolute inset-0 z-10 grid grid-cols-20 grid-rows-20">
-    {#each grid as gridItem (gridItem.id)}
-      <div aria-label=" "
-        class={`border border-black/30 cursor-pointer
-          ${gridItem.section ? sectionInfo.find(s => s.id === gridItem.section)?.color : "" }
-        `}
-      ></div>
-    {/each}
-  </div>
+            <div class="relative rounded-md overflow-hidden w-[600px]">
+              <div
+                class=" w-fit h-fit inset mx-auto border-black/30 border z-10 grid grid-cols-20 grid-rows-20"
+              >
+                {#each grid as gridItem, i (gridItem.index)}
+                  <button
+                    onclick={() =>
+                      handleInspectSection(
+                        gridItem.section && gridItem.section
+                      )}
+                    aria-label=" "
+                    class={`border border-black/30 cursor-pointer flex items-center justify-center w-7 h-7 
+                      ${handleReturnGridClasses(gridItem.section, sectionData)} `}
+                  >
+                    {#if gridItem.plant}
+                      <span class="text-lg leading-none"
+                        >{typeToIcon(gridItem.plant)}</span
+                      >
+                    {/if}
+                  </button>
+                {/each}
+              </div>
               <!-- {#each sectionInfo as sectionItem (sectionItem.sectionName)}
                 <div class="w-1/2 h-1/2 p-1">
                   <button
@@ -321,288 +242,303 @@
               {/each} -->
             </div>
           </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  {#if showSettings}
-    <div
-      class="fixed inset-0 bg-black/45 flex items-center justify-center z-50"
-    >
+    <!-- {#if showSettings}
       <div
-        class="h-screen w-fit min-w-[1000px] p-6 bg-white rounded-xl shadow-lg relative overflow-hidden"
+        class="fixed inset-0 bg-black/45 flex items-center justify-center z-50"
       >
-        <div class="w-full flex items-center justify-between mb-4">
-          <p class="font-semibold text-xl">Garden Configuration</p>
-          <button aria-label=" " on:click={() => (showSettings = false)}>
+        <div
+          class="h-screen overflow-y-scroll w-fit min-w-[1000px] p-6 bg-white rounded-xl shadow-lg relative overflow-hidden"
+        >
+          <div class="w-full flex items-center justify-between mb-4">
+            <p class="font-semibold text-xl">Garden Configuration</p>
+            <button aria-label=" " on:click={() => (showSettings = false)}>
+              <i
+                class="fa-solid fa-xmark cursor-pointer hover:text-rose-400 duration-300"
+              ></i>
+            </button>
+          </div>
+
+          <div class="flex w-full mb-4 bg-gray-100 rounded-xl p-1 gap-1">
+            <button
+              class="flex-1 py-2 rounded-lg text-sm font-medium duration-200
+                {activeTab === 'image'
+                ? 'bg-white shadow'
+                : 'hover:bg-gray-200'}"
+              on:click={() => switchTab("image")}
+            >
+              Image
+            </button>
+
+            <button
+              class="flex-1 py-2 rounded-lg text-sm font-medium duration-200
+                {activeTab === 'divisions'
+                ? 'bg-white shadow'
+                : 'hover:bg-gray-200'}"
+              on:click={() => switchTab("divisions")}
+            >
+              Divisions
+            </button>
+          </div> -->
+    <!-- image tab content -->
+    <!-- {#if activeTab === "image"}
+            <p class="font-medium mb-2">Garden Image</p>
+
+            <label
+              class="w-full h-[150px] border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 text-center"
+            >
+              <i class="fa-regular fa-upload text-gray-400 text-3xl mb-2"></i>
+              <p class="text-gray-500 text-sm">
+                Click to upload a custom garden image
+              </p>
+              <p class="text-gray-400 text-xs">PNG, JPG up to 10MB</p>
+
+              <input
+                type="file"
+                accept="image/*"
+                class="hidden"
+                on:change={handleImageUpload}
+              />
+            </label>
+            {#if uploadedImageUrl}
+              <div class="mt-4">
+                <img
+                  src={uploadedImageUrl}
+                  alt="Garden preview"
+                  class="w-full h-auto object-contain rounded-md"
+                />
+              </div>
+            {:else}
+              <p class="mt-4 text-gray-500 text-sm italic text-center">
+                No image uploaded yet. Upload an image above to preview it.
+              </p>
+            {/if}
+          {/if} -->
+
+    <!-- {#if activeTab === "divisions"}
+            <div class="w-fit mx-auto h-fit flex-col lg:flex-row flex gap-2">
+              <div
+                class="w-full min-w-[300px] lg:w-[20%] flex flex-col gap-3 h-fit p-4"
+              >
+                <p>
+                  Select a section, and pick which tiles belong to that section.
+                </p>
+                {#each sectionInfo as section (section.sectionName)}
+                  <button
+                    on:click={() => handleSelectSection(section.id)}
+                    class="w-full cursor-pointer border {section.color} p-2 text-left rounded-md {section.id ===
+                      selectedSection && 'font-semibold'}"
+                    >{section.sectionName}</button
+                  >
+                {/each}
+                <button
+                  on:click={() => clearEntireGrid()}
+                  class="bg-rose-200 cursor-pointer rounded-md py-2 mt-5 text-rose-700 border border-rose-700"
+                  >Clear All Tiles</button
+                >
+              </div>
+              <div class="w-full h-full p-4">
+                <div class="h-[600px] w-[600px] relative">
+                  <img
+                    src={uploadedImageUrl ||
+                      "/images/JUICY_FOREST_FOOD_GARDEN.png"}
+                    alt="Birds-eye-view food garden"
+                    class="block h-full w-full object-cover z-50"
+                  />
+                  <div
+                    class="absolute top-0 left-0 z-100 w-[600px] h-[600px] bg-blue-100/10 flex flex-wrap"
+                  >
+                    {#each gridToEdit as gridItem (gridItem.id)}
+                      <button
+                        aria-label=" "
+                        class={`w-[5%] h-[5%] border-[0.5px] border-black/30  cursor-pointer ${gridItem.section ? sectionInfo.find((s) => s.id === gridItem.section)?.color : ""}`}
+                        on:click={() => editGrid(gridItem.id)}
+                      ></button>
+                    {/each}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {/if} -->
+
+    <!-- Divider -->
+    <!-- <div class="border-t mt-6 mb-4"></div>
+
+          <div class="flex justify-end gap-2">
+            <button
+              on:click={() => (showSettings = false)}
+              class="px-5 py-2 rounded-lg border border-gray-300 bg-rose-200 text-rose-700 hover:bg-gray-100"
+            >
+              Close
+            </button>
+            <button
+              on:click={() => handleSaveGridChanges()}
+              class="px-5 py-2 bg-green-200 text-green-800 rounded-lg border border-gray-300 hover:bg-gray-100"
+            >
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+    {/if} -->
+
+    <!-- Section info opened on click of section -->
+
+    {#if sectionToDisplay}
+      <div
+        class="absolute flex flex-col min-w-[400px] max-w-[500px] right-0 top-0 h-screen border border-gray-300 bg-white shadow-xl z-100"
+      >
+        <div
+          class="w-full p-7 flex items-center justify-between border-b border-gray-300"
+        >
+          <div class="flex items-center gap-2">
+            {#if sectionToDisplay && sectionToDisplay?.issues.length > 0}
+              <div class="w-3 h-3 rounded-full bg-rose-600"></div>
+            {/if}
+            {#if sectionToDisplay && sectionToDisplay?.issues.length == 0}
+              <div class="w-3 h-3 rounded-full bg-green-600"></div>
+            {/if}
+            <div class="flex flex-col gap-1 items-stary">
+              <p>
+                {sectionToDisplay?.sectionName}
+              </p>
+              <p class="text-xs text-neutral-700">
+                Assigned to: <span class="font-semibold text-black">
+                  {sectionToDisplay.assignedTo}
+                </span>
+              </p>
+            </div>
+          </div>
+          <button aria-label=" " onclick={() => (sectionToDisplay = null)}>
             <i
-              class="fa-solid fa-xmark cursor-pointer hover:text-rose-400 duration-300"
+              class="fa-solid fa-x cursor-pointer hover:text-rose-400 duration-300"
             ></i>
           </button>
         </div>
-
-        <div class="flex w-full mb-4 bg-gray-100 rounded-xl p-1 gap-1">
-          <button
-            class="flex-1 py-2 rounded-lg text-sm font-medium duration-200
-                {activeTab === 'image'
-              ? 'bg-white shadow'
-              : 'hover:bg-gray-200'}"
-            on:click={() => switchTab("image")}
+        <!-- Error part -->
+        <div class="flex flex-col p-4">
+          <div
+            class="{sectionToDisplay?.issues &&
+            sectionToDisplay?.issues.length > 0
+              ? 'border-rose-400 bg-rose-200'
+              : 'border-green-400 bg-green-200'} border p-4 rounded-md mb-8"
           >
-            Image
-          </button>
-
-          <button
-            class="flex-1 py-2 rounded-lg text-sm font-medium duration-200
-                {activeTab === 'divisions'
-              ? 'bg-white shadow'
-              : 'hover:bg-gray-200'}"
-            on:click={() => switchTab("divisions")}
-          >
-            Divisions
-          </button>
-        </div>
-        <!-- image tab content -->
-        {#if activeTab === "image"}
-          <p class="font-medium mb-2">Garden Image</p>
-
-          <label
-            class="w-full h-[150px] border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 text-center"
-          >
-            <i class="fa-regular fa-upload text-gray-400 text-3xl mb-2"></i>
-            <p class="text-gray-500 text-sm">
-              Click to upload a custom garden image
-            </p>
-            <p class="text-gray-400 text-xs">PNG, JPG up to 10MB</p>
-
-            <input
-              type="file"
-              accept="image/*"
-              class="hidden"
-              on:change={handleImageUpload}
-            />
-          </label>
-          <!-- show image user uplaoded -->
-          {#if uploadedImageUrl}
-            <div class="mt-4">
-              <img
-                src={uploadedImageUrl}
-                alt="Garden preview"
-                class="w-full h-[180px] object-cover rounded-md"
-              />
-            </div>
-          {:else}
-            <p class="mt-4 text-gray-500 text-sm italic text-center">
-              No image uploaded yet. Upload an image above to preview it.
-            </p>
-          {/if}
-        {/if}
-
-        {#if activeTab === "divisions"}
-          <div class="w-fit  mx-auto  h-fit flex-col lg:flex-row flex gap-2">
-            <div class="w-full min-w-[300px] lg:w-[20%] flex flex-col gap-3 h-fit p-4">
-              <p>Select a section, and pick which tiles belong to that section.</p>
-              {#each sectionInfo as section (section.sectionName)}
-                <button
-                  on:click={() => handleSelectSection(section.id)}
-                  class="w-full cursor-pointer border {section.color} p-2 text-left rounded-md {section.id ===
-                    selectedSection && 'font-semibold'}"
-                  >{section.sectionName}</button
-                >
-              {/each}
-              <button on:click={() => clearEntireGrid()} class="bg-rose-200 cursor-pointer rounded-md py-2 mt-5 text-rose-700 border border-rose-700">Clear All Tiles</button>
-            </div>
-            <div class="w-full h-full p-4">
-              <div class="h-[600px] w-[600px] relative">
-                <img
-                  src="/images/JUICY_FOREST_FOOD_GARDEN.png"
-                  alt="Birds-eye-view food garden"
-                  class="block h-full w-full object-cover z-50"
-                />
-                <div
-                  class="absolute top-0 left-0 z-100 w-[600px] h-[600px] bg-blue-100/10 flex flex-wrap"
-                >
-                  {#each gridToEdit as gridItem (gridItem.id)}
-                    <button
-                      aria-label=" "
-                      class={`w-[5%] h-[5%] border-[0.5px] border-black/30  cursor-pointer ${gridItem.section ? sectionInfo.find((s) => s.id === gridItem.section)?.color : "" }`}
-                      on:click={() => editGrid(gridItem.id)}
-                    ></button>
-                  {/each}
+            {#if sectionToDisplay?.issues && sectionToDisplay.issues.length > 0}
+              <p class="text-rose-600">⚠️ Unresolved issues</p>
+              {#each sectionToDisplay.issues as issue (issue.issueDescription)}
+                <div class="flex items-center gap-2">
+                  <p class="max-w-[75%] w-fit">
+                    {issue.issueDescription}
+                    ({issue.criticalLevel})
+                  </p>
+                  <!-- <button class="px-3 py-2 rounded-md border border-lime-200 bg-lime-100 text-lime-700">Resolve</button> -->
                 </div>
-              </div>
-            </div>
+              {/each}
+            {:else}
+              <p class="text-green-700">
+                <i class="fa-solid fa-face-grin-beam mr-2"></i>
+                No issues found.
+              </p>
+            {/if}
           </div>
-        {/if}
-
-        <!-- Divider -->
-        <div class="border-t mt-6 mb-4"></div>
-
-        <!-- Close Button -->
-        <div class="flex justify-end gap-2">
-          <button
-            on:click={() => (showSettings = false)}
-            class="px-5 py-2 rounded-lg border border-gray-300 bg-rose-200 text-rose-700 hover:bg-gray-100"
-          >
-            Close
-          </button>
-           <button
-            on:click={() => handleSaveGridChanges()}
-            class="px-5 py-2 bg-green-200 text-green-800 rounded-lg border border-gray-300 hover:bg-gray-100"
-          >
-            Save Changes
-          </button>
-        </div>
-      </div>
-    </div>
-  {/if}
-
-  <!-- Section info opened on click of section -->
-
-  {#if sectionToDisplay}
-    <div
-      class="absolute flex flex-col min-w-[400px] max-w-[500px] right-0 top-0 h-screen border border-gray-300 bg-white shadow-xl z-100"
-    >
-      <div
-        class="w-full p-7 flex items-center justify-between border-b border-gray-300"
-      >
-        <div class="flex items-center gap-2">
-          {#if sectionToDisplay && sectionToDisplay?.issues.length > 0}
-            <div class="w-3 h-3 rounded-full bg-rose-600"></div>
-          {/if}
-          {#if sectionToDisplay && sectionToDisplay?.issues.length == 0}
-            <div class="w-3 h-3 rounded-full bg-green-600"></div>
-          {/if}
-          <p>
-            {sectionToDisplay?.sectionName}
-          </p>
-        </div>
-        <button aria-label=" " on:click={() => (sectionToDisplay = null)}>
-          <i
-            class="fa-solid fa-x cursor-pointer hover:text-rose-400 duration-300"
-          ></i>
-        </button>
-      </div>
-      <!-- Error part -->
-      <div class="flex flex-col p-4">
-        <div
-          class="{sectionToDisplay?.issues &&
-          sectionToDisplay?.issues.length > 0
-            ? 'border-rose-400 bg-rose-200'
-            : 'border-green-400 bg-green-200'} border p-4 rounded-md mb-8"
-        >
-          {#if sectionToDisplay?.issues && sectionToDisplay.issues.length > 0}
-            <p class="text-rose-600">⚠️ Unresolved issues</p>
-            {#each sectionToDisplay.issues as issue (issue.issueDescription)}
-              <div class="flex items-center gap-2">
-                <p class="max-w-[75%] w-fit">
-                  {issue.issueDescription}
-                  ({issue.criticalLevel})
+          <p class="mb-2">Real-time information</p>
+          <div class="flex flex-col gap-4">
+            <div
+              class="p-3 rounded-md border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50 w-full"
+            >
+              <div
+                class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
+              >
+                <i class="fa-solid fa-leaf text-sm"></i>
+              </div>
+              <div>
+                <p
+                  class="text-xs font-medium text-stone-400 uppercase tracking-wide"
+                >
+                  Humidity Level
                 </p>
-                <!-- <button class="px-3 py-2 rounded-md border border-lime-200 bg-lime-100 text-lime-700">Resolve</button> -->
+                <p class="text-sm font-bold text-stone-700">
+                  {sectionToDisplay?.humidityLevel}
+                </p>
               </div>
-            {/each}
-          {:else}
-            <p class="text-green-700">
-              <i class="fa-solid fa-face-grin-beam mr-2"></i>
-              No issues found.
-            </p>
-          {/if}
-        </div>
-        <p class="mb-2">Real-time information</p>
-        <div class="flex flex-col gap-4">
-          <div
-            class="p-3 rounded-md border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50 w-full"
-          >
+            </div>
             <div
-              class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
+              class="p-3 rounded-md border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50 w-full"
             >
-              <i class="fa-solid fa-leaf text-sm"></i>
-            </div>
-            <div>
-              <p
-                class="text-xs font-medium text-stone-400 uppercase tracking-wide"
+              <div
+                class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
               >
-                Humidity Level
-              </p>
-              <p class="text-sm font-bold text-stone-700">
-                {sectionToDisplay?.humidityLevel}
-              </p>
-            </div>
-          </div>
-          <div
-            class="p-3 rounded-md border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50 w-full"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
-            >
-              <i class="fa-solid fa-leaf text-sm"></i>
-            </div>
-            <div>
-              <p
-                class="text-xs font-medium text-stone-400 uppercase tracking-wide"
-              >
-                Temperature
-              </p>
-              <p class="text-sm font-bold text-stone-700">
-                {sectionToDisplay?.temperature}
-              </p>
-            </div>
-          </div>
-          <div
-            class="p-3 rounded-md border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50 w-full"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
-            >
-              <i class="fa-solid fa-leaf text-sm"></i>
-            </div>
-            <div>
-              <p
-                class="text-xs font-medium text-stone-400 uppercase tracking-wide"
-              >
-                Soil Moisture
-              </p>
-              <p class="text-sm font-bold text-stone-700">
-                {sectionToDisplay?.soilMoisture}
-              </p>
-            </div>
-          </div>
-          <div
-            class="p-3 rounded-md border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50 w-full"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
-            >
-              <i class="fa-solid fa-leaf text-sm"></i>
-            </div>
-            <div>
-              <p
-                class="text-xs font-medium text-stone-400 uppercase tracking-wide"
-              >
-                Last Watered
-              </p>
-              <p class="text-sm font-bold text-stone-700">
-                {sectionToDisplay?.lastWatered}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="my-4 mt-8 flex flex-col gap-2">
-          <p>Plants in this section</p>
-          {#if sectionToDisplay}
-            <div class="flex flex-col gap-4">
-              {#each sectionToDisplay.plants as plant (plant)}
-                <div
-                  class="w-full rounded-md bg-[#f0fdf4] text-black text-sm border-[#baf8cf] border text-neural-600 p-3"
+                <i class="fa-solid fa-leaf text-sm"></i>
+              </div>
+              <div>
+                <p
+                  class="text-xs font-medium text-stone-400 uppercase tracking-wide"
                 >
-                  {plant}
-                </div>
-              {/each}
+                  Temperature
+                </p>
+                <p class="text-sm font-bold text-stone-700">
+                  {sectionToDisplay?.temperature}
+                </p>
+              </div>
             </div>
-          {/if}
+            <div
+              class="p-3 rounded-md border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50 w-full"
+            >
+              <div
+                class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
+              >
+                <i class="fa-solid fa-leaf text-sm"></i>
+              </div>
+              <div>
+                <p
+                  class="text-xs font-medium text-stone-400 uppercase tracking-wide"
+                >
+                  Soil Moisture
+                </p>
+                <p class="text-sm font-bold text-stone-700">
+                  {sectionToDisplay?.soilMoisture}
+                </p>
+              </div>
+            </div>
+            <div
+              class="p-3 rounded-md border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50 w-full"
+            >
+              <div
+                class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
+              >
+                <i class="fa-solid fa-leaf text-sm"></i>
+              </div>
+              <div>
+                <p
+                  class="text-xs font-medium text-stone-400 uppercase tracking-wide"
+                >
+                  Last Watered
+                </p>
+                <p class="text-sm font-bold text-stone-700">
+                  {sectionToDisplay?.lastWatered}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="my-4 mt-8 flex flex-col gap-2">
+            <p>Plants in this section</p>
+            {#if sectionToDisplay}
+              <div class="flex flex-col gap-4">
+                {#each sectionToDisplay.plants as plant (plant)}
+                  <div
+                    class="w-full rounded-md bg-[#f0fdf4] text-black text-sm border-[#baf8cf] border text-neural-600 p-3"
+                  >
+                    {plant}
+                  </div>
+                {/each}
+              </div>
+            {/if}
+          </div>
         </div>
       </div>
-    </div>
-  {/if}
+    {/if}
+  </div>
 </section>

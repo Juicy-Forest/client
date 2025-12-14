@@ -1,7 +1,5 @@
 <script lang="ts">
   import NavLink from "./NavLink.svelte";
-  let gardenName = "Harvest Moon Plot"
-
   let openNavbar = false
 
   let navigationLinks = [
@@ -57,7 +55,7 @@
     </div>
     <div class="hidden flex-col md:hidden lg:flex">
       <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400">Current Garden</p>
-      <p class="text-sm font-bold text-stone-700 leading-tight">Harvest Moon Plot</p>
+      <p class="text-sm font-bold text-stone-700 leading-tight"></p>
     </div>
    </div>
   <!-- Center navbar -->

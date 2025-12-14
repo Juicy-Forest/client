@@ -2,10 +2,11 @@ import { redirect } from '@sveltejs/kit';
 
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3030";
 
-export const load = async ({ cookies, url, fetch }) => {
+export const load = async ({ cookies, url, fetch, depends }) => {
+  depends("data:sections")
   // Skip authentication check for login and register pages
   if (url.pathname === '/login' || url.pathname === '/register') {
-     return {
+    return {
     user: null,
     gardenData: [],
     sectionData: []
@@ -35,32 +36,30 @@ export const load = async ({ cookies, url, fetch }) => {
     const userData = await response.json();
     
     // Get garden data
-    const gardenResponse = await fetch(`${API_BASE_URL}/garden/user`, {
+    const gardenRes = await fetch(`${API_BASE_URL}/garden/user`, {
       credentials: "include",
-      headers: {
-        'x-authorization': token,
-      },
-    })
-    const parsedGardens = await gardenResponse.json()
-    // get section data
-    const sectionResponsePromises = parsedGardens.map(async (garden) => {
-      const response = await fetch(`${API_BASE_URL}/section/${garden._id}`, {
-        credentials: "include",
-        headers: {
-        'x-authorization': token,
-      },
-      })
-      const parsed = await response.json()
-      return parsed
-    })
+      headers: { 'x-authorization': token }
+    });
 
-    const resolvedSectionPromises = await Promise.all(sectionResponsePromises)
-    // Get section data, get grid data
-    console.log("Garden sections:", resolvedSectionPromises)
+    const gardenData = await gardenRes.json();
+    const parsedGardens = Array.isArray(gardenData) ? gardenData : [];
+
+    // get section data
+      const sectionPromises = parsedGardens.map(async (g) => {
+        // console.log("Checking for garden sections:", g)
+      const secRes = await fetch(`${API_BASE_URL}/section/${g._id}`, {
+        credentials: "include",
+        headers: { 'x-authorization': token }
+      });
+      return secRes.json();
+    });
+
+    const sectionData = await Promise.all(sectionPromises);
+
     return {
-      user: userData,
+      userData,
       gardenData: parsedGardens,
-      sectionData: resolvedSectionPromises
+      sectionData: sectionData.flat(2)
     };
   } catch (error) {
     console.log("ERROR:", error)
