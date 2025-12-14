@@ -65,7 +65,6 @@
 
   let sectionInfo: SectionInfo[] = $state([]);
   const gardenGrid = data.gardenData ? data.gardenData[0].grid : [] // find way to fix, will always exist, made with garden init
-  console.log(data.sectionData)
   let grid: GridBoxType[] = $state(gardenGrid);        
   let editingGrid: GridBoxType[] = $state([]);           
   let gridToShow: GridBoxType[] = $state(grid);

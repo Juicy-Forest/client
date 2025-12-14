@@ -14,7 +14,6 @@
   let gardens = $state(data?.gardenData ?? []);
   let sectionToDisplay: null | SectionInfo = $state(null);
   let user: any = $state(data.userData);
-  $inspect(grid);
 
   const handleInspectSection = function (sectionId: string | null) {
     if (!sectionId) return;
