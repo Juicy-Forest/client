@@ -7,11 +7,9 @@
     let password = $state('');
     let confirmPassword = $state('');
     let error = $state('');
-    let success = $state('');
 
     function submit() {
         error = '';
-        success = '';
         if (password !== confirmPassword) {
             error = 'Passwords do not match';
             return;
@@ -32,10 +30,7 @@
         <form method="POST" action="?/register" use:enhance={() => {
             submit();
             return async ({ update, result }) => {
-                if (result.type === 'success') {
-                    success = "Registration successful! Redirecting to garden setup...";
-                    setTimeout(() => goto('/createjoin'), 2000);
-                } else if (result.type === 'failure') {
+                if (result.type === 'failure') {
                     error = result.data?.error as string;
                 }
                 update();
@@ -63,10 +58,6 @@
 
             {#if error}
                 <p class="text-red-600 text-sm mb-4">{error}</p>
-            {/if}
-
-            {#if success}
-                <p class="text-green-600 text-sm mb-4">{success}</p>
             {/if}
 
             <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:opacity-95">Sign Up</button>

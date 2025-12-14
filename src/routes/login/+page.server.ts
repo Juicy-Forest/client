@@ -47,6 +47,6 @@ export const actions: Actions = {
     }
 
     // Redirect to createjoin page after successful login
-    redirect(308, '/createjoin');
+    throw redirect(303, '/createjoin');
   },
 };
