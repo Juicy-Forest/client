@@ -3,10 +3,9 @@
 
   let ws: WebSocket | undefined = $state();
   let draftMessage = $state("");
-  let messages: string[] = $state([]);
+  let messages: any[] = $state([]);
   const { data } = $props();
-  console.log(data);
-
+  const userData = data.userData;
   onMount(() => {
     ws = new WebSocket("ws://localhost:3033");
 
@@ -15,8 +14,8 @@
     };
 
     ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      messages.push(data.message);
+      const data = JSON.parse(event.data).payload;
+      messages.push(data);
     };
 
     return () => {
@@ -26,7 +25,6 @@
 
   function sendMessage() {
     const load = JSON.stringify({
-      id: "12312312",
       message: draftMessage,
     });
 
@@ -53,7 +51,7 @@
     <p>No messages yet.</p>
   {:else}
     {#each messages as message}
-      <p>{message}</p>
+      <p class="{userData._id === message.author._id ? "text-blue-500" : "text-orange-500"}">{message.author.username}: {message.content}</p>
     {/each}
   {/if}
 </section>
