@@ -239,7 +239,7 @@
 	isOpen={isModalOpen}
 	close={closeModal}
 	title={modalMode === "delete"
-		? "Delete Items"
+		? "Delete Item"
 		: modalMode === "create"
 			? "Add New Item"
 			: "Edit Item"}
