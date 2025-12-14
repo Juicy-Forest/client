@@ -139,9 +139,10 @@
         </button>
       </div>
     </aside>
+    
     <!--Main Content-->
-    <main class="flex-1 p-8">
-      <div class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-[2.5rem] border border-stone-200/60 bg-white/80 shadow-xl shadow-stone-200/20 backdrop-blur-xl">
+    <main class="h-[calc(100vh-10.5rem)]">
+      <div class="flex h-full flex-col overflow-hidden rounded-[2.5rem] border border-stone-200/60 bg-white/80 shadow-xl shadow-stone-200/20 backdrop-blur-xl">
         <!-- Header -->
         <header class="flex flex-wrap items-center justify-between gap-4 border-b border-stone-100 bg-white/50 px-8 py-5 backdrop-blur-sm">
           <div class="w-full flex justify-between items-start mb-8">
@@ -164,7 +165,7 @@
           <div class="flex-1 overflow-y-auto px-8 py-6">
             <div class="flex flex-col gap-2 shadow-xl p-5 rounded-2xl">
               {#each data.tasks as task}
-                <Task {task} onEdit={openEditModal} onDelete={openDeleteModal} onCheck={toggleCheck} onDesc={openDescModal}/>
+                <Task {task} onEdit={openEditModal} onDelete={openDeleteModal} onCheck={toggleCheck}/>
               {/each}
             </div>
           </div>
@@ -173,15 +174,14 @@
     </main>
   </div>
 </section>
+
+
 <Modal
   isOpen={isModalOpen}
   close={closeModal}
-  title={modalMode === "delete"
-    ? "Delete Task"
-    : modalMode === "create"
-      ? "Add New Item"
-      : modalMode === "edit" ? "Edit Item"
-      : "Description"}
+  title= {modalMode === "delete" ? "Delete Task" : 
+          modalMode === "create" ? "Add New Item" : 
+          "Edit Item"}
 >
   {#if modalMode === "delete"}
     <div class="text-center">
@@ -209,10 +209,6 @@
         </button>
       </div>
     </div>
-  {:else if modalMode === "description"}
-      <div class="overflow-hidden rounded-lg border border-stone-200/60 shadow-xl shadow-stone-200/20 backdrop-blur- bg-stone-50 px-4 py-2.5 text-sm text-stone-800 placeholder:text-stone-400 focus:border-lime-300 focus:bg-white focus:ring-2 focus:ring-lime-100 focus:outline-none transition-all resize-y">
-        <label for="description">{selectedTask.description}</label>
-      </div>
   {:else}
     <form onsubmit={(e) => {e.preventDefault();handleSubmit();}} class="space-x-4">
       <div>
