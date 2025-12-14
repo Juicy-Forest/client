@@ -170,12 +170,12 @@
             Here's your daily garden overview.
           </p>
         </div>
-        <button
+        <!-- <button
           class="flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2 text-sm font-medium text-stone-600 transition-all hover:bg-stone-50 hover:text-stone-800 hover:border-stone-300 shadow-sm"
         >
           <i class="fa-solid fa-gear text-stone-400"></i>
           <span>Settings</span>
-        </button>
+        </button> -->
       </header>
 
       <!-- Content -->

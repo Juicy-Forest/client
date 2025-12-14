@@ -335,27 +335,31 @@ const handleIconPlacement = function(grid: GridBoxType) {
               : "Visualize and manage plants in your garden."}
           </p>
         </div>
+        <div class="w-fit flex items-center gap-2">
         {#if (isEditMode)}
-          <span
-            class="flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700"
-          >
-            <div class="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></div>
-            Editing Active
-          </span>
-           <div class="flex gap-3 mt-4">
-                <button onclick={cancelEdit} class="px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-100 transition cursor-pointer">
-                    Cancel
-                </button>
 
-                <button onclick={saveEdit} class="px-4 py-2 rounded-md bg-green-200 cursor-pointer text-green-700 hover:bg-green-300 duration-300">
-                    Save
-                </button>
-            </div>
+          <span
+          class="flex items-center h-full gap-2 rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700"
+          >
+          <div class="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></div>
+          Editing Active
+          </span>
+
+        <div class="flex gap-3 h-full items-center">
+          <button onclick={cancelEdit} class="px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-100 transition cursor-pointer">
+            Cancel
+          </button>
+          
+          <button onclick={saveEdit} class="px-4 py-2 rounded-md bg-green-200 cursor-pointer text-green-700 hover:bg-green-300 duration-300">
+            Save
+          </button>
+        </div>
         {:else}
-         <button onclick={enterEditMode} class="px-4 py-2 rounded-md bg-green-200 cursor-pointer text-green-700 hover:bg-green-300 duration-300">
-              Edit
-            </button>
+        <button onclick={enterEditMode} class="px-4 py-2 rounded-md bg-green-200 cursor-pointer text-green-700 hover:bg-green-300 duration-300">
+          Edit
+        </button>
         {/if}
+      </div>
       </header>
 
       <!-- Content -->
