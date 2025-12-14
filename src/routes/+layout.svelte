@@ -10,6 +10,6 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<Navigation />
+<Navigation gardenData={data ? {...data.gardenData[0]}: ''}/>
 
 {@render children()}

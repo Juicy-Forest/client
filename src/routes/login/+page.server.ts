@@ -15,7 +15,7 @@ export const actions: Actions = {
 
     try {
       // Make API call to external server
-      const response = await fetch(`${API_BASE_URL}/user/login`, {
+      const response = await fetch(`${API_BASE_URL}/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -34,6 +34,7 @@ export const actions: Actions = {
 
       // Store the token from the server response
       if (result.accessToken) {
+        console.log('hello')
         cookies.set("auth-token", result.accessToken, {
           path: "/",
           httpOnly: true,
@@ -47,6 +48,7 @@ export const actions: Actions = {
     }
 
     // Redirect to createjoin page after successful login
-    throw redirect(302, '/createjoin');
+    console.log('we\'re redirecting baby')
+    redirect(308, '/createjoin');
   },
 };

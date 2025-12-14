@@ -20,7 +20,7 @@ export const load = async ({ cookies, url, fetch, depends }) => {
 
   // Verify token with external server
   try {
-    const response = await fetch(`${API_BASE_URL}/user/`, {
+    const response = await fetch(`${API_BASE_URL}/users/`, {
       method: 'GET',
       credentials: "include",
       headers: {
