@@ -7,8 +7,9 @@
 	import { setContext, getContext } from "svelte";
 	import { invalidateAll } from "$app/navigation";
 	import { slide } from "svelte/transition";
-    import InventoryDeleteModal from '$lib/components/inventory/InventoryDeleteModal.svelte';
-    import InventoryCreateEditModal from '$lib/components/inventory/InventoryCreateEditModal.svelte';
+	import InventoryDeleteModal from '$lib/components/inventory/InventoryDeleteModal.svelte';
+	import InventoryCreateEditModal from '$lib/components/inventory/InventoryCreateEditModal.svelte';
+	import InventorySearchBar from "$lib/components/inventory/InventorySearchBar.svelte";
 
 	let { data } = $props();
 
@@ -24,6 +25,15 @@
 						: item.type ===
 							selectedInventoryType.selectedInventoryType,
 				),
+	);
+
+	let searchBarInput = $state({value: ""});
+	setContext("inventorySearchBarInput", searchBarInput);
+
+	const filteredSearchItems = $derived(
+		searchBarInput.value != ""
+			? filteredItems.filter((item) => item.name.includes(searchBarInput.value))
+			: filteredItems,
 	);
 
 	let isModalOpen = $state(false);
@@ -181,9 +191,9 @@
 			<header
 				class="flex flex-wrap items-center justify-between gap-4 border-b border-stone-100 bg-white/50 px-8 py-5 backdrop-blur-sm"
 			>
-			<div class="w-full">
-				<InventoryWarning inventory={data.inventory} />
-			</div>
+				<div class="w-full">
+					<InventoryWarning inventory={data.inventory} />
+				</div>
 				<div>
 					<div class="flex items-center gap-2">
 						<h2 class="text-lg font-bold text-stone-800">
@@ -205,12 +215,13 @@
 					<i class="fa-solid fa-plus"></i>
 					<span>Add Item</span>
 				</button>
+				<InventorySearchBar />
 			</header>
 
 			<div class="flex flex-1 flex-col overflow-hidden bg-stone-50/30">
 				<div class="flex-1 overflow-y-auto px-8 py-6">
 					<div class="flex flex-col gap-2">
-						{#each filteredItems as inventoryItem (inventoryItem._id)}
+						{#each filteredSearchItems as inventoryItem (inventoryItem._id)}
 							<InventoryItem
 								item={inventoryItem}
 								onEdit={openEditModal}
