@@ -9,7 +9,7 @@
 		{ id: 'plant', label: 'Plants', icon: 'fa-seedling', desc: 'Living plants' },
 		{ id: 'seed', label: 'Seeds', icon: 'fa-circle-dot', desc: 'Seeds & bulbs' },
 		{ id: 'tool', label: 'Tools', icon: 'fa-wrench', desc: 'Garden equipment' },
-		{ id: 'supply', label: 'Supplies', icon: 'fa-box-open', desc: 'Fertilizer, pots, shovels' }
+		{ id: 'supply', label: 'Supplies', icon: 'fa-box-open', desc: 'Fertilizer, Soil, Pesticide' }
 	];
 </script>
 
