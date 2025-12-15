@@ -1,9 +1,9 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import NavLink from "./NavLink.svelte";
-  let gardenName = "Harvest Moon Plot"
-
   let openNavbar = false
-
+  
+  const { gardenData } = $props();
   let navigationLinks = [
     {
       route: "/",
@@ -30,6 +30,7 @@
       text: "Inventory",
       icon: "fa solid fa-box"
     },
+    
   ]
 
   let notifications: {section: string, description: string}[] = [
@@ -56,7 +57,7 @@
     </div>
     <div class="hidden flex-col md:hidden lg:flex">
       <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400">Current Garden</p>
-      <p class="text-sm font-bold text-stone-700 leading-tight">Harvest Moon Plot</p>
+      <p class="text-sm font-bold text-stone-700 leading-tight">{gardenData.name}</p>
     </div>
    </div>
   <!-- Center navbar -->
@@ -71,12 +72,15 @@
   </div>
   <!-- Notifications -->
    <div class="w-[200px] flex hidden md:flex justify-end relative z-50">
-    <button on:click={() => showNotificationTab = !showNotificationTab} class="flex items-center gap-2 group active:scale-[0.95] duration-200 transform cursor-pointer relative hover:bg-stone-100 duration-300 rounded-full p-3">
+    <button onclick={() => showNotificationTab = !showNotificationTab} class="flex items-center gap-2 group active:scale-[0.95] duration-200 transform cursor-pointer relative hover:bg-stone-100 duration-300 rounded-full p-3">
         {#if notifications.length > 0}
           <div class="bg-rose-500 h-4 w-4 rounded-full text-[10px] font-bold text-white flex items-center justify-center absolute top-1 right-1 ring-2 ring-white">{notifications.length}</div>
         {/if}
 
       <i class="fa-solid fa-bell group-hover:text-stone-800 text-stone-500 duration-200 text-lg"></i>
+    </button>
+    <button onclick={() => {goto('/settings')}} class="flex items-center gap-2 group active:scale-[0.95] duration-200 transform cursor-pointer relative hover:bg-stone-100 duration-300 rounded-full p-3">
+    <i class="fa-solid fa-gear group-hover:text-stone-800 text-stone-500 duration-200 text-lg"></i>    
     </button>
     {#if showNotificationTab}
       <div class="absolute right-0 mt-14 w-80 origin-top-right rounded-3xl bg-white p-4 shadow-xl ring-1 ring-black/5 focus:outline-none border border-stone-100 z-50">
@@ -113,17 +117,18 @@
       </div>
     {/if}
   </div>
+  
    </div>
    <!-- Navbar on small screens -->
    <div class={`block md:hidden top-0 left-0 h-full w-[50%] flex justify-end items-center px-8 `}>
-      <button aria-label=" " on:click={() => openNavbar = true} >        
+      <button aria-label=" " onclick={() => openNavbar = true} >        
         <i class="fa-solid fa-bars text-neutral-600 transform scale-[2.5] cursor-pointer hover:opacity-80 "></i> hi
       </button>
    </div>
 
    <!-- Absolute full screen navbar for mobile -->
    <div class={` ${openNavbar ? "block" : "hidden"} absolute h-screen w-screen z-[100] bg-white top-1 left-1 rounded-md border-[#e5e5e5] border justify-center`}>
-    <button aria-label=" " class="absolute top-5 right-15 cursor-pointer hover:opacity-80 duration-200" on:click={() => openNavbar = false}>
+    <button aria-label=" " class="absolute top-5 right-15 cursor-pointer hover:opacity-80 duration-200" onclick={() => openNavbar = false}>
       <i class="fa-solid fa-x transform scale-[2] text-neutral-600"></i>
     </button>
     <ul class="flex flex-col items-center mt-[35%]">
