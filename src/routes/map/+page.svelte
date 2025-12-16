@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { invalidate } from '$app/navigation';
+  import MapSidebar from '$lib/components/Map/MapSidebar.svelte';
   import type { GridBoxType, IconType } from '$lib/types/garden.js';
-  import type { SectionInfo } from '$lib/types/section.js';
   import { handleReturnGridClasses } from '$lib/utils/grid.js';
 
   const { data } = $props();
@@ -38,32 +37,12 @@
   },
 ];
 
-  let colorOptions = [
-{ tailwindclass: "bg-rose-400" },
-{ tailwindclass: "bg-green-300" },
-{ tailwindclass: "bg-blue-400" },
-{ tailwindclass: "bg-yellow-300" },
-{ tailwindclass: "bg-purple-400" },
-{ tailwindclass: "bg-orange-400" },
-{ tailwindclass: "bg-teal-300" },
-{ tailwindclass: "bg-pink-400" },
-{ tailwindclass: "bg-lime-300" },
-{ tailwindclass: "bg-sky-400" },
-{ tailwindclass: "bg-amber-400" },
-{ tailwindclass: "bg-indigo-400" },
-{ tailwindclass: "bg-fuchsia-400" }
-
-]
-
 // states
-  let selectedColor = $state('')
-  let sectionName = $state('')
-  let plants = $state('')
-  let newSectionErrorMsg = $state('')
   let selectedSectionId = $state('')
   let isEditMode = $state(false);
 
-  let sectionInfo: SectionInfo[] = $state([]);
+  const updateSelectSectionId = (newSectionId: string) => selectedSectionId = newSectionId
+  const updateSelectedIcon = (newIcon: IconType) => selectedIcon = newIcon
   const gardenGrid = data.gardenData ? data.gardenData[0].grid : [] // find way to fix, will always exist, made with garden init
   let grid: GridBoxType[] = $state(gardenGrid);        
   let editingGrid: GridBoxType[] = $state([]);           
@@ -85,56 +64,15 @@
     gridToShow = next; 
   }
 
-  const handleCreateSection = async function() {
-    if(!selectedColor || ! sectionName) {
-        newSectionErrorMsg = 'Color & Name is required.'
-    return
-    }
-    newSectionErrorMsg = '';
-    const sectionResponse = await fetch('/api/section', {
-        method: "POST", 
-        body: JSON.stringify({
-            sectionName, 
-            plants: plants.split(", "),
-            color: selectedColor,
-            gardenId: data.gardenData ? data.gardenData[0]._id : '' // think of fix, gardenData will always exist
-        })
-    })
-    const parsedSectionResponse = await sectionResponse.json()
-    if(parsedSectionResponse._id) {
-        await invalidate("data:sections") 
-  
-    }   else {    
-    // Handle err
-        console.log("Error trying to create new section:", parsedSectionResponse.error)
-    }
-  }
-
-  const handleNameChange = (v: string) => sectionName = v
-  const handlePlantChange = (v: string) => plants = v
-
-  const handleDeleteSection = async function(id: string) {
-    // todo deltet section
-    const deleteSectionResponse = await fetch(`/api/section/${id}`, {
-        method: "DELETE",
-    })
-    const parsedRes = await deleteSectionResponse.json()
-    if(parsedRes.status === 500) {
-        // handle error message, (use toastify for errors)
-        return 
-    }
-    await invalidate("data:sections")
-  }
-
   const cloneGrid = function (source: GridBoxType[]): GridBoxType[] {
-    return source.map(cell => ({ ...cell }));
-  }
+    return source.map((cell) => ({ ...cell }));
+  };
 
-const enterEditMode = function() {
-  editingGrid = cloneGrid(grid);
-  gridToShow = editingGrid;
-  isEditMode = true;
-}
+  const enterEditMode = function() {
+    editingGrid = cloneGrid(grid);
+    gridToShow = editingGrid;
+    isEditMode = true;
+  }
 
 const saveEdit = async function() {
   if(JSON.stringify(editingGrid) !== JSON.stringify(grid)) {
@@ -166,25 +104,12 @@ const exitEditMode = function() {
   isEditMode = false;
 }
 
-  const handleSectionClick = function(section:any) {
-    if(isEditMode) {
-      selectedSectionId = section._id
-    } else {
-      // notify user they must be in edit mode first or let it
-      //  highlight all related section tiles
-    }
-  }
-
 
 const typeToIcon = function(type: string) {
   const res = plantTypes.find((obj) => obj.type === type) as IconType
   return res.icon 
 }
 
-  function selectIcon(icon: IconType) {
-    selectedIcon = selectedIcon === icon ? null : icon;
-    selectedSectionId = ''
-  }
 
 const handleIconPlacement = function(grid: GridBoxType) {
   if(selectedIcon) {
@@ -198,6 +123,7 @@ const handleIconPlacement = function(grid: GridBoxType) {
     gridToShow = updatedGrid
   }
 }
+
 </script>
 
 <section
@@ -207,110 +133,7 @@ const handleIconPlacement = function(grid: GridBoxType) {
     class="mx-auto grid w-full max-w-none items-start gap-8 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)]"
   >
     <!-- Sidebar -->
-    <aside
-      class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-3xl border border-stone-200/60 bg-white/60 px-5 py-6 shadow-sm backdrop-blur-xl transition-colors hover:bg-white/80"
-    >
-      <header class="mb-6 px-2">
-        <p class="text-xs font-bold uppercase tracking-widest text-stone-400">
-          Navigation
-        </p>
-        <h1 class="mt-1 text-lg font-bold tracking-tight text-stone-800">
-          Garden Map
-        </h1>
-      </header>
-
-      <div class="flex-1 overflow-y-auto pr-1">
-        <div class="flex flex-col gap-3">
-          <div class="rounded-2xl border border-stone-200 bg-stone-50/50 p-4">
-            <div class="flex items-center gap-3 mb-2">
-              <span class="text-xl">📍</span>
-              <div>
-                <p class="text-sm font-bold text-stone-700">Amsterdam Garden</p>
-                <p class="text-xs text-stone-500">Netherlands</p>
-              </div>
-            </div>
-          </div>
-
-          <div class=" mb-0 border-t border-stone-200"></div>
-          <!-- // show current sections -->
-           <div class="flex flex-col w-full gap-1">
-            <p
-              class="text-xs font-bold uppercase tracking-widest text-stone-400 mb-1">
-              Available Sections
-            </p>
-            <!-- idk what this is, VScode suggested quick fix, otherwise underlined yellow -->
-            <!-- svelte-ignore a11y_no_static_element_interactions -->
-            {#each data.sectionData as section (section._id)}
-            <!-- svelte-ignore a11y_click_events_have_key_events -->
-            <div  onclick={() => handleSectionClick(section)} class="w-full p-2 flex items-center justify-between cursor-pointer border-gray-200 border rounded-md {selectedSectionId === section._id && 'font-semibold'} {section.color}">
-              <p>{section.sectionName}</p>
-              <button aria-label=" " onclick={() => handleDeleteSection(section._id)} class="border active:scale-[0.7] transform duration-200 border-gray-300 text-gray-700 flex items-center justify-center w-5 h-5 rounded-md cursor-pointer bg-gray-100" >
-                <i class="fa-solid fa-x scale-[0.5]"></i>
-              </button>
-            </div>
-            {/each}
-          </div>
-          
-          {#if !data.sectionData || data.sectionData.length === 0} 
-          <span class="font-semibold text-xs my-1">Note: Create a section to get started.</span>
-          {/if}
-          {#if (isEditMode)}
-          <div class="my-2 border-t border-stone-200"></div>
-
-          <div class="">
-            <p
-              class="text-xs font-bold uppercase tracking-widest text-stone-400 mb-1"
-            >
-              Add section
-            </p>
-            <p class="text-xs text-rose-400 font-semibold mb-1">{newSectionErrorMsg}</p>
-              <div class="w-full flex flex-col items-start gap-2 px-1">
-                  <input onchange={(e) => handleNameChange((e.target as HTMLInputElement).value || "")} value={sectionName} class="p-2 w-full  rounded-md  bg-none placeholder:text-xs text-black/80 border border-black/30" type="text" placeholder="Section name">
-                  <input onchange={(e) => handlePlantChange((e.target as HTMLInputElement).value || "")} value={plants} class="p-2  w-full rounded-md bg-none outline-none  text-black/80 border placeholder:text-xs border-black/30" type="text" placeholder="Plants (comma separated)">
-                <div class="flex flex-wrap gap-1 w-full h-fit">
-                    {#each colorOptions as color (color.tailwindclass)}
-                        <button onclick={() => selectedColor = color.tailwindclass} class="rounded-md w-5 h-5 cursor-pointer {color.tailwindclass} {selectedColor === color.tailwindclass && 'border border-black'}"></button>
-                    {/each}
-                </div>
-                  <button
-                    onclick={() => handleCreateSection()}
-                    class={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition-all ${isEditMode ? "bg-amber-100 text-amber-800 ring-1 ring-amber-200" : "bg-stone-100 text-stone-600 hover:bg-stone-200"}`}
-                  >
-                    <i class="fa-solid fa-pen"></i>
-                    <span>Create Section</span>
-                  </button>
-            </div>
-          </div>
-          <div class="my-2 border-t border-stone-200"></div>
-          <div class="w-full h-[30px] ">
-            <p
-              class="text-xs font-bold uppercase tracking-widest text-stone-400 mb-1"
-            >
-              Add Plants
-            </p>
-            <div class="grid grid-cols-2 gap-2">
-
-              {#each plantTypes as plant (plant.type)}
-              <button
-              type="button"
-              class={`flex flex-col items-center justify-center gap-1 rounded-xl border p-3 transition-all border-stone-200 text-stone-600 hover:border-stone-300  cursor-pointer ${selectedIcon?.type === plant.type ? "bg-stone-200" : "hover:bg-stone-50"}
-             
-              `}
-              onclick={() => selectIcon(plant)}
-              >
-              <span class="text-2xl">{plant.icon}</span>
-              <span class="text-[10px] font-bold uppercase tracking-wide"
-              >{plant.type}</span
-              >
-            </button>
-            {/each}
-          </div>
-          </div>
-          {/if}
-        </div>
-      </div>
-    </aside>
-
+  <MapSidebar updateSelectedIcon={updateSelectedIcon} selectedIcon={selectedIcon} plantTypes={plantTypes} updateSelectSectionId={updateSelectSectionId} selectedSectionId={selectedSectionId} sectionData={data.sectionData} isEditMode={isEditMode} gardenData={data.gardenData} />
     <!-- Main Content -->
     <div
       class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-[2.5rem] border border-stone-200/60 bg-white/80 shadow-xl shadow-stone-200/20 backdrop-blur-xl"
