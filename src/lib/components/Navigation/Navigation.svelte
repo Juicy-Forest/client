@@ -29,8 +29,13 @@
       text: "Inventory",
       icon: "fa solid fa-box"
     },
-    
+
   ]
+
+  const dynamicLinks = $derived(navigationLinks.map(link => ({
+    ...link,
+    route: gardenData._id ? `${link.route}?gardenId=${gardenData._id}` : link.route
+  })));
 
   let notifications: {section: string, description: string}[] = [
     {
@@ -64,8 +69,8 @@
     <ul
       class="flex justify-center gap-6  px-8 items-center text-neutral-300"
     >
-    {#each navigationLinks as navItem (navItem.route)}
-      <li><NavLink route={navItem.route} text={navItem.text} icon={navItem.icon} orientation={"Vertical"} onClick={() => {}} /></li> | 
+    {#each dynamicLinks as navItem (navItem.route)}
+      <li><NavLink route={navItem.route} text={navItem.text} icon={navItem.icon} orientation={"Vertical"} onClick={() => {}} /></li> |
     {/each}
     </ul>
   </div>
@@ -127,7 +132,7 @@
       <i class="fa-solid fa-x transform scale-[2] text-neutral-600"></i>
     </button>
     <ul class="flex flex-col items-center mt-[35%]">
-        {#each navigationLinks as navItem (navItem.route) }
+        {#each dynamicLinks as navItem (navItem.route) }
           <li class="text-2xl">
             <NavLink route={navItem.route} text={navItem.text} icon={navItem.icon} orientation={'Horizontal'} onClick={() => openNavbar = false} />
           </li>
@@ -135,4 +140,3 @@
     </ul>
     </div>
 </nav>
-

@@ -9,7 +9,8 @@ export const load = async ({ cookies, url, fetch, depends }) => {
     return {
     user: null,
     gardenData: [],
-    sectionData: []
+    sectionData: [],
+    currentGarden: {}
   };
   }
 
@@ -55,10 +56,14 @@ export const load = async ({ cookies, url, fetch, depends }) => {
 
     const sectionData = await Promise.all(sectionPromises);
 
+    const gardenId = url.searchParams.get('gardenId');
+    const currentGarden = parsedGardens.find(g => g._id === gardenId) || parsedGardens[0] || {};
+
     return {
       userData,
       gardenData: parsedGardens,
-      sectionData: sectionData.flat(2)
+      sectionData: sectionData.flat(2),
+      currentGarden
     };
   } catch (error) {
     console.log("ERROR:", error)

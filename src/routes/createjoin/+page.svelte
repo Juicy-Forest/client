@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
+	import { goto } from '$app/navigation';
 
 	export let data: PageData;
 
@@ -49,8 +50,12 @@
 	}
 
 	function selectGarden(garden: any) {
-		// TODO: navigate to garden dashboard or something
-		console.log('Selected garden:', garden);
+		goto('/?gardenId=' + garden._id);
+	}
+
+	function copyCode(code: string) {
+		navigator.clipboard.writeText(code);
+		alert('Code copied to clipboard!');
 	}
 </script>
 
@@ -74,7 +79,7 @@
 						<h3 class="text-lg font-semibold text-gray-800 mb-3">Your Gardens</h3>
 						<div class="grid gap-3 md:grid-cols-2">
 							{#each joinedGardens as garden}
-								<button on:click={() => selectGarden(garden)} class="border border-gray-200 rounded-lg p-4 hover:shadow-sm focus:outline-none text-left">
+								<button onclick={() => selectGarden(garden)} class="border border-gray-200 rounded-lg p-4 hover:shadow-sm focus:outline-none text-left">
 									<div class="flex items-center gap-3">
 										<div class="bg-green-100 rounded-full w-10 h-10 flex items-center justify-center">
 											<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -86,6 +91,7 @@
 										<div>
 											<div class="font-medium text-gray-800">{garden.name}</div>
 											<div class="text-sm text-gray-500">{garden.members?.length || 0} members</div>
+											<div class="text-xs text-gray-400">Code: <span class="cursor-pointer hover:text-gray-600" onclick={(e) => { e.stopPropagation(); copyCode(garden.joinCode || 'N/A'); }}>{garden.joinCode || 'N/A'}</span></div>
 										</div>
 									</div>
 								</button>
@@ -95,7 +101,7 @@
 				{/if}
 
 				<div class="flex gap-4">
-					<button type="button" on:click={chooseCreate} class="flex-1 border border-gray-200 rounded-lg py-6 px-4 flex items-center gap-4 hover:shadow-sm focus:outline-none">
+					<button type="button" onclick={chooseCreate} class="flex-1 border border-gray-200 rounded-lg py-6 px-4 flex items-center gap-4 hover:shadow-sm focus:outline-none">
 						<div class="flex-shrink-0">
 							<div class="bg-emerald-100 rounded-full w-12 h-12 flex items-center justify-center">
 								<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -106,7 +112,7 @@
 						<div class="text-left text-gray-700 font-medium">Create New Garden</div>
 					</button>
 
-					<button type="button" on:click={chooseJoin} class="flex-1 border border-gray-200 rounded-lg py-6 px-4 flex items-center gap-4 hover:shadow-sm focus:outline-none">
+					<button type="button" onclick={chooseJoin} class="flex-1 border border-gray-200 rounded-lg py-6 px-4 flex items-center gap-4 hover:shadow-sm focus:outline-none">
 						<div class="flex-shrink-0">
 							<div class="bg-blue-100 rounded-full w-12 h-12 flex items-center justify-center">
 								<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -120,7 +126,7 @@
 				</div>
 
 			{:else if step === 'create-details'}
-				<button class="mb-4 text-sm text-gray-600 flex items-center gap-2" on:click={back}>&larr; Back</button>
+				<button class="mb-4 text-sm text-gray-600 flex items-center gap-2" onclick={back}>&larr; Back</button>
 				<h2 class="text-2xl font-semibold text-gray-800">Food Garden Details</h2>
 				<p class="text-gray-500 mt-2 mb-6">Choose a name and location for your food garden</p>
 
@@ -170,7 +176,7 @@
 				</form>
 
 			{:else if step === 'join'}
-				<button class="mb-4 text-sm text-gray-600 flex items-center gap-2" on:click={back}>&larr; Back</button>
+				<button class="mb-4 text-sm text-gray-600 flex items-center gap-2" onclick={back}>&larr; Back</button>
 				<h2 class="text-2xl font-semibold text-gray-800">Join Existing Garden</h2>
 				<p class="text-gray-500 mt-2 mb-4">Enter the garden code provided by your admin</p>
 
