@@ -1,35 +1,25 @@
 <script lang="ts">
-  import { invalidate } from "$app/navigation";
+  import { globalData, isEditMode, selectedSectionId } from "$lib/state/data";
   import type { IconType } from "$lib/types/garden";
   import CreateNewSection from "./CreateNewSection.svelte";
   import SidebarSections from "./SidebarSections.svelte";
 
   const {
-    sectionData,
-    isEditMode,
-    gardenData,
-    selectedSectionId,
-    updateSelectSectionId,
     plantTypes,
     selectedIcon,
     updateSelectedIcon,
   } = $props();
 
-  const handleDeleteSection = async function (id: string) {
-    // todo deltet section
-    const deleteSectionResponse = await fetch(`/api/section/${id}`, {
-      method: "DELETE",
-    });
-    const parsedRes = await deleteSectionResponse.json();
-    if (parsedRes.status === 500) {
-      // handle error message, (use toastify for errors)
-      return;
-    }
-    await invalidate("data:sections");
-  };
+
+  let userData = $derived($globalData.userDataState)
+  let gardenData = $derived($globalData.gardenDataState)
+  let sectionData = $derived($globalData.sectionDataState)
+
+
+  const updateSelectSectionId = (newSectionId: string) => selectedSectionId.set(newSectionId)
 
   const handleSectionClick = function (section: any) {
-    if (isEditMode) {
+    if ($isEditMode) {
       updateSelectSectionId(section._id);
     } else {
       // notify user they must be in edit mode first or let it
@@ -39,7 +29,7 @@
 
   function selectIcon(icon: IconType) {
     updateSelectedIcon(selectedIcon === icon ? null : icon);
-    updateSelectSectionId("");
+    updateSelectSectionId('');
   }
 </script>
 
@@ -69,17 +59,17 @@
 
       <div class=" mb-0 border-t border-stone-200"></div>
       <!-- // show current sections -->
-      <SidebarSections selectedSectionId={selectedSectionId} sectionData={sectionData} handleSectionClick={handleSectionClick} handleDeleteSection={handleDeleteSection} />
+      <SidebarSections />
 
       {#if !sectionData || sectionData.length === 0}
         <span class="font-semibold text-xs my-1"
           >Note: Create a section to get started.</span
         >
       {/if}
-      {#if isEditMode}
+      {#if $isEditMode}
         <div class="my-2 border-t border-stone-200"></div>
         <!-- -----NEW SECTION ----- -->
-       <CreateNewSection isEditMode={isEditMode} gardenData={gardenData} />
+       <CreateNewSection/>
         <div class="my-2 border-t border-stone-200"></div>
 
         <!-- ----- PLANTS ----- -->
