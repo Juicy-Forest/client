@@ -1,6 +1,7 @@
 <script lang="ts">
   import { invalidate } from "$app/navigation";
   import { globalData, isEditMode, selectedSectionId } from "$lib/state/data";
+  import type { SectionInfo } from "$lib/types/section";
 
     let sectionData = $derived($globalData.sectionDataState)
 
@@ -9,10 +10,15 @@
       method: "DELETE",
     });
     const parsedRes = await deleteSectionResponse.json();
+    console.log(parsedRes)
     if (parsedRes.status === 500) {
       // handle error message, (use toastify for errors)
       return;
     }
+    globalData.update((d) => ({
+      ...d,
+      sectionDataState: d.sectionDataState.filter((section: SectionInfo) => section._id !== id)
+    }))
     await invalidate("data:sections");
   };
 
