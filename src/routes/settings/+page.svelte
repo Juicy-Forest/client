@@ -1,13 +1,14 @@
 <script lang="ts">
   import type { GardenData } from '$lib/types/garden.js';
-
-
+  import { setContext } from 'svelte';
+  import Option from '$lib/components/Settings/Option.svelte';
 
   let activeTab = $state('profile');
   let { data } = $props();
   let user: any = $state(data.userData);
   let gardenData: GardenData = data.gardenData;
   let gardens = $state(data?.gardenData ?? []);
+  setContext('activeTab', () => activeTab);
 
   const settingsOptions = [
     {
@@ -48,25 +49,7 @@
       <div class="flex-1 overflow-y-auto pr-1">
         <div class="flex flex-col gap-2">
           {#each settingsOptions as option (option.id)}
-            <button
-              onclick={() => (activeTab = option.id)}
-              class={`p-3 rounded-2xl border transition-all duration-200 flex items-center gap-3 cursor-pointer ${
-                activeTab === option.id
-                  ? 'border-lime-300 bg-lime-50/80 shadow-sm'
-                  : 'border-stone-200 bg-white/50 hover:border-lime-200 hover:bg-lime-50/50'
-              }`}
-            >
-              <div
-                class={`flex h-8 w-8 items-center justify-center rounded-full ${option.color}`}
-              >
-                <i class={option.icon}></i>
-              </div>
-              <div class="text-left">
-                <p class="text-xs font-medium text-stone-400 uppercase tracking-wide">
-                  {option.label}
-                </p>
-              </div>
-            </button>
+            <Option {option}/>
           {/each}
         </div>
       </div>
