@@ -52,8 +52,12 @@ export class ChatService {
   }
 
   sendMessage(ws: WebSocket | undefined, content:string) {
+    if (!content.trim()) return
+
     const load = JSON.stringify({
+      type: "message",
       message: content,
+      channelId: this.activeChannelId
     });
 
     if (ws && ws.readyState === WebSocket.OPEN) {
@@ -61,6 +65,17 @@ export class ChatService {
     }
   }
   
+  getInitialMessages(ws: WebSocket | undefined){
+    const load = JSON.stringify({
+      type: "initialMessages",
+      channelId: this.activeChannelId
+    })
+
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(load);
+    }
+  }
+
   sendMessageAI(content: string) {
     if (!content.trim()) return;
 

@@ -18,16 +18,28 @@
 
     ws.onopen = () => {
       console.log("Client: Connection established!");
+      chat.getInitialMessages(ws);
     };
 
+    // This is very stupid logic. Let's hope I don't forget why it works like this (^-^)
     ws.onmessage = (event) => {
-      const data = JSON.parse(event.data).payload;
-      messages.push(data);
+      const data = JSON.parse(event.data);
+      if (!Array.isArray(data)) {
+        messages.push(data.payload);
+      } else {
+        messages = [];
+        data.forEach((message) => messages.push(message.payload));
+      }
     };
 
     return () => {
       ws?.close();
     };
+  });
+
+  $effect(() => {
+    const channelId = chat.activeChannelId;
+    chat.getInitialMessages(ws);
   });
 </script>
 

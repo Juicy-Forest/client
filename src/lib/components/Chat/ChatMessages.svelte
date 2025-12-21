@@ -39,9 +39,9 @@
       {#each messages as message, i}
         {@const isRepeated = i > 0 && messages[i - 1].author.username === message.author.username}
         <MessageItem 
-          {message} 
+          message={message} 
           isSelf={message.author._id === userId} 
-          {isRepeated}
+          isRepeated={isRepeated}
         />
       {/each}
     {/if}
