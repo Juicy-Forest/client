@@ -7,39 +7,29 @@
   import { onMount } from "svelte";
 
   let ws: WebSocket | undefined = $state();
-  let messages: any[] = $state([]);
   const chat = new ChatService();
 
   const { data } = $props();
   const userData = data.userData;
+  const messages: any[] = $derived(
+    chat.activeMessages
+  );
 
   onMount(() => {
     ws = new WebSocket("ws://localhost:3033");
 
     ws.onopen = () => {
       console.log("Client: Connection established!");
-      chat.getInitialMessages(ws);
     };
 
-    // This is very stupid logic. Let's hope I don't forget why it works like this (^-^)
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      if (!Array.isArray(data)) {
-        messages.push(data.payload);
-      } else {
-        messages = [];
-        data.forEach((message) => messages.push(message.payload));
-      }
+      chat.processIncomingMessages(data);
     };
 
     return () => {
       ws?.close();
     };
-  });
-
-  $effect(() => {
-    const channelId = chat.activeChannelId;
-    chat.getInitialMessages(ws);
   });
 </script>
 
@@ -57,10 +47,7 @@
     <div
       class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-[2.5rem] border border-stone-200/60 bg-white/80 shadow-xl shadow-stone-200/20 backdrop-blur-xl"
     >
-      <ChatHeader
-        activeChannel={chat.activeChannel}
-        activeMembers={chat.activeMembers}
-      />
+      <ChatHeader activeChannel={chat.activeChannel} />
       <div class="flex flex-1 flex-col overflow-hidden bg-stone-50/30">
         <ChatMessages {messages} userId={userData._id} />
         <ChatInput
