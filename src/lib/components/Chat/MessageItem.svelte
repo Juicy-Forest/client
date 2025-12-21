@@ -45,7 +45,7 @@
     {/if}
     
     <div
-      class={`inline-block rounded-2xl border px-6 py-3.5 text-[15px] leading-relaxed shadow-sm
+      class={`inline-block rounded-2xl border px-6 py-3.5 text-[15px] w-fit max-w-1/3 break-all text-wrap leading-relaxed shadow-sm
         ${isRepeated ? 'mt-0.5' : 'mt-2'}
         ${isSelf 
           ? `border-lime-200 bg-lime-50 text-stone-800 ring-1 ring-lime-900/5 ${isRepeated ? 'rounded-r-md' : 'rounded-tr-sm'}` 
