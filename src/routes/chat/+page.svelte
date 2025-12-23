@@ -11,9 +11,8 @@
 
   const { data } = $props();
   const userData = data.userData;
-  const messages: any[] = $derived(
-    chat.activeMessages
-  );
+  let messages: any[] = $state([]);
+  // let filteredMessages: any[] = $derived(messages.filter(message => message.channelId === chat.activeChannelId));
 
   onMount(() => {
     ws = new WebSocket("ws://localhost:3033");
@@ -24,7 +23,7 @@
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      chat.processIncomingMessages(data);
+      chat.processIncomingMessages(data, messages);
     };
 
     return () => {
@@ -34,27 +33,27 @@
 </script>
 
 <section
-  class="box-border min-h-screen bg-[#fdfcf8] px-4 pb-8 pt-12 text-stone-800 sm:px-8 lg:px-12"
+  class="box-border bg-[#fdfcf8] px-4 pb-8 pt-12 text-stone-800 sm:px-8 lg:px-12"
 >
-  <div
-    class="mx-auto grid w-full max-w-none items-start gap-8 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)]"
-  >
-    <ChatSidebar
-      channels={chat.channels}
-      activeChannelId={chat.activeChannelId}
-      onSelectChannel={(id) => chat.setActiveChannel(id)}
-    />
+  <!-- <div -->
+  <!--   class="mx-auto grid w-full max-w-none items-start gap-8 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)]" -->
+  <!-- > -->
+  <!--   <ChatSidebar -->
+  <!--     channels={chat.channels} -->
+  <!--     activeChannelId={chat.activeChannelId} -->
+  <!--     onSelectChannel={(id) => chat.setActiveChannel(id)} -->
+  <!--   /> -->
     <div
       class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-[2.5rem] border border-stone-200/60 bg-white/80 shadow-xl shadow-stone-200/20 backdrop-blur-xl"
     >
       <ChatHeader activeChannel={chat.activeChannel} />
       <div class="flex flex-1 flex-col overflow-hidden bg-stone-50/30">
-        <ChatMessages {messages} userId={userData._id} />
+        <ChatMessages messages={messages} userId={userData._id} />
         <ChatInput
           activeChannelLabel={chat.activeChannel.label}
           onSendMessage={(content) => chat.sendMessage(ws, content)}
         />
       </div>
     </div>
-  </div>
+  <!-- </div> -->
 </section>

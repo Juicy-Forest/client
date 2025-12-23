@@ -8,7 +8,6 @@ export class ChatService {
     { id: 'supplies', label: 'supplies', topic: 'Requests & inventory updates', unread: 1 }
   ]);
 
-  messages: any[] = $state([]);
   activeChannelId: string = $state('');
 
   constructor() {
@@ -21,10 +20,6 @@ export class ChatService {
 
   get activeChannel() {
     return this.channels.find((channel) => channel.id === this.activeChannelId) ?? this.channels[0];
-  }
-
-  get activeMessages() {
-    return this.messages;
   }
 
   setActiveChannel(channelId: string) {
@@ -47,12 +42,12 @@ export class ChatService {
     }
   }
 
-  processIncomingMessages(data: any) {
+  processIncomingMessages(data: any, messages: any[]) {
     if (!Array.isArray(data)) {
       // Single message
-      this.messages.push(data.payload);
+      messages.push(data.payload);
     } else {
-      data.forEach((message) => this.messages.push(message.payload));
+      data.forEach((message) => messages.push(message.payload));
     }
   }
 }
