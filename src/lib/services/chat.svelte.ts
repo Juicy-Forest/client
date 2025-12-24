@@ -38,7 +38,11 @@ export class ChatService {
 
     this.ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      this.processIncomingMessages(data);
+      if (data.type === 'activity') {
+        console.log(data.payload);
+      }else {
+        this.processIncomingMessages(data);
+      }
     };
 
     return () => {
