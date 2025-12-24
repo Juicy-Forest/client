@@ -6,29 +6,14 @@
   import { ChatService } from "$lib/services/chat.svelte.js";
   import { onMount } from "svelte";
 
-  let ws: WebSocket | undefined = $state();
   const chat = new ChatService();
 
   const { data } = $props();
   const userData = data.userData;
-  let messages: any[] = $state([]);
-  let filteredMessages: any[] = $derived(messages.filter(message => message.channelId === chat.activeChannelId));
+  let filteredMessages: any[] = $derived(chat.messages.filter(message => message.channelId === chat.activeChannelId));
 
   onMount(() => {
-    ws = new WebSocket("ws://localhost:3033");
-
-    ws.onopen = () => {
-      console.log("Client: Connection established!");
-    };
-
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      chat.processIncomingMessages(data, messages);
-    };
-
-    return () => {
-      ws?.close();
-    };
+    chat.socketsSetup();
   });
 </script>
 
@@ -51,7 +36,7 @@
         <ChatMessages messages={filteredMessages} userId={userData._id} />
         <ChatInput
           activeChannelLabel={chat.activeChannel.label}
-          onSendMessage={(content) => chat.sendMessage(ws, content)}
+          onSendMessage={(content) => chat.sendMessage(content)}
         />
       </div>
     </div>

@@ -9,6 +9,8 @@ export class ChatService {
   ]);
 
   activeChannelId: string = $state('');
+  messages: any[] = $state([]);
+  ws: WebSocket | undefined = $state();
 
   constructor() {
     $effect(() => {
@@ -26,7 +28,24 @@ export class ChatService {
     this.activeChannelId = channelId;
   }
 
-  sendMessage(ws: WebSocket | undefined, content:string) {
+  socketsSetup(){
+    this.ws = new WebSocket("ws://localhost:3033");
+
+    this.ws.onopen = () => {
+      console.log("Client: Connection established!");
+    };
+
+    this.ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      this.processIncomingMessages(data);
+    };
+
+    return () => {
+      this.ws?.close();
+    };
+  }
+
+  sendMessage(content:string) {
     if (!content.trim()) return
 
     const load = JSON.stringify({
@@ -35,10 +54,8 @@ export class ChatService {
       channelId: this.activeChannelId
     });
 
-    console.log(load);
-
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(load);
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(load);
     }
   }
 
@@ -52,15 +69,12 @@ export class ChatService {
     }
   };
 
-  processIncomingMessages(data: any, messages: any[]) {
+  processIncomingMessages(data: any) {
     if (!Array.isArray(data)) {
       // Single message
-      messages.push(data.payload);
+      this.messages.push(data.payload);
     } else {
-      data.forEach((message) => messages.push(message.payload));
+      data.forEach((message) => this.messages.push(message.payload));
     }
   }
 }
-
-
-
