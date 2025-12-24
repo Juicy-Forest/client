@@ -1,11 +1,11 @@
 <script lang="ts">
-  let { activeChannelLabel, onSendMessage } = $props();
+  let { activeChannelLabel, onSendMessage, chat} = $props();
   let draftMessage = $state('');
 
   function handleSubmit(e: Event) {
     e.preventDefault();
     if (draftMessage.trim()) {
-      onSendMessage(draftMessage);
+      onSendMessage(draftMessage)
       draftMessage = '';
     }
   }
@@ -24,6 +24,7 @@
       <input
         class="flex-1 border-none bg-transparent text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-0"
         type="text"
+        oninput={() => chat.sendActivity()}
         placeholder={`Message #${activeChannelLabel}...`}
         bind:value={draftMessage}
       />

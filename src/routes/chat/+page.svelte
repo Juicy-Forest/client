@@ -4,7 +4,6 @@
   import ChatMessages from "$lib/components/Chat/ChatMessages.svelte";
   import ChatSidebar from "$lib/components/Chat/ChatSidebar.svelte";
   import { ChatService } from "$lib/services/chat.svelte.js";
-  import { onMount } from "svelte";
 
   const chat = new ChatService();
 
@@ -12,9 +11,6 @@
   const userData = data.userData;
   let filteredMessages: any[] = $derived(chat.messages.filter(message => message.channelId === chat.activeChannelId));
 
-  onMount(() => {
-    chat.socketsSetup();
-  });
 </script>
 
 <section
@@ -37,6 +33,7 @@
         <ChatInput
           activeChannelLabel={chat.activeChannel.label}
           onSendMessage={(content) => chat.sendMessage(content)}
+          chat={chat}
         />
       </div>
     </div>

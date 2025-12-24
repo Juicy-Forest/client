@@ -13,6 +13,7 @@ export class ChatService {
   ws: WebSocket | undefined = $state();
 
   constructor() {
+    this.socketsSetup();
     $effect(() => {
       if (!this.activeChannelId && this.channels.length > 0) {
         this.activeChannelId = this.channels[0].id;
@@ -28,7 +29,7 @@ export class ChatService {
     this.activeChannelId = channelId;
   }
 
-  socketsSetup(){
+  socketsSetup() {
     this.ws = new WebSocket("ws://localhost:3033");
 
     this.ws.onopen = () => {
@@ -45,7 +46,7 @@ export class ChatService {
     };
   }
 
-  sendMessage(content:string) {
+  sendMessage(content: string) {
     if (!content.trim()) return
 
     const load = JSON.stringify({
@@ -59,13 +60,13 @@ export class ChatService {
     }
   }
 
-  sendActivity(ws: WebSocket | undefined){
+  sendActivity() {
     const load = JSON.stringify({
       type: "activity",
     });
 
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(load);
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(load);
     }
   };
 
