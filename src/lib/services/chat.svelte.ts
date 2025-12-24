@@ -2,7 +2,7 @@ import { type Channel } from '$lib/components/Chat/types';
 
 export class ChatService {
   channels: Channel[] = $state([
-    { id: 'general', label: 'general', topic: 'Announcements & hangouts', unread: 3 },
+    { id: 'general', label: 'general', topic: 'All conversations are here', unread: 3 },
     { id: 'expeditions', label: 'expeditions', topic: 'Field coordination & reports' },
     { id: 'lab-notes', label: 'lab-notes', topic: 'Research documentation & drafts' },
     { id: 'supplies', label: 'supplies', topic: 'Requests & inventory updates', unread: 1 }
@@ -41,6 +41,16 @@ export class ChatService {
       ws.send(load);
     }
   }
+
+  sendActivity(ws: WebSocket | undefined){
+    const load = JSON.stringify({
+      type: "activity",
+    });
+
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(load);
+    }
+  };
 
   processIncomingMessages(data: any, messages: any[]) {
     if (!Array.isArray(data)) {
