@@ -42,6 +42,18 @@ export class ChatService {
     this.ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.type === 'activity') {
+        this.processActivity(data);
+      }else {
+        this.processIncomingMessages(data);
+      }
+    };
+
+    return () => {
+      this.ws?.close();
+    };
+  }
+
+  processActivity(data: any){
         if(!this.peopleTyping.includes(data.payload) && this.activeChannelId === data.channelId){
           this.peopleTyping.push(data.payload);
         }
@@ -56,14 +68,6 @@ export class ChatService {
         }, 1000);
         
         this.typingTimeouts.set(data.payload, timeoutId);
-      }else {
-        this.processIncomingMessages(data);
-      }
-    };
-
-    return () => {
-      this.ws?.close();
-    };
   }
 
   sendMessage(content: string) {
