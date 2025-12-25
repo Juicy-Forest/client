@@ -42,7 +42,7 @@ export class ChatService {
     this.ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.type === 'activity') {
-        if(!this.peopleTyping.includes(data.payload)){
+        if(!this.peopleTyping.includes(data.payload) && this.activeChannelId === data.channelId){
           this.peopleTyping.push(data.payload);
         }
 
@@ -83,6 +83,7 @@ export class ChatService {
   sendActivity() {
     const load = JSON.stringify({
       type: "activity",
+      channelId: this.activeChannelId,
     });
 
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
