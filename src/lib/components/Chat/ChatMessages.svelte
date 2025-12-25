@@ -2,6 +2,7 @@
   import { tick } from "svelte";
   import MessageItem from "./MessageItem.svelte";
   import TypingIndicator from "./TypingIndicator.svelte";
+  import { isAtBottom, scrollToBottom } from "$lib/utils/scroll";
 
   let { messages, userId, peopleTyping } = $props();
 
@@ -9,15 +10,20 @@
 
   $effect(() => {
     const count = messages.length;
-    if ((count > 0 || peopleTyping.length > 0) && scrollContainer) {
-      tick().then(() => {
-        requestAnimationFrame(() => {
-          scrollContainer.scrollTo({
-            top: scrollContainer.scrollHeight,
-            behavior: "smooth",
+    const typingCount = peopleTyping.length;
+    
+    if ((count > 0 || typingCount > 0) && scrollContainer) {
+      const shouldScroll = isAtBottom(scrollContainer);
+      
+      if (shouldScroll) {
+        tick().then(() => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              scrollToBottom(scrollContainer);
+            });
           });
         });
-      });
+      }
     }
   });
 </script>
