@@ -34,6 +34,7 @@
           messages={filteredMessages} 
           userId={userData._id}
           peopleTyping={people}
+          activeChannelId={chat.activeChannelId}
         />
         <ChatInput
           activeChannelLabel={chat.activeChannel.label}

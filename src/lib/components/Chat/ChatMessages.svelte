@@ -1,12 +1,16 @@
 <script lang="ts">
-  import { tick } from "svelte";
   import MessageItem from "./MessageItem.svelte";
   import TypingIndicator from "./TypingIndicator.svelte";
-  import { isAtBottom, scrollToBottom } from "$lib/utils/scroll";
+  import { isAtBottom, smoothScrollToBottom, scrollToBottomInstant } from "$lib/utils/scroll";
 
-  let { messages, userId, peopleTyping } = $props();
+  let { messages, userId, peopleTyping, activeChannelId } = $props();
 
   let scrollContainer: HTMLDivElement;
+  
+    $effect(() => {
+    const channelId = activeChannelId;
+    scrollToBottomInstant(scrollContainer);
+  });
 
   $effect(() => {
     const count = messages.length;
@@ -16,13 +20,7 @@
       const shouldScroll = isAtBottom(scrollContainer);
       
       if (shouldScroll) {
-        tick().then(() => {
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              scrollToBottom(scrollContainer);
-            });
-          });
-        });
+        smoothScrollToBottom(scrollContainer);
       }
     }
   });
