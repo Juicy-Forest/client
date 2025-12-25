@@ -97,6 +97,7 @@ export class ChatService {
 
   processIncomingMessages(data: any) {
     if (!Array.isArray(data)) {
+      console.log(data);
       // Single message
       this.messages.push(data.payload);
     } else {

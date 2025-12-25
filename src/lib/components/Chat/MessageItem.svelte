@@ -4,6 +4,7 @@
   import Avatar from "./Avatar.svelte";
 
   let { message, isSelf, isRepeated } = $props();
+  $inspect(message);
 
   function formatTime(timestamp: string) {
     const date = new Date(timestamp);

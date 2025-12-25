@@ -9,7 +9,8 @@
 
   const { data } = $props();
   const userData = data.userData;
-  let filteredMessages: any[] = $derived(chat.messages.filter(message => message.channelId === chat.activeChannelId));
+  let filteredMessages: any[] = $derived(chat.messages.filter(message => message.channelName === chat.activeChannelId));
+  $inspect(filteredMessages);
   let people = $derived(chat.peopleTyping);
 
 </script>

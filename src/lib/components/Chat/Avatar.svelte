@@ -1,5 +1,6 @@
 <script lang="ts">
   let { author, isRepeated } = $props();
+  console.log(author);
 </script>
 
 <div class="flex h-10 w-10 shrink-0 flex-col items-center">
@@ -7,12 +8,12 @@
     <div
       class={`flex h-10 w-10 items-center justify-center rounded-2xl text-xs font-bold shadow-sm transition-transform group-hover:scale-105`}
     >
-      {author
+      {author? author
         .split(" ")
         .map((part) => part[0])
         .join("")
         .slice(0, 2)
-        .toUpperCase()}
+        .toUpperCase(): "I"}
     </div>
   {/if}
 </div>
