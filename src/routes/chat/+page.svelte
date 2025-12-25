@@ -10,6 +10,7 @@
   const { data } = $props();
   const userData = data.userData;
   let filteredMessages: any[] = $derived(chat.messages.filter(message => message.channelId === chat.activeChannelId));
+  let people = $derived(chat.peopleTyping);
 
 </script>
 
@@ -29,10 +30,14 @@
     >
       <ChatHeader activeChannel={chat.activeChannel} />
       <div class="flex flex-1 flex-col overflow-hidden bg-stone-50/30">
-        <ChatMessages messages={filteredMessages} userId={userData._id} />
+        <ChatMessages 
+          messages={filteredMessages} 
+          userId={userData._id}
+          peopleTyping={people}
+        />
         <ChatInput
           activeChannelLabel={chat.activeChannel.label}
-          onSendMessage={(content) => chat.sendMessage(content)}
+          onSendMessage={(content: any) => chat.sendMessage(content)}
           chat={chat}
         />
       </div>

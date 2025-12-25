@@ -10,7 +10,10 @@ export class ChatService {
 
   activeChannelId: string = $state('');
   messages: any[] = $state([]);
+  peopleTyping: string[] = $state([]);
   ws: WebSocket | undefined = $state();
+  typingTimeouts: Map<string, number> = new Map(); // Add this line
+
 
   constructor() {
     this.socketsSetup();
@@ -39,7 +42,20 @@ export class ChatService {
     this.ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.type === 'activity') {
-        console.log(data.payload);
+        if(!this.peopleTyping.includes(data.payload)){
+          this.peopleTyping.push(data.payload);
+        }
+
+        if (this.typingTimeouts.has(data.payload)) {
+          clearTimeout(this.typingTimeouts.get(data.payload));
+        }
+        
+        const timeoutId = setTimeout(() => {
+          this.peopleTyping = this.peopleTyping.filter(p => p !== data.payload);
+          this.typingTimeouts.delete(data.payload);
+        }, 1000);
+        
+        this.typingTimeouts.set(data.payload, timeoutId);
       }else {
         this.processIncomingMessages(data);
       }
