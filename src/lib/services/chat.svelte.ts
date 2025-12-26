@@ -55,7 +55,8 @@ export class ChatService {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(bodyObj)
     });
-    console.log(response);
+    const channel = await response.json();
+    this.channels.push(channel);
   }
 
   processActivity(data: any) {
