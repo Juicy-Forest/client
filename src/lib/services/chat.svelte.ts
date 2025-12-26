@@ -1,12 +1,5 @@
-import { type Channel } from '$lib/components/Chat/types';
-
 export class ChatService {
-  channels: Channel[] = $state([
-    { id: 'general', label: 'general', topic: 'All conversations are here', unread: 3 },
-    { id: 'expeditions', label: 'expeditions', topic: 'Field coordination & reports' },
-    { id: 'lab-notes', label: 'lab-notes', topic: 'Research documentation & drafts' },
-    { id: 'supplies', label: 'supplies', topic: 'Requests & inventory updates', unread: 1 }
-  ]);
+  channels: any[] = $state([]);
 
   activeChannelId: string = $state('');
   messages: any[] = $state([]);
@@ -19,13 +12,13 @@ export class ChatService {
     this.socketsSetup();
     $effect(() => {
       if (!this.activeChannelId && this.channels.length > 0) {
-        this.activeChannelId = this.channels[0].id;
+        this.activeChannelId = this.channels[0]._id;
       }
     });
   }
 
   get activeChannel() {
-    return this.channels.find((channel) => channel.id === this.activeChannelId) ?? this.channels[0];
+    return this.channels.find((channel) => channel._id === this.activeChannelId) ?? '';
   }
 
   setActiveChannel(channelId: string) {
@@ -43,8 +36,10 @@ export class ChatService {
       const data = JSON.parse(event.data);
       if (data.type === 'activity') {
         this.processActivity(data);
-      }else {
-        this.processIncomingMessages(data);
+      } else if (data.type === 'initialLoad') {
+        this.processInitialLoad(data);
+      } else if (data.type === 'text') {
+        this.messages.push(data.payload);
       }
     };
 
@@ -53,21 +48,31 @@ export class ChatService {
     };
   }
 
-  processActivity(data: any){
-        if(!this.peopleTyping.includes(data.payload) && this.activeChannelId === data.channelId){
-          this.peopleTyping.push(data.payload);
-        }
+  async createChannel(name: string, gardenId: string) {
+    const bodyObj = { name: name, gardenId: gardenId };
+    const response = await fetch('http://localhost:3030/channel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bodyObj)
+    });
+    console.log(response);
+  }
 
-        if (this.typingTimeouts.has(data.payload)) {
-          clearTimeout(this.typingTimeouts.get(data.payload));
-        }
-        
-        const timeoutId = setTimeout(() => {
-          this.peopleTyping = this.peopleTyping.filter(p => p !== data.payload);
-          this.typingTimeouts.delete(data.payload);
-        }, 1000);
-        
-        this.typingTimeouts.set(data.payload, timeoutId);
+  processActivity(data: any) {
+    if (!this.peopleTyping.includes(data.payload) && this.activeChannelId === data.channelId) {
+      this.peopleTyping.push(data.payload);
+    }
+
+    if (this.typingTimeouts.has(data.payload)) {
+      clearTimeout(this.typingTimeouts.get(data.payload));
+    }
+
+    const timeoutId = setTimeout(() => {
+      this.peopleTyping = this.peopleTyping.filter(p => p !== data.payload);
+      this.typingTimeouts.delete(data.payload);
+    }, 1000);
+
+    this.typingTimeouts.set(data.payload, timeoutId);
   }
 
   sendMessage(content: string) {
@@ -76,7 +81,8 @@ export class ChatService {
     const load = JSON.stringify({
       type: "message",
       content: content,
-      channelId: this.activeChannelId
+      channelId: this.activeChannelId,
+      channelName: this.channels.find(c => c._id === this.activeChannelId)
     });
 
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
@@ -95,13 +101,9 @@ export class ChatService {
     }
   };
 
-  processIncomingMessages(data: any) {
-    if (!Array.isArray(data)) {
-      console.log(data);
-      // Single message
-      this.messages.push(data.payload);
-    } else {
-      data.forEach((message) => this.messages.push(message.payload));
-    }
+  processInitialLoad(data: any) {
+    console.log(data);
+    data.messages.forEach((message) => this.messages.push(message.payload));
+    data.channels.forEach(channel => this.channels.push(channel));
   }
 }

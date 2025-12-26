@@ -1,6 +1,5 @@
 <script lang="ts">
   let { author, isRepeated } = $props();
-  console.log(author);
 </script>
 
 <div class="flex h-10 w-10 shrink-0 flex-col items-center">

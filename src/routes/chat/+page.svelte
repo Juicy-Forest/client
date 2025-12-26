@@ -8,9 +8,9 @@
   const chat = new ChatService();
 
   const { data } = $props();
+  const gardenData = data.gardenData[0];
   const userData = data.userData;
-  let filteredMessages: any[] = $derived(chat.messages.filter(message => message.channelName === chat.activeChannelId));
-  $inspect(filteredMessages);
+  let filteredMessages: any[] = $derived(chat.messages.filter(message => message.channelId === chat.activeChannelId));
   let people = $derived(chat.peopleTyping);
 
 </script>
@@ -25,6 +25,8 @@
       channels={chat.channels}
       activeChannelId={chat.activeChannelId}
       onSelectChannel={(id) => chat.setActiveChannel(id)}
+      createChannel={(name, gardenId) => chat.createChannel(name, gardenId)}
+      gardenId={gardenData._id}
     />
     <div
       class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-[2.5rem] border border-stone-200/60 bg-white/80 shadow-xl shadow-stone-200/20 backdrop-blur-xl"
@@ -38,7 +40,7 @@
           activeChannelId={chat.activeChannelId}
         />
         <ChatInput
-          activeChannelLabel={chat.activeChannel.label}
+          activeChannelLabel={chat.activeChannel.name}
           onSendMessage={(content: any) => chat.sendMessage(content)}
           chat={chat}
         />
