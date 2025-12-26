@@ -38,12 +38,15 @@
           userId={userData._id}
           peopleTyping={people}
           activeChannelId={chat.activeChannelId}
+          hasChannels={chat.channels.length > 0}
         />
-        <ChatInput
-          activeChannelLabel={chat.activeChannel.name}
-          onSendMessage={(content: any) => chat.sendMessage(content)}
-          chat={chat}
-        />
+        {#if chat.channels.length > 0}
+          <ChatInput
+            activeChannelLabel={chat.activeChannel.name}
+            onSendMessage={(content: any) => chat.sendMessage(content)}
+            chat={chat}
+          />
+        {/if}
       </div>
     </div>
   </div>

@@ -55,14 +55,22 @@
 
   <nav class="flex-1 overflow-y-auto pr-1">
     <ul class="space-y-2">
-      {#if channels}
-      {#each channels as channel}
-        <ChannelItem
-          {channel}
-          isActive={activeChannelId === channel._id}
-          clickHandler={() => onSelectChannel(channel._id)}
-        />
-      {/each}
+      {#if channels && channels.length > 0}
+        {#each channels as channel}
+          <ChannelItem
+            {channel}
+            isActive={activeChannelId === channel._id}
+            clickHandler={() => onSelectChannel(channel._id)}
+          />
+        {/each}
+      {:else}
+        <li class="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-stone-200 bg-stone-50/50 px-4 py-8 text-center">
+          <div class="rounded-full bg-stone-100 p-2 text-stone-400">
+            <i class="fa-solid fa-hashtag text-base"></i>
+          </div>
+          <p class="text-xs text-stone-500">No channels yet</p>
+          <p class="text-xs text-stone-400">Create one above!</p>
+        </li>
       {/if}
     </ul>
   </nav>
