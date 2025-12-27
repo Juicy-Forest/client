@@ -1,7 +1,7 @@
 <script lang="ts">
   import TypingDots from "./TypingDots.svelte";
 
-  let { peopleTyping = [] }: { peopleTyping: string[] } = $props();
+  let { peopleTyping = [] }: { peopleTyping: any[] } = $props();
 </script>
 
 {#if peopleTyping.length > 0}
@@ -11,10 +11,10 @@
       <div class="flex -space-x-6">
         {#each peopleTyping as person}
           <div
-            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white text-xs font-bold text-stone-700 shadow-sm ring ring-stone-900/5 transition-transform hover:scale-105"
-            title={person}
+            class={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[${person.avatarColor}] text-xs font-bold text-stone-700 shadow-sm ring ring-stone-900/5 transition-transform hover:scale-105`}
+            title={person.username}
           >
-            {person
+            {person.username
               .split(" ")
               .map((part: string) => part[0])
               .join("")

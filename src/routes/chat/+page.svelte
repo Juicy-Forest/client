@@ -12,6 +12,7 @@
   const userData = data.userData;
   let filteredMessages: any[] = $derived(chat.messages.filter(message => message.channelId === chat.activeChannelId));
   let people = $derived(chat.peopleTyping);
+  chat.setUserData(userData);
 
 </script>
 
@@ -39,6 +40,7 @@
           peopleTyping={people}
           activeChannelId={chat.activeChannelId}
           hasChannels={chat.channels.length > 0}
+          avatarColor={userData.avatarColor}
         />
         {#if chat.channels.length > 0}
           <ChatInput

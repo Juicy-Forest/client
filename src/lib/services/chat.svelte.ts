@@ -3,10 +3,10 @@ export class ChatService {
 
   activeChannelId: string = $state('');
   messages: any[] = $state([]);
-  peopleTyping: string[] = $state([]);
+  peopleTyping: any[] = $state([]);
   ws: WebSocket | undefined = $state();
   typingTimeouts: Map<string, number> = new Map(); // Add this line
-
+  userData :any = {};
 
   constructor() {
     this.socketsSetup();
@@ -21,9 +21,13 @@ export class ChatService {
     return this.channels.find((channel) => channel._id === this.activeChannelId) ?? '';
   }
 
+  setUserData(userData:any){
+    this.userData = userData
+  };
+
   setActiveChannel(channelId: string) {
     this.activeChannelId = channelId;
-  }
+  };
 
   socketsSetup() {
     this.ws = new WebSocket("ws://localhost:3033");
@@ -59,8 +63,15 @@ export class ChatService {
     this.channels.push(channel);
   }
 
+  processInitialLoad(data: any) {
+    console.log(data);
+    data.messages.forEach((message) => this.messages.push(message.payload));
+    data.channels.forEach(channel => this.channels.push(channel));
+  }
+
   processActivity(data: any) {
-    if (!this.peopleTyping.includes(data.payload) && this.activeChannelId === data.channelId) {
+    if (!this.peopleTyping.find(p => p.username === data.payload.username) && this.activeChannelId === data.channelId) {
+      console.log(data.payload);
       this.peopleTyping.push(data.payload);
     }
 
@@ -69,7 +80,7 @@ export class ChatService {
     }
 
     const timeoutId = setTimeout(() => {
-      this.peopleTyping = this.peopleTyping.filter(p => p !== data.payload);
+      this.peopleTyping = this.peopleTyping.filter(p => p.username !== data.payload.username);
       this.typingTimeouts.delete(data.payload);
     }, 1000);
 
@@ -83,7 +94,8 @@ export class ChatService {
       type: "message",
       content: content,
       channelId: this.activeChannelId,
-      channelName: this.channels.find(c => c._id === this.activeChannelId)
+      channelName: this.channels.find(c => c._id === this.activeChannelId),
+      avatarColor: this.userData.avatarColor,
     });
 
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
@@ -95,16 +107,11 @@ export class ChatService {
     const load = JSON.stringify({
       type: "activity",
       channelId: this.activeChannelId,
+      avatarColor: this.userData.avatarColor,
     });
 
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(load);
     }
   };
-
-  processInitialLoad(data: any) {
-    console.log(data);
-    data.messages.forEach((message) => this.messages.push(message.payload));
-    data.channels.forEach(channel => this.channels.push(channel));
-  }
 }

@@ -1,6 +1,18 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{html,js,svelte,ts}'],
+  safelist: [
+    'bg-[#FFB3BA]',
+    'bg-[#FFDFBA]',
+    'bg-[#FFFFBA]',
+    'bg-[#BAFFC9]',
+    'bg-[#BAE1FF]',
+    'bg-[#D5BAFF]',
+    'bg-[#FFC9DE]',
+    'bg-[#FFE7BA]',
+    'bg-[#BAFFD9]',
+    'bg-[#BFFFD9]',
+  ],
   theme: {
     extend: {
       keyframes: {

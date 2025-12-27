@@ -3,7 +3,7 @@
   import { cubicOut } from "svelte/easing";
   import Avatar from "./Avatar.svelte";
 
-  let { message, isSelf, isRepeated } = $props();
+  let { message, isSelf, isRepeated, avatarColor } = $props();
 
   function formatTime(timestamp: string) {
     const date = new Date(timestamp);
@@ -20,7 +20,7 @@
   in:fly={{ y: 20, duration: 300, easing: cubicOut }}
 >
   <!-- Avatar - Hidden for repeated messages but keeps spacing -->
-  <Avatar author={message.author.username} {isRepeated} />
+  <Avatar author={message.author} {isRepeated}/>
 
   <div class={`flex max-w-[85%] flex-1 flex-col ${isSelf ? "items-end" : ""}`}>
     {#if !isRepeated}
