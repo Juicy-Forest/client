@@ -5,7 +5,7 @@ export class ChatService {
   messages: any[] = $state([]);
   peopleTyping: any[] = $state([]);
   ws: WebSocket | undefined = $state();
-  typingTimeouts: Map<string, number> = new Map(); // Add this line
+  typingTimeouts: Map<string, any> = new Map(); // Add this line
   userData :any = {};
 
   constructor() {
@@ -64,14 +64,12 @@ export class ChatService {
   }
 
   processInitialLoad(data: any) {
-    console.log(data);
-    data.messages.forEach((message) => this.messages.push(message.payload));
-    data.channels.forEach(channel => this.channels.push(channel));
+    data.messages.forEach((message: any) => this.messages.push(message.payload));
+    data.channels.forEach((channel: any) => this.channels.push(channel));
   }
 
   processActivity(data: any) {
     if (!this.peopleTyping.find(p => p.username === data.payload.username) && this.activeChannelId === data.channelId) {
-      console.log(data.payload);
       this.peopleTyping.push(data.payload);
     }
 

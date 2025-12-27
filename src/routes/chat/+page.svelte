@@ -13,7 +13,6 @@
   let filteredMessages: any[] = $derived(chat.messages.filter(message => message.channelId === chat.activeChannelId));
   let people = $derived(chat.peopleTyping);
   chat.setUserData(userData);
-
 </script>
 
 <section
