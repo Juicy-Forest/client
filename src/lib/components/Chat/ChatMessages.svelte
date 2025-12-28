@@ -54,7 +54,6 @@
           {message}
           isSelf={message.author._id === userId}
           {isRepeated}
-          {avatarColor}
         />
       {/each}
     {/if}

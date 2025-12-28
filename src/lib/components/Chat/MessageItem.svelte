@@ -2,8 +2,11 @@
   import { fly } from "svelte/transition";
   import { cubicOut } from "svelte/easing";
   import Avatar from "./Avatar.svelte";
+  import MessageMenuButton from "./MessageMenuButton.svelte";
+  import MessageMenuPopup from "./MessageMenuPopup.svelte";
 
-  let { message, isSelf, isRepeated, avatarColor } = $props();
+  let { message, isSelf, isRepeated } = $props();
+  let showMenu = $state(false);
 
   function formatTime(timestamp: string) {
     const date = new Date(timestamp);
@@ -12,6 +15,24 @@
       hour: "2-digit",
       minute: "2-digit",
     });
+  }
+
+  function toggleMenu() {
+    showMenu = !showMenu;
+  }
+
+  function closeMenu() {
+    showMenu = false;
+  }
+
+  function handleEdit() {
+    // TODO: Implement edit handler
+    closeMenu();
+  }
+
+  function handleUnsend() {
+    // TODO: Implement unsend handler
+    closeMenu();
   }
 </script>
 
@@ -36,16 +57,33 @@
       </header>
     {/if}
 
-    <div
-      class={`inline-block rounded-2xl border px-6 py-3.5 text-[15px] w-fit max-w-1/3 break-all text-wrap leading-relaxed shadow-sm
-        ${isRepeated ? "mt-0.5" : "mt-2"}
-        ${
-          isSelf
-            ? `border-lime-200 bg-lime-50 text-stone-800 ring-1 ring-lime-900/5 ${isRepeated ? "rounded-r-md" : "rounded-tr-sm"}`
-            : `border-stone-100 bg-white text-stone-700 ring-1 ring-stone-900/5 ${isRepeated ? "rounded-l-md" : "rounded-tl-sm"}`
-        }`}
-    >
-      {message.content}
+    <div class="relative inline-flex items-center gap-2">
+      {#if isSelf}
+        <div class="relative order-first">
+          <MessageMenuButton onclick={toggleMenu} />
+
+          {#if showMenu}
+            <MessageMenuPopup
+              timestamp={message.timestamp}
+              onEdit={handleEdit}
+              onUnsend={handleUnsend}
+              onClose={closeMenu}
+            />
+          {/if}
+        </div>
+      {/if}
+
+      <div
+        class={`rounded-2xl border px-6 py-3.5 text-[15px] break-all text-wrap leading-relaxed shadow-sm
+          ${isRepeated ? "mt-0.5" : "mt-2"}
+          ${
+            isSelf
+              ? `border-lime-200 bg-lime-50 text-stone-800 ring-1 ring-lime-900/5 ${isRepeated ? "rounded-r-md" : "rounded-tr-sm"}`
+              : `border-stone-100 bg-white text-stone-700 ring-1 ring-stone-900/5 ${isRepeated ? "rounded-l-md" : "rounded-tl-sm"}`
+          }`}
+      >
+        {message.content}
+      </div>
     </div>
   </div>
 </article>
