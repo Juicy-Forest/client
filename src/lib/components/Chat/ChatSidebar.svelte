@@ -1,24 +1,23 @@
 <script lang="ts">
+  import { getContext } from "svelte";
   import ChannelItem from "./ChannelItem.svelte";
+  import type { ChatService } from "$lib/services/chat.svelte";
 
   interface Props {
-    channels: any[];
-    activeChannelId: string;
-    onSelectChannel: (id: string) => void;
-    createChannel?: (name: string, gardenId: string) => void;
     gardenId: string;
   }
 
-  let { channels, activeChannelId, onSelectChannel, createChannel, gardenId}: Props = $props();
+  const chat: ChatService = getContext("chatService");
+  let { gardenId }: Props = $props();
 
   function handleCreateChannel(e: SubmitEvent) {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
     const name = formData.get("channelName") as string;
 
-    if (name?.trim() && createChannel) {
-      createChannel(name.trim(), gardenId);
-      (e.target as HTMLFormElement).reset(); 
+    if (name?.trim()) {
+      chat.createChannel(name.trim(), gardenId);
+      (e.target as HTMLFormElement).reset();
     }
   }
 </script>
@@ -55,16 +54,18 @@
 
   <nav class="flex-1 overflow-y-auto pr-1">
     <ul class="space-y-2">
-      {#if channels && channels.length > 0}
-        {#each channels as channel}
+      {#if chat.channels && chat.channels.length > 0}
+        {#each chat.channels as channel}
           <ChannelItem
             {channel}
-            isActive={activeChannelId === channel._id}
-            clickHandler={() => onSelectChannel(channel._id)}
+            isActive={chat.activeChannelId === channel._id}
+            clickHandler={() => chat.setActiveChannel(channel._id)}
           />
         {/each}
       {:else}
-        <li class="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-stone-200 bg-stone-50/50 px-4 py-8 text-center">
+        <li
+          class="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-stone-200 bg-stone-50/50 px-4 py-8 text-center"
+        >
           <div class="rounded-full bg-stone-100 p-2 text-stone-400">
             <i class="fa-solid fa-hashtag text-base"></i>
           </div>

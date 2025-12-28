@@ -7,12 +7,15 @@
   import MessageContent from "./MessageContent.svelte";
   import MessageEditForm from "./MessageEditForm.svelte";
   import MessageUnsendModal from "./MessageUnsendModal.svelte";
+    import type { ChatService } from "$lib/services/chat.svelte";
+    import { getContext } from "svelte";
 
-  let { message, isSelf, isRepeated, onEdit, onDelete } = $props();
+  let { message, isSelf, isRepeated } = $props();
   let showMenu = $state(false);
   let isEditing = $state(false);
   let showUnsendModal = $state(false);
 
+  const chat: ChatService= getContext('chatService')
   function formatTime(timestamp: string) {
     const date = new Date(timestamp);
 
@@ -36,7 +39,7 @@
   }
 
   function handleEditSave(newContent: string) {
-    onEdit(message._id, newContent);
+    chat.sendEditedMessage(message._id, newContent);
     isEditing = false;
   }
 
@@ -50,7 +53,7 @@
   }
 
   function handleUnsendConfirm() {
-    onDelete(message._id);
+    chat.deleteMessage(message._id);
     showUnsendModal = false;
   }
 

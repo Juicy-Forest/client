@@ -4,14 +4,14 @@
   import ChatMessages from "$lib/components/Chat/ChatMessages.svelte";
   import ChatSidebar from "$lib/components/Chat/ChatSidebar.svelte";
   import { ChatService } from "$lib/services/chat.svelte.js";
+  import { setContext } from "svelte";
 
   const chat = new ChatService();
+  setContext("chatService", chat);
 
   const { data } = $props();
   const gardenData = data.gardenData[0];
   const userData = data.userData;
-  let filteredMessages: any[] = $derived(chat.messages.filter(message => message.channelId === chat.activeChannelId));
-  let people = $derived(chat.peopleTyping);
   chat.setUserData(userData);
 </script>
 
@@ -21,33 +21,15 @@
   <div
     class="mx-auto grid w-full max-w-none items-start gap-8 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)]"
   >
-    <ChatSidebar
-      channels={chat.channels}
-      activeChannelId={chat.activeChannelId}
-      onSelectChannel={(id) => chat.setActiveChannel(id)}
-      createChannel={(name, gardenId) => chat.createChannel(name, gardenId)}
-      gardenId={gardenData._id}
-    />
+    <ChatSidebar gardenId={gardenData._id} />
     <div
       class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-[2.5rem] border border-stone-200/60 bg-white/80 shadow-xl shadow-stone-200/20 backdrop-blur-xl"
     >
       <ChatHeader activeChannel={chat.activeChannel} />
       <div class="flex flex-1 flex-col overflow-hidden bg-stone-50/30">
-        <ChatMessages 
-          messages={filteredMessages} 
-          userId={userData._id}
-          peopleTyping={people}
-          activeChannelId={chat.activeChannelId}
-          hasChannels={chat.channels.length > 0}
-          onEdit={(messageId: string, newContent: string) => chat.sendEditedMessage(messageId, newContent)}
-          onDelete={(messageId: string) => chat.deleteMessage(messageId)}
-        />
+        <ChatMessages/>
         {#if chat.channels.length > 0}
-          <ChatInput
-            activeChannelLabel={chat.activeChannel.name}
-            onSendMessage={(content: any) => chat.sendMessage(content)}
-            chat={chat}
-          />
+          <ChatInput />
         {/if}
       </div>
     </div>
