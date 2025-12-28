@@ -10,6 +10,7 @@
     activeChannelId,
     hasChannels = true,
     onEdit,
+    onDelete,
    } = $props();
 
   let scrollContainer: HTMLDivElement;
@@ -62,6 +63,7 @@
           isSelf={message.author._id === userId}
           {isRepeated}
           {onEdit}
+          {onDelete}
         />
       {/each}
     {/if}

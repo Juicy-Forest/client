@@ -39,7 +39,8 @@
           peopleTyping={people}
           activeChannelId={chat.activeChannelId}
           hasChannels={chat.channels.length > 0}
-          onEdit={(messageId, newContent) => chat.sendEditedMessage(messageId, newContent)}
+          onEdit={(messageId: string, newContent: string) => chat.sendEditedMessage(messageId, newContent)}
+          onDelete={(messageId: string) => chat.deleteMessage(messageId)}
         />
         {#if chat.channels.length > 0}
           <ChatInput

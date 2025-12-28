@@ -46,6 +46,8 @@ export class ChatService {
         this.messages.push(data.payload);
       } else if (data.type === 'editMessage') {
         this.processEditedMessage(data.payload)
+      } else if (data.type === 'deleteMessage') {
+        this.processDeletedMessage(data.payload);
       }
     };
 
@@ -98,6 +100,13 @@ export class ChatService {
     }
   }
 
+  processDeletedMessage(deletedMessage: any) {
+    const messageIndex = this.messages.findIndex(m => m._id == deletedMessage._id)
+    if (messageIndex !== -1) {
+      this.messages.splice(messageIndex, 1);
+    }
+  }
+
   sendMessage(content: string) {
     if (!content.trim()) return
 
@@ -127,6 +136,21 @@ export class ChatService {
       this.ws.send(load);
     }
   };
+
+  deleteMessage(messageId: string) {
+    if (!messageId) {
+      return;
+    }
+
+    const load = JSON.stringify({
+      type: "deleteMessage",
+      messageId: messageId,
+    });
+
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(load);
+    }
+  }
 
   sendActivity() {
     const load = JSON.stringify({

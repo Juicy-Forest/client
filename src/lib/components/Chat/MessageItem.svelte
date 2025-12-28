@@ -6,10 +6,12 @@
   import MessageMenuPopup from "./MessageMenuPopup.svelte";
   import MessageContent from "./MessageContent.svelte";
   import MessageEditForm from "./MessageEditForm.svelte";
+  import MessageUnsendModal from "./MessageUnsendModal.svelte";
 
-  let { message, isSelf, isRepeated, onEdit } = $props();
+  let { message, isSelf, isRepeated, onEdit, onDelete } = $props();
   let showMenu = $state(false);
   let isEditing = $state(false);
+  let showUnsendModal = $state(false);
 
   function formatTime(timestamp: string) {
     const date = new Date(timestamp);
@@ -34,8 +36,6 @@
   }
 
   function handleEditSave(newContent: string) {
-    // TODO: Implement save via chat service
-    
     onEdit(message._id, newContent);
     isEditing = false;
   }
@@ -45,9 +45,17 @@
   }
 
   function handleUnsend() {
-    // TODO: Implement unsend via chat service
-    console.log("Unsend:", message._id);
     closeMenu();
+    showUnsendModal = true;
+  }
+
+  function handleUnsendConfirm() {
+    onDelete(message._id);
+    showUnsendModal = false;
+  }
+
+  function handleUnsendCancel() {
+    showUnsendModal = false;
   }
 </script>
 
@@ -110,3 +118,9 @@
     </div>
   </div>
 </article>
+
+<MessageUnsendModal
+  isOpen={showUnsendModal}
+  onConfirm={handleUnsendConfirm}
+  onCancel={handleUnsendCancel}
+/>
