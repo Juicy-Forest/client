@@ -4,9 +4,12 @@
   import Avatar from "./Avatar.svelte";
   import MessageMenuButton from "./MessageMenuButton.svelte";
   import MessageMenuPopup from "./MessageMenuPopup.svelte";
+  import MessageContent from "./MessageContent.svelte";
+  import MessageEditForm from "./MessageEditForm.svelte";
 
-  let { message, isSelf, isRepeated } = $props();
+  let { message, isSelf, isRepeated, onEdit } = $props();
   let showMenu = $state(false);
+  let isEditing = $state(false);
 
   function formatTime(timestamp: string) {
     const date = new Date(timestamp);
@@ -26,12 +29,24 @@
   }
 
   function handleEdit() {
-    // TODO: Implement edit handler
     closeMenu();
+    isEditing = true;
+  }
+
+  function handleEditSave(newContent: string) {
+    // TODO: Implement save via chat service
+    
+    onEdit(message._id, newContent);
+    isEditing = false;
+  }
+
+  function handleEditCancel() {
+    isEditing = false;
   }
 
   function handleUnsend() {
-    // TODO: Implement unsend handler
+    // TODO: Implement unsend via chat service
+    console.log("Unsend:", message._id);
     closeMenu();
   }
 </script>
@@ -43,7 +58,7 @@
   <!-- Avatar - Hidden for repeated messages but keeps spacing -->
   <Avatar author={message.author} {isRepeated}/>
 
-  <div class={`flex max-w-[85%] flex-1 flex-col ${isSelf ? "items-end" : ""}`}>
+  <div class={`flex max-w-[55%] flex-1 flex-col ${isSelf ? "items-end" : ""}`}>
     {#if !isRepeated}
       <header
         class={`flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm ${isSelf ? "flex-row-reverse" : ""}`}
@@ -58,7 +73,7 @@
     {/if}
 
     <div class="relative inline-flex items-center gap-2">
-      {#if isSelf}
+      {#if isSelf && !isEditing}
         <div class="relative order-first">
           <MessageMenuButton onclick={toggleMenu} />
 
@@ -82,7 +97,15 @@
               : `border-stone-100 bg-white text-stone-700 ring-1 ring-stone-900/5 ${isRepeated ? "rounded-l-md" : "rounded-tl-sm"}`
           }`}
       >
-        {message.content}
+        {#if isEditing}
+          <MessageEditForm
+            initialContent={message.content}
+            onSave={handleEditSave}
+            onCancel={handleEditCancel}
+          />
+        {:else}
+          <MessageContent content={message.content} isEdited={message.edited} />
+        {/if}
       </div>
     </div>
   </div>

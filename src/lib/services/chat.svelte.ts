@@ -6,7 +6,7 @@ export class ChatService {
   peopleTyping: any[] = $state([]);
   ws: WebSocket | undefined = $state();
   typingTimeouts: Map<string, any> = new Map(); // Add this line
-  userData :any = {};
+  userData: any = {};
 
   constructor() {
     this.socketsSetup();
@@ -21,7 +21,7 @@ export class ChatService {
     return this.channels.find((channel) => channel._id === this.activeChannelId) ?? '';
   }
 
-  setUserData(userData:any){
+  setUserData(userData: any) {
     this.userData = userData
   };
 
@@ -44,6 +44,8 @@ export class ChatService {
         this.processInitialLoad(data);
       } else if (data.type === 'text') {
         this.messages.push(data.payload);
+      } else if (data.type === 'editMessage') {
+        this.processEditedMessage(data.payload)
       }
     };
 
@@ -85,6 +87,17 @@ export class ChatService {
     this.typingTimeouts.set(data.payload, timeoutId);
   }
 
+  processEditedMessage(editedMessage: any) {
+    const messageIndex = this.messages.findIndex(m => m._id == editedMessage._id)
+    if (messageIndex !== -1) {
+      this.messages[messageIndex] = {
+        ...this.messages[messageIndex],
+        content: editedMessage.content,
+        timestamp: editedMessage.timestamp,
+      };
+    }
+  }
+
   sendMessage(content: string) {
     if (!content.trim()) return
 
@@ -100,6 +113,20 @@ export class ChatService {
       this.ws.send(load);
     }
   }
+
+  sendEditedMessage(messageId: string, newContent: string) {
+    if (!newContent.trim()) return
+
+    const load = JSON.stringify({
+      type: "editMessage",
+      messageId: messageId,
+      newContent: newContent,
+    });
+
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(load);
+    }
+  };
 
   sendActivity() {
     const load = JSON.stringify({

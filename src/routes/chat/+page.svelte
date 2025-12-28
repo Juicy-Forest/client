@@ -39,7 +39,7 @@
           peopleTyping={people}
           activeChannelId={chat.activeChannelId}
           hasChannels={chat.channels.length > 0}
-          avatarColor={userData.avatarColor}
+          onEdit={(messageId, newContent) => chat.sendEditedMessage(messageId, newContent)}
         />
         {#if chat.channels.length > 0}
           <ChatInput

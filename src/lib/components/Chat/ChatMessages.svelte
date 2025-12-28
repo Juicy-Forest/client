@@ -3,7 +3,14 @@
   import TypingIndicator from "./TypingIndicator.svelte";
   import { isAtBottom, smoothScrollToBottom, scrollToBottomInstant } from "$lib/utils/scroll";
 
-  let { messages, userId, peopleTyping, activeChannelId, hasChannels = true, avatarColor} = $props();
+  let { 
+    messages,
+    userId,
+    peopleTyping,
+    activeChannelId,
+    hasChannels = true,
+    onEdit,
+   } = $props();
 
   let scrollContainer: HTMLDivElement;
   
@@ -54,6 +61,7 @@
           {message}
           isSelf={message.author._id === userId}
           {isRepeated}
+          {onEdit}
         />
       {/each}
     {/if}
