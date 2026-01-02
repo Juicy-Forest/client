@@ -1,5 +1,27 @@
 <script lang="ts">
-  const { sectionData, handleSectionClick, handleDeleteSection, selectedSectionId } = $props();
+  import { invalidate } from "$app/navigation";
+  import { globalData, isEditMode, selectedSectionId } from "$lib/state/data";
+  import type { SectionInfo } from "$lib/types/section";
+
+    let sectionData = $derived($globalData.sectionDataState)
+
+   const handleDeleteSection = async function (id: string) {
+    const deleteSectionResponse = await fetch(`/api/section/${id}`, {
+      method: "DELETE",
+    });
+    const parsedRes = await deleteSectionResponse.json();
+    console.log(parsedRes)
+    if (parsedRes.status === 500) {
+      // handle error message, (use toastify for errors)
+      return;
+    }
+    globalData.update((d) => ({
+      ...d,
+      sectionDataState: d.sectionDataState.filter((section: SectionInfo) => section._id !== id)
+    }))
+    await invalidate("data:sections");
+  };
+
 </script>
 
 <div class="flex flex-col w-full gap-1">
@@ -11,10 +33,15 @@
   {#each sectionData as section (section._id)}
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <div
-      onclick={() => handleSectionClick(section)}
-      class="w-full p-2 flex items-center justify-between cursor-pointer
-       border-gray-200 border rounded-md {selectedSectionId ===
-        section._id && 'font-semibold'} {section.color}"
+      onclick={() => {
+        if($isEditMode) {
+          selectedSectionId.set(section._id)
+        }
+      }
+        }
+      class={`w-full p-2 flex items-center justify-between cursor-pointer
+       border-gray-200 border rounded-md ${$selectedSectionId && (($selectedSectionId ===
+        section._id) && 'font-semibold')} ${section.color}`}
     >
       <p>{section.sectionName}</p>
       <button

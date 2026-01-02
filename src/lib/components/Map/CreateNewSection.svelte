@@ -1,8 +1,9 @@
 <script lang="ts">
   import { invalidate } from "$app/navigation";
+  import { globalData, isEditMode } from "$lib/state/data";
 
-  const { gardenData, isEditMode } = $props();
-
+  let gardenData = $derived($globalData.gardenDataState)
+  
   let colorOptions = [
     { tailwindclass: "bg-rose-400" },
     { tailwindclass: "bg-green-300" },
@@ -44,8 +45,16 @@
       }),
     });
     const parsedSectionResponse = await sectionResponse.json();
+    console.log(parsedSectionResponse)
     if (parsedSectionResponse._id) {
-      await invalidate("data:sections");
+      globalData.update(d => {
+       console.log("DATA:", d) 
+       console.log("New section:", [...d.sectionDataState, parsedSectionResponse])
+      return ({
+        ...d,
+        sectionDataState: [...d.sectionDataState, parsedSectionResponse]})
+      }
+      );
     } else {
       // Handle err
       console.log(
@@ -92,7 +101,7 @@
     </div>
     <button
       onclick={() => handleCreateSection()}
-      class={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition-all ${isEditMode ? "bg-amber-100 text-amber-800 ring-1 ring-amber-200" : "bg-stone-100 text-stone-600 hover:bg-stone-200"}`}
+      class={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition-all ${$isEditMode ? "bg-amber-100 text-amber-800 ring-1 ring-amber-200" : "bg-stone-100 text-stone-600 hover:bg-stone-200"}`}
     >
       <i class="fa-solid fa-pen"></i>
       <span>Create Section</span>

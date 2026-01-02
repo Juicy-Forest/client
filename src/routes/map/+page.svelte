@@ -1,9 +1,13 @@
 <script lang="ts">
   import MapSidebar from '$lib/components/Map/MapSidebar.svelte';
+  import { globalData, selectedSectionId, isEditMode } from '$lib/state/data';
   import type { GridBoxType, IconType } from '$lib/types/garden.js';
   import { handleReturnGridClasses } from '$lib/utils/grid.js';
 
-  const { data } = $props();
+  let gardenData = $derived($globalData.gardenDataState)
+  // console.log(gardenData)
+  let sectionData = $derived($globalData.sectionDataState)
+  let activeGarden = $derived($globalData.activeGardenState)
   export const plantTypes: IconType[] = [{
     type: "Plant",
     icon: "🌱"
@@ -37,51 +41,47 @@
   },
 ];
 
-// states
-  let selectedSectionId = $state('')
-  let isEditMode = $state(false);
-
-  const updateSelectSectionId = (newSectionId: string) => selectedSectionId = newSectionId
   const updateSelectedIcon = (newIcon: IconType) => selectedIcon = newIcon
-  const gardenGrid = data.gardenData ? data.gardenData[0].grid : [] // find way to fix, will always exist, made with garden init
-  let grid: GridBoxType[] = $state(gardenGrid);        
+  let gridBeforeEdit: GridBoxType[] | [] = $state(($globalData.activeGardenState && $globalData.activeGardenState.grid) || []);        
   let editingGrid: GridBoxType[] = $state([]);           
-  let gridToShow: GridBoxType[] = $state(grid);
+  let gridToShow: GridBoxType[] = $derived(gridBeforeEdit);
   let selectedIcon: IconType | null = $state(null);
 
 
   // handlers and functionality
   const updateCell = function (i: number) {
-    if(!isEditMode) return
+    if(!$isEditMode) return
     const next = [...editingGrid];
-    if(selectedSectionId) {
-      next[i] = { ...next[i], section: next[i].section ? null : selectedSectionId };
+    if($selectedSectionId) {
+      next[i] = { ...next[i], section: next[i].section ? null : $selectedSectionId };
     } else if (selectedIcon) {
       next[i] = {...next[i], plant: selectedIcon.type}
     }
-    // const selectedSection = data.sectionData?.find((s: any) => s._id === selectedSectionId)
+    // const selectedSection = sectionData?.find((s: any) => s._id === selectedSectionId)
     editingGrid = next;
     gridToShow = next; 
+    // must undo later if they cancel iunstead of save (check diff between grid and editing grid, then remove)
+    globalData.update((d:any) => ({...d, activeGardenState: {...d.activeGardenState, grid: next}}))
   }
 
   const cloneGrid = function (source: GridBoxType[]): GridBoxType[] {
-    return source.map((cell) => ({ ...cell }));
+    return source.map((t) => ({...t}))
   };
 
   const enterEditMode = function() {
-    editingGrid = cloneGrid(grid);
+    editingGrid = cloneGrid(gridBeforeEdit);
     gridToShow = editingGrid;
-    isEditMode = true;
+    isEditMode.set(true)
   }
 
 const saveEdit = async function() {
-  if(JSON.stringify(editingGrid) !== JSON.stringify(grid)) {
+  if(JSON.stringify($globalData.activeGardenState!.grid) !== JSON.stringify(gridBeforeEdit)) {
     // updated garden obj
     const newGarden = {
-      ...data.gardenData![0],
+      ...gardenData![0],
       grid: editingGrid.map(cell => ({ ...cell }))
     };    
-    await fetch(`api/garden/${data.gardenData![0]._id}`, {
+    await fetch(`api/garden/${gardenData![0]._id}`, {
       method: "PUT",
       headers:  {
         "Content-Type": "application/json"
@@ -90,18 +90,19 @@ const saveEdit = async function() {
     })
 
   } 
-  grid = cloneGrid(editingGrid);
+  gridBeforeEdit = cloneGrid(editingGrid);
   exitEditMode();
 }
 
 const cancelEdit = function() {
+  
   exitEditMode();
 }
 
 const exitEditMode = function() {
-  gridToShow = grid;
+  gridToShow = gridBeforeEdit;
   editingGrid = [];
-  isEditMode = false;
+  isEditMode.set(false);
 }
 
 
@@ -133,7 +134,7 @@ const handleIconPlacement = function(grid: GridBoxType) {
     class="mx-auto grid w-full max-w-none items-start gap-8 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)]"
   >
     <!-- Sidebar -->
-  <MapSidebar updateSelectedIcon={updateSelectedIcon} selectedIcon={selectedIcon} plantTypes={plantTypes} updateSelectSectionId={updateSelectSectionId} selectedSectionId={selectedSectionId} sectionData={data.sectionData} isEditMode={isEditMode} gardenData={data.gardenData} />
+  <MapSidebar updateSelectedIcon={updateSelectedIcon} selectedIcon={selectedIcon} plantTypes={plantTypes}  />
     <!-- Main Content -->
     <div
       class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-[2.5rem] border border-stone-200/60 bg-white/80 shadow-xl shadow-stone-200/20 backdrop-blur-xl"
@@ -145,13 +146,13 @@ const handleIconPlacement = function(grid: GridBoxType) {
         <div>
           <h2 class="text-lg font-bold text-stone-800">Interactive Layout</h2>
           <p class="mt-0.5 text-sm text-stone-500">
-            {isEditMode
+            {$isEditMode
               ? "Select an item from the sidebar and click on the map to place it."
               : "Visualize and manage plants in your garden."}
           </p>
         </div>
         <div class="w-fit flex items-center gap-2">
-        {#if (isEditMode)}
+        {#if ($isEditMode)}
 
           <span
           class="flex items-center h-full gap-2 rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700"
@@ -188,7 +189,7 @@ const handleIconPlacement = function(grid: GridBoxType) {
                       handleIconPlacement(gridItem)
                       updateCell(i)}}
                     class={`border border-black/30 cursor-pointer flex items-center justify-center w-7 h-7
-                    ${handleReturnGridClasses(gridItem.section, data.sectionData)}
+                    ${handleReturnGridClasses(gridItem.section, sectionData)}
                     `}
                   >
                {#if (gridItem.plant)}
