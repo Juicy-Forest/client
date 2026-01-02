@@ -1,5 +1,5 @@
 <script>
-    const { formData, errors, onCancel, onSubmit } = $props();
+    const { formData = $bindable(), errors, onCancel, onSubmit } = $props();
 </script>
 
 <form
