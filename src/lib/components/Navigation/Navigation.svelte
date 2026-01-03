@@ -1,5 +1,6 @@
 <script lang="ts">
   import NavLink from "./NavLink.svelte";
+  import { goto } from "$app/navigation";
   let openNavbar = false
   
   const { gardenData } = $props();
@@ -75,7 +76,12 @@
     </ul>
   </div>
   <!-- Notifications -->
-   <div class="w-[200px] flex hidden md:flex justify-end relative z-50">
+   <div class="w-[200px] flex hidden md:flex justify-end gap-2 relative z-50">
+    <form method="POST" action="/logout">
+      <button type="submit" class="flex items-center gap-2 group active:scale-[0.95] duration-200 transform cursor-pointer relative hover:bg-stone-100 duration-300 rounded-full p-3">
+        <i class="fa-solid fa-lock group-hover:text-stone-800 text-stone-500 duration-200 text-lg"></i>
+      </button>
+    </form>
     <button on:click={() => showNotificationTab = !showNotificationTab} class="flex items-center gap-2 group active:scale-[0.95] duration-200 transform cursor-pointer relative hover:bg-stone-100 duration-300 rounded-full p-3">
         {#if notifications.length > 0}
           <div class="bg-rose-500 h-4 w-4 rounded-full text-[10px] font-bold text-white flex items-center justify-center absolute top-1 right-1 ring-2 ring-white">{notifications.length}</div>
