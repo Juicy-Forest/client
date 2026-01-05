@@ -7,7 +7,7 @@
     
     const selectedInventoryType = getContext("selectedInventoryType");
     const searchBarInput = getContext("inventorySearchBarInput")
-
+    
     const filteredItems = $derived(
         selectedInventoryType.selectedInventoryType === "all"
             ? inventory
