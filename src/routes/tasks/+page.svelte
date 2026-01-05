@@ -6,14 +6,21 @@
   import TaskHeader from "$lib/components/Tasks/TaskHeader.svelte";
   import TaskSection from "$lib/components/Tasks/TaskSection.svelte";
 
-  let sections = [
-    { _id: 's1', color: "bg-blue-500", initials: "T", title: "Section - Vegetables", assigned: "Tyrion"},
-    { _id: 's2', color: "bg-purple-500", initials: "J", title: "Section - Herbs", assigned: "Jon"},
-    { _id: 's3', color: "bg-green-500", initials: "MP", title: "Section - Flowers", assigned: "Marco Polo"},
-    { _id: 's4', color: "bg-orange-500", initials: "T", title: "Section - Fruits", assigned: "Tyrell"},
-  ];
-
   let { data } = $props();
+
+  let sections = $derived(data.sectionData?.map(section => ({
+    _id: section._id,
+    color: section.color,
+    initials: section.sectionName.charAt(0).toUpperCase(),
+    title: section.sectionName,
+    assigned: data.userData?.username || "You"
+  })) || []);
+
+  // Group tasks by sectionId
+  let tasksBySection = $derived(sections.reduce((acc, section) => {
+    acc[section._id] = data.tasks.filter(task => task.sectionId === section._id);
+    return acc;
+  }, {}));
 
 </script>
 
@@ -27,7 +34,7 @@
           <div class="flex-1 overflow-y-auto px-8 py-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               {#each sections as section}
-                <TaskSection {section} {data} />
+                <TaskSection {section} {data} tasks={tasksBySection[section._id] || []}/>
               {/each} 
             </div>
           </div>

@@ -5,7 +5,7 @@
   import { invalidateAll } from "$app/navigation";
   import Modal from "../util/Modal.svelte";
 
-  let {section, data} = $props();
+  let {section, data, tasks} = $props();
 
   let modalMode = $state("create");
   let selectedTask = $state(null);
@@ -39,6 +39,8 @@
       name: "",
       description: "",
       isComplete: false,
+      sectionId: section._id,
+
     };
     selectedTask = null;
   }
@@ -107,7 +109,7 @@
 <div class="flex flex-col gap-2 shadow-xl p-5 rounded-2xl">
     <h2>{section.title}</h2>
     <p>{section.assigned}</p>
-    {#each data.tasks as task (task._id)}
+    {#each tasks as task (task._id)}
       <Task key={task._id} {task} onEdit={openEditModal} onDelete={openDeleteModal}/>
     {/each}
 
