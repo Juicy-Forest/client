@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import NavLink from "./NavLink.svelte";
-  import { goto } from "$app/navigation";
   let openNavbar = false
   
   const { gardenData } = $props();
