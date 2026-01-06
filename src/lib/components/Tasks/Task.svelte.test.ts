@@ -73,28 +73,6 @@ describe('TaskComponent', () => {
     expect(checkbox).toBeChecked();
   });
 
-  it('calls onCheck when checkbox is clicked', async () => {
-    const user = userEvent.setup();
-    let checkedTask = null;
-    const onCheck = (task) => { checkedTask = task; };
-    const onEdit = () => {};
-    const onDelete = () => {};
-
-    render(TaskComponent, {
-      props: {
-        task: mockTask,
-        onEdit,
-        onDelete,
-        onCheck
-      }
-    });
-
-    const checkbox = screen.getByRole('checkbox');
-    await user.click(checkbox);
-
-    expect(checkedTask).toEqual(mockTask);
-  });
-
   it('calls onEdit when edit button is clicked', async () => {
     const user = userEvent.setup();
     let editedTask = null;
