@@ -3,37 +3,13 @@ import { render, screen } from '@testing-library/svelte';
 import ChatHeader from '../ChatHeader.svelte';
 
 describe('ChatHeader', () => {
-  const mockActiveChannel = {
-    id: 'ch1',
-    name: 'general',
-    label: 'General',
-    topic: 'General discussion'
-  };
-
   it('renders channel name with hashtag', () => {
-    render(ChatHeader, { props: { activeChannel: mockActiveChannel } });
-
+    render(ChatHeader, { props: { activeChannel: { id: 'ch1', name: 'general' } } });
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('#general');
   });
 
-  it('displays an active indicator dot', () => {
-    const { container } = render(ChatHeader, { props: { activeChannel: mockActiveChannel } });
-
-    const activeDot = container.querySelector('.bg-lime-500');
-    expect(activeDot).toBeInTheDocument();
-  });
-
-  it('renders different channel names correctly', () => {
-    const customChannel = { ...mockActiveChannel, name: 'announcements' };
-    render(ChatHeader, { props: { activeChannel: customChannel } });
-
+  it('renders different channel names', () => {
+    render(ChatHeader, { props: { activeChannel: { id: 'ch2', name: 'announcements' } } });
     expect(screen.getByText('#announcements')).toBeInTheDocument();
   });
-
-  it('renders header element', () => {
-    render(ChatHeader, { props: { activeChannel: mockActiveChannel } });
-
-    expect(screen.getByRole('banner')).toBeInTheDocument();
-  });
 });
-

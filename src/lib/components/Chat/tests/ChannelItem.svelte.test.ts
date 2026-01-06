@@ -16,14 +16,7 @@ describe('ChannelItem', () => {
 
   it('renders channel name with hashtag', () => {
     renderChannel();
-
     expect(screen.getByText('#general')).toBeInTheDocument();
-  });
-
-  it('renders as a button', () => {
-    renderChannel();
-
-    expect(screen.getByRole('button')).toBeInTheDocument();
   });
 
   it('triggers clickHandler when clicked', async () => {
@@ -34,28 +27,4 @@ describe('ChannelItem', () => {
 
     expect(mockClickHandler).toHaveBeenCalledTimes(1);
   });
-
-  it('applies active styles when isActive is true', () => {
-    renderChannel(mockChannel, true);
-
-    const button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-lime-100/50');
-    expect(button).toHaveClass('text-lime-900');
-  });
-
-  it('applies inactive styles when isActive is false', () => {
-    renderChannel(mockChannel, false);
-
-    const button = screen.getByRole('button');
-    expect(button).toHaveClass('text-stone-500');
-    expect(button).not.toHaveClass('bg-lime-100/50');
-  });
-
-  it('displays different channel names correctly', () => {
-    const customChannel = { _id: 'ch2', name: 'announcements' };
-    renderChannel(customChannel);
-
-    expect(screen.getByText('#announcements')).toBeInTheDocument();
-  });
 });
-

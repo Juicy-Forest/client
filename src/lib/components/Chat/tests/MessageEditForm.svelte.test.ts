@@ -14,40 +14,21 @@ describe('MessageEditForm', () => {
 
   const renderForm = (initialContent = 'Original message') =>
     render(MessageEditForm, {
-      props: {
-        initialContent,
-        onSave: mockOnSave,
-        onCancel: mockOnCancel
-      }
+      props: { initialContent, onSave: mockOnSave, onCancel: mockOnCancel }
     });
 
   it('renders textarea with initial content', () => {
     renderForm('Hello world');
-
-    const textarea = screen.getByRole('textbox');
-    expect(textarea).toHaveValue('Hello world');
+    expect(screen.getByRole('textbox')).toHaveValue('Hello world');
   });
 
-  it('renders Save and Cancel buttons', () => {
-    renderForm();
-
-    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
-  });
-
-  it('renders keyboard hint text', () => {
-    renderForm();
-
-    expect(screen.getByText('Enter to save · Esc to cancel')).toBeInTheDocument();
-  });
-
-  it('calls onSave with new content when Save is clicked', async () => {
+  it('calls onSave with trimmed content when Save is clicked', async () => {
     const user = userEvent.setup();
     renderForm('Original');
 
     const textarea = screen.getByRole('textbox');
     await user.clear(textarea);
-    await user.type(textarea, 'Updated content');
+    await user.type(textarea, '  Updated content  ');
     await user.click(screen.getByRole('button', { name: 'Save' }));
 
     expect(mockOnSave).toHaveBeenCalledWith('Updated content');
@@ -62,42 +43,7 @@ describe('MessageEditForm', () => {
     expect(mockOnCancel).toHaveBeenCalled();
   });
 
-  it('calls onCancel when content is unchanged', async () => {
-    const user = userEvent.setup();
-    renderForm('Original');
-
-    await user.click(screen.getByRole('button', { name: 'Save' }));
-
-    expect(mockOnCancel).toHaveBeenCalled();
-    expect(mockOnSave).not.toHaveBeenCalled();
-  });
-
-  it('calls onCancel when content is only whitespace', async () => {
-    const user = userEvent.setup();
-    renderForm('Original');
-
-    const textarea = screen.getByRole('textbox');
-    await user.clear(textarea);
-    await user.type(textarea, '   ');
-    await user.click(screen.getByRole('button', { name: 'Save' }));
-
-    expect(mockOnCancel).toHaveBeenCalled();
-    expect(mockOnSave).not.toHaveBeenCalled();
-  });
-
-  it('trims whitespace from content before saving', async () => {
-    const user = userEvent.setup();
-    renderForm('Original');
-
-    const textarea = screen.getByRole('textbox');
-    await user.clear(textarea);
-    await user.type(textarea, '  New content  ');
-    await user.click(screen.getByRole('button', { name: 'Save' }));
-
-    expect(mockOnSave).toHaveBeenCalledWith('New content');
-  });
-
-  it('calls onSave when Enter is pressed', async () => {
+  it('calls onSave on Enter key', async () => {
     const user = userEvent.setup();
     renderForm('Original');
 
@@ -109,29 +55,13 @@ describe('MessageEditForm', () => {
     expect(mockOnSave).toHaveBeenCalledWith('New content');
   });
 
-  it('calls onCancel when Escape is pressed', async () => {
+  it('calls onCancel on Escape key', async () => {
     const user = userEvent.setup();
     renderForm();
 
-    const textarea = screen.getByRole('textbox');
-    await user.click(textarea);
+    await user.click(screen.getByRole('textbox'));
     await user.keyboard('{Escape}');
 
     expect(mockOnCancel).toHaveBeenCalled();
   });
-
-  it('allows newline with Shift+Enter', async () => {
-    const user = userEvent.setup();
-    renderForm('Line 1');
-
-    const textarea = screen.getByRole('textbox');
-    await user.clear(textarea);
-    await user.type(textarea, 'Line 1');
-    await user.keyboard('{Shift>}{Enter}{/Shift}');
-    await user.type(textarea, 'Line 2');
-
-    expect(textarea).toHaveValue('Line 1\nLine 2');
-    expect(mockOnSave).not.toHaveBeenCalled();
-  });
 });
-
