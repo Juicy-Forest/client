@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import NavLink from "./NavLink.svelte";
   import { goto } from "$app/navigation";
   let openNavbar = false
@@ -89,6 +90,9 @@
 
       <i class="fa-solid fa-bell group-hover:text-stone-800 text-stone-500 duration-200 text-lg"></i>
     </button>
+    <button onclick={() => {goto('/settings')}} class="flex items-center gap-2 group active:scale-[0.95] duration-200 transform cursor-pointer relative hover:bg-stone-100 duration-300 rounded-full p-3">
+    <i class="fa-solid fa-gear group-hover:text-stone-800 text-stone-500 duration-200 text-lg"></i>    
+    </button>
     {#if showNotificationTab}
       <div class="absolute right-0 mt-14 w-80 origin-top-right rounded-3xl bg-white p-4 shadow-xl ring-1 ring-black/5 focus:outline-none border border-stone-100 z-50">
         <div class="mb-4 flex items-center justify-between px-2">
@@ -124,17 +128,18 @@
       </div>
     {/if}
   </div>
+  
    </div>
    <!-- Navbar on small screens -->
    <div class={`block md:hidden top-0 left-0 h-full w-[50%] flex justify-end items-center px-8 `}>
-      <button aria-label=" " on:click={() => openNavbar = true} >        
+      <button aria-label=" " onclick={() => openNavbar = true} >        
         <i class="fa-solid fa-bars text-neutral-600 transform scale-[2.5] cursor-pointer hover:opacity-80 "></i> hi
       </button>
    </div>
 
    <!-- Absolute full screen navbar for mobile -->
    <div class={` ${openNavbar ? "block" : "hidden"} absolute h-screen w-screen z-[100] bg-white top-1 left-1 rounded-md border-[#e5e5e5] border justify-center`}>
-    <button aria-label=" " class="absolute top-5 right-15 cursor-pointer hover:opacity-80 duration-200" on:click={() => openNavbar = false}>
+    <button aria-label=" " class="absolute top-5 right-15 cursor-pointer hover:opacity-80 duration-200" onclick={() => openNavbar = false}>
       <i class="fa-solid fa-x transform scale-[2] text-neutral-600"></i>
     </button>
     <ul class="flex flex-col items-center mt-[35%]">

@@ -1,11 +1,19 @@
 <script lang="ts">
-  import type { Message } from './types';
   import { fly } from 'svelte/transition';
   import { cubicOut } from 'svelte/easing';
 
-  export let message: Message;
+  export let message;
   export let isSelf: boolean = false;
   export let isRepeated: boolean = false;
+
+  function formatTime(timestamp: string) {
+    const date = new Date(timestamp);
+    
+    return date.toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  }
 </script>
 
 <article 
@@ -18,7 +26,7 @@
       <div
         class={`flex h-10 w-10 items-center justify-center rounded-2xl text-xs font-bold shadow-sm transition-transform group-hover:scale-105 ${message.author.avatarColor}`}
       >
-        {message.author.name
+        {message.author.username
           .split(' ')
           .map((part) => part[0])
           .join('')
@@ -31,12 +39,8 @@
   <div class={`flex max-w-[85%] flex-1 flex-col ${isSelf ? 'items-end' : ''}`}>
     {#if !isRepeated}
       <header class={`flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm ${isSelf ? 'flex-row-reverse' : ''}`}>
-        <p class={`font-bold ${message.author.color}`}>{message.author.name}</p>
-        <span
-          class="rounded-md bg-stone-100 px-1.5 py-0.5 text-[10px] font-medium text-stone-500"
-          >{message.author.role}</span
-        >
-        <span class="text-xs text-stone-400">{message.timestamp}</span>
+        <p class={`font-bold ${message.author.color}`}>{message.author.username}</p>
+        <span class="text-xs text-stone-400">{formatTime(message.timestamp)}</span>
       </header>
     {/if}
     
@@ -52,3 +56,4 @@
     </div>
   </div>
 </article>
+
