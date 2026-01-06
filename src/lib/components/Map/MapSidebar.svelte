@@ -1,11 +1,13 @@
 <script lang="ts">
   import { invalidate } from "$app/navigation";
+  import { page } from "$app/state";
   import type { IconType } from "$lib/types/garden";
+  import type { SectionInfo } from "$lib/types/section";
   import CreateNewSection from "./CreateNewSection.svelte";
   import SidebarSections from "./SidebarSections.svelte";
 
   const {
-    sectionData,
+    sectionData: initSectionData,
     isEditMode,
     gardenData,
     selectedSectionId,
@@ -14,19 +16,8 @@
     selectedIcon,
     updateSelectedIcon,
   } = $props();
-
-  const handleDeleteSection = async function (id: string) {
-    // todo deltet section
-    const deleteSectionResponse = await fetch(`/api/section/${id}`, {
-      method: "DELETE",
-    });
-    const parsedRes = await deleteSectionResponse.json();
-    if (parsedRes.status === 500) {
-      // handle error message, (use toastify for errors)
-      return;
-    }
-    await invalidate("data:sections");
-  };
+  
+  let gardenId = $derived(() => page.url.searchParams.get("gardenId"));
 
   const handleSectionClick = function (section: any) {
     if (isEditMode) {
@@ -41,6 +32,37 @@
     updateSelectedIcon(selectedIcon === icon ? null : icon);
     updateSelectSectionId("");
   }
+
+  let sectionData = $state<SectionInfo[]>(
+    structuredClone(initSectionData)
+  );
+
+  let selectedGardenSectionData = $derived(() => {
+    const id = gardenId();
+    if (!id) return [];
+    return sectionData.filter(s => s.garden._id === id);
+  });
+
+  const updateGardenSections = (newSection: SectionInfo) => {
+    sectionData = [...sectionData, newSection];
+  };
+
+    const handleDeleteSection = async function (id: string) {
+      console.log('DELETING SECTION WWITH  ID":', id)
+    const deleteSectionResponse = await fetch(`/api/section/${id}`, {
+      method: "DELETE",
+    });
+
+    const parsedRes = await deleteSectionResponse.json();
+    if (parsedRes.status === 500) {
+      // handle error message, (use toastify for errors)
+      return;
+    }
+    await invalidate("data:sections");
+    sectionData = sectionData.filter(s => s._id !== id);
+    console.log('UPDATED  SECTION DATA:', sectionData)
+  };
+
 </script>
 
 <aside
@@ -69,9 +91,14 @@
 
       <div class=" mb-0 border-t border-stone-200"></div>
       <!-- // show current sections -->
-      <SidebarSections selectedSectionId={selectedSectionId} sectionData={sectionData} handleSectionClick={handleSectionClick} handleDeleteSection={handleDeleteSection} />
+      <SidebarSections
+        {selectedSectionId}
+        sectionData={sectionData}
+        {handleSectionClick}
+        {handleDeleteSection}
+      />
 
-      {#if !sectionData || sectionData.length === 0}
+      {#if !selectedGardenSectionData || selectedGardenSectionData.length === 0}
         <span class="font-semibold text-xs my-1"
           >Note: Create a section to get started.</span
         >
@@ -79,7 +106,11 @@
       {#if isEditMode}
         <div class="my-2 border-t border-stone-200"></div>
         <!-- -----NEW SECTION ----- -->
-       <CreateNewSection isEditMode={isEditMode} gardenData={gardenData} />
+        <CreateNewSection
+          onNewSection={updateGardenSections}
+          {isEditMode}
+          {gardenData}
+        />
         <div class="my-2 border-t border-stone-200"></div>
 
         <!-- ----- PLANTS ----- -->

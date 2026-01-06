@@ -1,4 +1,4 @@
-import type { GardenData } from "./garden";
+import type { Garden } from "./garden";
 
 export type IssueType = {
     solved: boolean;
@@ -17,7 +17,7 @@ export type SectionInfo = {
     issues: IssueType[] | [];
     plants: string[];
     color: string;
-    garden: GardenData
+    garden: Garden
   };
 
 export type SectionData  = SectionInfo[]

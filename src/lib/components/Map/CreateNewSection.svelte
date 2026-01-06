@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { invalidate } from "$app/navigation";
+  import { invalidate, invalidateAll } from "$app/navigation";
+  import { page } from "$app/state";
 
-  const { gardenData, isEditMode } = $props();
+  const { gardenData, isEditMode, onNewSection } = $props();
 
   let colorOptions = [
     { tailwindclass: "bg-rose-400" },
@@ -24,6 +25,7 @@
   let sectionName = $state("");
   let plants = $state("");
   let newSectionErrorMsg = $state("");
+  const gardenId = page.url.searchParams.get('gardenId')
 
   const handleNameChange = (v: string) => (sectionName = v);
   const handlePlantChange = (v: string) => (plants = v);
@@ -40,12 +42,15 @@
         sectionName,
         plants: plants.split(", "),
         color: selectedColor,
-        gardenId: gardenData ? gardenData[0]._id : "", // think of fix, gardenData will always exist
+        gardenId: gardenId,
       }),
-    });
+    headers: {
+      "Content-Type": "application/json"
+    }});
     const parsedSectionResponse = await sectionResponse.json();
     if (parsedSectionResponse._id) {
-      await invalidate("data:sections");
+      // await invalidate("data:sections");
+      onNewSection(parsedSectionResponse)
     } else {
       // Handle err
       console.log(
