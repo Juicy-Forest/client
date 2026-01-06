@@ -47,9 +47,9 @@ describe('InventoryItemList', () => {
     expect(screen.getByText('No items found in this category.')).toBeInTheDocument();
   });
 
-  it('is case-sensitive in search logic', () => {
+  it('is case-insensitive in search logic', () => {
     searchBarInput.value = 'tomato';
     renderComponent();
-    expect(screen.getByText('No items found in this category.')).toBeInTheDocument();
+    expect(screen.queryByText('No items found in this category.')).not.toBeInTheDocument();
   });
 });
