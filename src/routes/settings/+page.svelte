@@ -2,12 +2,19 @@
   import type { GardenData } from '$lib/types/garden.js';
   import { setContext } from 'svelte';
   import Option from '$lib/components/Settings/Option.svelte';
+  import ChangeButton from '$lib/components/Settings/ChangeButton.svelte';
+  import { enhance } from '$app/forms';
 
   let activeTab = $state('profile');
   let { data } = $props();
   let user: any = $state(data.userData);
   let gardenData: GardenData = data.gardenData;
   let gardens = $state(data?.gardenData ?? []);
+  
+  let newPassword = $state('');
+  let passwordError = $state('');
+  let passwordSuccess = $state('');
+  
   setContext('activeTab', () => activeTab);
 
   const settingsOptions = [
@@ -53,6 +60,15 @@
           {/each}
         </div>
       </div>
+
+      <form method="POST" action="?/logout" class="mt-auto">
+        <button
+          type="submit"
+          class="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors"
+        >
+          Logout
+        </button>
+      </form>
     </aside>
 
     <div
@@ -85,6 +101,7 @@
                     class="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400"
                     placeholder={user.username}
                   />
+                  <ChangeButton settingField="username"/>
                 </div>
                 <div>
                   <label class="block text-xs font-medium text-stone-600 mb-2">Email</label>
@@ -93,28 +110,44 @@
                     class="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400"
                     placeholder={user.email}
                   />
+                  <ChangeButton settingField="email"/>
                 </div>
               </div>
             </div>
 
             <div class="rounded-2xl border border-stone-200 bg-white p-6">
               <h3 class="mb-4 text-sm font-bold text-stone-800">Change Password</h3>
-              <div class="space-y-4">
-                <div>
-                  <label class="block text-xs font-medium text-stone-600 mb-2">Current Password</label>
-                  <input
-                    type="password"
-                    class="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400"
-                  />
+              <form data-field="password" method="POST" action="?/changePassword" use:enhance={() => {
+                return async ({ update, result }) => {
+                  if (result.type === 'success') {
+                  passwordSuccess = result.data?.message as string;
+                  newPassword = '';
+                  } else if (result.type === 'failure') {
+                  passwordError = result.data?.error as string;
+                }
+                update();
+                };}}>
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-xs font-medium text-stone-600 mb-2">New Password</label>
+                    <input
+                      type="password"
+                      name="newPassword"
+                      bind:value={newPassword}
+                      class="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400"
+                    />
+                    <ChangeButton settingField="password" />
+                  </div>
                 </div>
-                <div>
-                  <label class="block text-xs font-medium text-stone-600 mb-2">New Password</label>
-                  <input
-                    type="password"
-                    class="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400"
-                  />
-                </div>
-              </div>
+
+                {#if passwordError}
+                  <p class="text-red-600 text-sm mt-4">{passwordError}</p>
+                {/if}
+
+                {#if passwordSuccess}
+                  <p class="text-green-600 text-sm mt-4">{passwordSuccess}</p>
+                {/if}
+              </form>
             </div>
           </div>
         {/if}
