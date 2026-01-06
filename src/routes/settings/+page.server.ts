@@ -141,5 +141,63 @@ export const actions: Actions = {
       console.error("Email change error:", error);
       return fail(500, { error: "Internal server error" });
     }
+  },
+
+  updateGardenName: async ({ request, cookies, fetch }) => {
+    const data = await request.formData();
+    const newGardenName = data.get("newGardenName") as string;
+    const gardenId = data.get("gardenId") as string;
+    const token = cookies.get('auth-token');
+    
+    if (!token) {
+      return fail(401, { error: "Not authenticated" });
+    }
+
+    if (!newGardenName) {
+      return fail(400, { error: "'Garden name' field is required" });
+    }
+    
+    if (!gardenId) {
+      return fail(400, { error: "Garden ID is required" });
+    }
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/garden/${gardenId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-authorization': token,
+        },
+        body: JSON.stringify({ name: newGardenName }),
+      });
+      
+      const contentType = response.headers.get('content-type');
+      let result;
+      
+      if (contentType?.includes('application/json')) {
+        result = await response.json();
+      } else {
+        const text = await response.text();
+        console.error("API returned non-JSON response:", text);
+        return fail(500, { error: "Server error: Invalid response format" });
+      }
+      
+      if (!response.ok) {
+        let errorMessage = result.message || result.error || "Garden name change failed";
+        
+        if (response.status === 403) {
+          errorMessage = "Only the garden owner can change the garden name";
+        } else if (response.status === 404) {
+          errorMessage = "Garden not found";
+        }
+        
+        return fail(response.status, { error: errorMessage });
+      }
+
+      return { success: true, message: "Garden name changed successfully!", newGardenName };
+    } catch (error) {
+      console.error("Garden name change error:", error);
+      return fail(500, { error: "Internal server error" });
+    }
   }
 };

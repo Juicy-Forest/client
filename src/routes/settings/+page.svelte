@@ -1,39 +1,13 @@
 <script lang="ts">
-  import type { GardenData } from '$lib/types/garden.js';
-  import { setContext } from 'svelte';
   import Option from '$lib/components/Settings/Option.svelte';
-  import ChangeButton from '$lib/components/Settings/ChangeButton.svelte';
-  import { enhance } from '$app/forms';
+  import SettingsContent from '$lib/components/Settings/SettingsContent.svelte';
+  import Logout from '$lib/components/Settings/Logout.svelte';
 
   let activeTab = $state('profile');
   let { data } = $props();
   let user: any = $state(data.userData);
-  let gardenData: GardenData = data.gardenData;
   let gardens = $state(data?.gardenData ?? []);
   
-  let newPassword = $state('');
-  let passwordError = $state('');
-  let passwordSuccess = $state('');
-  
-  let newUsername = $state('');
-  let usernameError = $state('');
-  let usernameSuccess = $state('');
-  
-  let newEmail = $state('');
-  let emailError = $state('');
-  let emailSuccess = $state('');
-  
-  const clearAllMessages = () => {
-    usernameError = '';
-    usernameSuccess = '';
-    emailError = '';
-    emailSuccess = '';
-    passwordError = '';
-    passwordSuccess = '';
-  };
-  
-  setContext('activeTab', () => activeTab);
-
   const settingsOptions = [
     {
       id: 'profile',
@@ -73,22 +47,16 @@
       <div class="flex-1 overflow-y-auto pr-1">
         <div class="flex flex-col gap-2">
           {#each settingsOptions as option (option.id)}
-            <Option {option}/>
+            <Option {option} {activeTab} setActiveTab={(value: string) => { activeTab = value }}/>
           {/each}
         </div>
       </div>
 
-      <form method="POST" action="?/logout" class="mt-auto">
-        <button
-          type="submit"
-          class="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors"
-        >
-          Logout
-        </button>
-      </form>
+      <Logout />
     </aside>
 
-    <div
+    <!-- main content -->
+    <main
       class="flex h-[calc(100vh-10.5rem)] flex-col rounded-[2.5rem] border border-stone-200/60 bg-white/80 shadow-xl shadow-stone-200/20 backdrop-blur-xl"
     >
       <header
@@ -105,149 +73,8 @@
       </header>
 
       <div class="flex-1 overflow-y-auto bg-stone-50/30 px-8 py-6">
-        <!-- profile Settings -->
-        {#if activeTab === 'profile'}
-          <div class="space-y-6">
-            <div class="rounded-2xl border border-stone-200 bg-white p-6">
-              <h3 class="mb-4 text-sm font-bold text-stone-800">Change Username</h3>
-              <form data-field="username" method="POST" action="?/updateUsername" use:enhance={() => {
-                clearAllMessages();
-                return async ({ update, result }) => {
-                  if (result.type === 'success') {
-                  usernameSuccess = result.data?.message as string;
-                  user.username = result.data?.newUsername;
-                  newUsername = '';
-                  setTimeout(() => location.reload(), 1000);
-                  } else if (result.type === 'failure') {
-                  usernameError = result.data?.error as string;
-                }
-                update();
-                };
-              }}>
-                <div class="space-y-4">
-                  <div>
-                    <label for="newUsername" class="block text-xs font-medium text-stone-600 mb-2">Current Username: {user.username}</label>
-                    <input
-                      id="newUsername"
-                      type="text"
-                      name="newUsername"
-                      bind:value={newUsername}
-                      class="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400"
-                      placeholder="Enter new username"
-                    />
-                    <ChangeButton settingField="username" />
-                  </div>
-                </div>
-
-                {#if usernameError}
-                  <p class="text-red-600 text-sm mt-4">{usernameError}</p>
-                {:else if usernameSuccess}
-                  <p class="text-green-600 text-sm mt-4">{usernameSuccess}</p>
-                {/if}
-              </form>
-            </div>
-
-            <div class="rounded-2xl border border-stone-200 bg-white p-6">
-              <h3 class="mb-4 text-sm font-bold text-stone-800">Change Email</h3>
-              <form data-field="email" method="POST" action="?/updateEmail" use:enhance={() => {
-                clearAllMessages();
-                return async ({ update, result }) => {
-                  if (result.type === 'success') {
-                  emailSuccess = result.data?.message as string;
-                  user.email = result.data?.newEmail;
-                  newEmail = '';
-                  setTimeout(() => location.reload(), 1000);
-                  } else if (result.type === 'failure') {
-                  emailError = result.data?.error as string;
-                }
-                update();
-                };
-              }}>
-                <div class="space-y-4">
-                  <div>
-                    <label for="newEmail" class="block text-xs font-medium text-stone-600 mb-2">Current Email: {user.email}</label>
-                    <input
-                      id="newEmail"
-                      type="email"
-                      name="newEmail"
-                      bind:value={newEmail}
-                      class="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400"
-                      placeholder="Enter new email"
-                    />
-                    <ChangeButton settingField="email" />
-                  </div>
-                </div>
-
-                {#if emailError}
-                  <p class="text-red-600 text-sm mt-4">{emailError}</p>
-                {:else if emailSuccess}
-                  <p class="text-green-600 text-sm mt-4">{emailSuccess}</p>
-                {/if}
-              </form>
-            </div>
-
-            <div class="rounded-2xl border border-stone-200 bg-white p-6">
-              <h3 class="mb-4 text-sm font-bold text-stone-800">Change Password</h3>
-              <form data-field="password" method="POST" action="?/changePassword" use:enhance={() => {
-                clearAllMessages();
-                return async ({ update, result }) => {
-                  if (result.type === 'success') {
-                  passwordSuccess = result.data?.message as string;
-                  newPassword = '';
-                  } else if (result.type === 'failure') {
-                  passwordError = result.data?.error as string;
-                }
-                update();
-                };
-              }}>
-                <div class="space-y-4">
-                  <div>
-                    <label for="newPassword" class="block text-xs font-medium text-stone-600 mb-2">New Password</label>
-                    <input
-                      id="newPassword"
-                      type="password"
-                      name="newPassword"
-                      bind:value={newPassword}
-                      class="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400"
-                    />
-                    <ChangeButton settingField="password" />
-                  </div>
-                </div>
-
-                {#if passwordError}
-                  <p class="text-red-600 text-sm mt-4">{passwordError}</p>
-                {:else if passwordSuccess}
-                  <p class="text-green-600 text-sm mt-4">{passwordSuccess}</p>
-                {/if}
-              </form>
-            </div>
-          </div>
-        {/if}
-
-        <!-- garden Settings -->
-        {#if activeTab === 'garden'}
-          <div class="space-y-6">
-            <div class="rounded-2xl border border-stone-200 bg-white p-6">
-              <h3 class="mb-4 text-sm font-bold text-stone-800">Garden Preferences</h3>
-              <div class="space-y-4">
-                <div>
-                  <label for="gardenName" class="block text-xs font-medium text-stone-600 mb-2">Garden Name</label>
-                  <input
-                    id="gardenName"
-                    type="text"
-                    class="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400"
-                    placeholder={gardens[0].name}
-                  />
-                </div>
-              </div>
-            </div>
-
-            
-          </div>
-        {/if}
-
-
+        <SettingsContent {activeTab} {user} {gardens} />
       </div>
-    </div>
+    </main>
   </div>
 </section>

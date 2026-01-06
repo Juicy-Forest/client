@@ -1,13 +1,12 @@
 <script lang="ts">
     import { getContext } from 'svelte';
     
-    let activeTab = $state(getContext('activeTab'));
-    let {option} = $props();
+    let { activeTab, setActiveTab, option } = $props();
 
 </script>
 
 <button
-        onclick={() => (activeTab = option.id)}
+        onclick={() => setActiveTab(option.id)}
         class={`p-3 rounded-2xl border transition-all duration-200 flex items-center gap-3 cursor-pointer ${
         activeTab === option.id
         ? 'border-lime-300 bg-lime-50/80 shadow-sm'
