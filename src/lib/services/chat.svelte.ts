@@ -73,20 +73,22 @@ export class ChatService {
   }
 
   processActivity(data: any) {
-    if (!this.peopleTyping.find(p => p.username === data.payload.username) && this.activeChannelId === data.channelId) {
+    const username = data.payload.username;
+
+    if (!this.peopleTyping.find(p => p.username === username) && this.activeChannelId === data.channelId) {
       this.peopleTyping.push(data.payload);
     }
 
-    if (this.typingTimeouts.has(data.payload)) {
-      clearTimeout(this.typingTimeouts.get(data.payload));
+    if (this.typingTimeouts.has(username)) {
+      clearTimeout(this.typingTimeouts.get(username));
     }
 
     const timeoutId = setTimeout(() => {
-      this.peopleTyping = this.peopleTyping.filter(p => p.username !== data.payload.username);
-      this.typingTimeouts.delete(data.payload);
+      this.peopleTyping = this.peopleTyping.filter(p => p.username !== username);
+      this.typingTimeouts.delete(username);
     }, 1000);
 
-    this.typingTimeouts.set(data.payload, timeoutId);
+    this.typingTimeouts.set(username, timeoutId);
   }
 
   processEditedMessage(editedMessage: any) {
