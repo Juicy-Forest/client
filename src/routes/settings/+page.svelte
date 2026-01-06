@@ -23,6 +23,15 @@
   let emailError = $state('');
   let emailSuccess = $state('');
   
+  const clearAllMessages = () => {
+    usernameError = '';
+    usernameSuccess = '';
+    emailError = '';
+    emailSuccess = '';
+    passwordError = '';
+    passwordSuccess = '';
+  };
+  
   setContext('activeTab', () => activeTab);
 
   const settingsOptions = [
@@ -50,7 +59,7 @@
   >
     <!-- sidebar -->
     <aside
-      class="flex flex-col overflow-visible rounded-3xl border border-stone-200/60 bg-white/60 px-5 py-6 shadow-sm backdrop-blur-xl transition-colors hover:bg-white/80"
+      class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-3xl border border-stone-200/60 bg-white/60 px-5 py-6 shadow-sm backdrop-blur-xl transition-colors hover:bg-white/80"
     >
       <header class="mb-6 px-2">
         <p class="text-xs font-bold uppercase tracking-widest text-stone-400">
@@ -80,7 +89,7 @@
     </aside>
 
     <div
-      class="flex flex-col rounded-[2.5rem] border border-stone-200/60 bg-white/80 shadow-xl shadow-stone-200/20 backdrop-blur-xl"
+      class="flex h-[calc(100vh-10.5rem)] flex-col rounded-[2.5rem] border border-stone-200/60 bg-white/80 shadow-xl shadow-stone-200/20 backdrop-blur-xl"
     >
       <header
         class="flex flex-wrap items-center justify-between gap-4 border-b border-stone-100 bg-white/50 px-8 py-5 backdrop-blur-sm"
@@ -95,13 +104,14 @@
         </div>
       </header>
 
-      <div class="bg-stone-50/30 px-8 py-6">
+      <div class="flex-1 overflow-y-auto bg-stone-50/30 px-8 py-6">
         <!-- profile Settings -->
         {#if activeTab === 'profile'}
           <div class="space-y-6">
             <div class="rounded-2xl border border-stone-200 bg-white p-6">
               <h3 class="mb-4 text-sm font-bold text-stone-800">Change Username</h3>
               <form data-field="username" method="POST" action="?/updateUsername" use:enhance={() => {
+                clearAllMessages();
                 return async ({ update, result }) => {
                   if (result.type === 'success') {
                   usernameSuccess = result.data?.message as string;
@@ -110,7 +120,8 @@
                   usernameError = result.data?.error as string;
                 }
                 update();
-                };}}>
+                };
+              }}>
                 <div class="space-y-4">
                   <div>
                     <label class="block text-xs font-medium text-stone-600 mb-2">Current Username: {user.username}</label>
@@ -136,6 +147,7 @@
             <div class="rounded-2xl border border-stone-200 bg-white p-6">
               <h3 class="mb-4 text-sm font-bold text-stone-800">Change Email</h3>
               <form data-field="email" method="POST" action="?/updateEmail" use:enhance={() => {
+                clearAllMessages();
                 return async ({ update, result }) => {
                   if (result.type === 'success') {
                   emailSuccess = result.data?.message as string;
@@ -144,7 +156,8 @@
                   emailError = result.data?.error as string;
                 }
                 update();
-                };}}>
+                };
+              }}>
                 <div class="space-y-4">
                   <div>
                     <label class="block text-xs font-medium text-stone-600 mb-2">Current Email: {user.email}</label>
@@ -170,6 +183,7 @@
             <div class="rounded-2xl border border-stone-200 bg-white p-6">
               <h3 class="mb-4 text-sm font-bold text-stone-800">Change Password</h3>
               <form data-field="password" method="POST" action="?/changePassword" use:enhance={() => {
+                clearAllMessages();
                 return async ({ update, result }) => {
                   if (result.type === 'success') {
                   passwordSuccess = result.data?.message as string;
@@ -178,7 +192,8 @@
                   passwordError = result.data?.error as string;
                 }
                 update();
-                };}}>
+                };
+              }}>
                 <div class="space-y-4">
                   <div>
                     <label class="block text-xs font-medium text-stone-600 mb-2">New Password</label>

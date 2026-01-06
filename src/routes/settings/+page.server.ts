@@ -15,10 +15,6 @@ export const actions: Actions = {
     if (!newPassword) {
       return fail(400, { error: "'New password' field is required" });
     }
-
-    if (newPassword.length < 8) {
-      return fail(400, { error: "Password must be at least 8 characters long" });
-    }
     
     try {
       const response = await fetch(`${API_BASE_URL}/users/changePassword`, {
