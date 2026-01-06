@@ -82,7 +82,7 @@
         <i class="fa-solid fa-lock group-hover:text-stone-800 text-stone-500 duration-200 text-lg"></i>
       </button>
     </form>
-    <button on:click={() => showNotificationTab = !showNotificationTab} class="flex items-center gap-2 group active:scale-[0.95] duration-200 transform cursor-pointer relative hover:bg-stone-100 duration-300 rounded-full p-3">
+    <button onclick={() => showNotificationTab = !showNotificationTab} class="flex items-center gap-2 group active:scale-[0.95] duration-200 transform cursor-pointer relative hover:bg-stone-100 duration-300 rounded-full p-3">
         {#if notifications.length > 0}
           <div class="bg-rose-500 h-4 w-4 rounded-full text-[10px] font-bold text-white flex items-center justify-center absolute top-1 right-1 ring-2 ring-white">{notifications.length}</div>
         {/if}
