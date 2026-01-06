@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/state';
   import MapSidebar from '$lib/components/Map/MapSidebar.svelte';
   import type { GridBoxType, IconType } from '$lib/types/garden.js';
   import { handleReturnGridClasses } from '$lib/utils/grid.js';
@@ -43,7 +44,9 @@
 
   const updateSelectSectionId = (newSectionId: string) => selectedSectionId = newSectionId
   const updateSelectedIcon = (newIcon: IconType) => selectedIcon = newIcon
-  const gardenGrid = data.gardenData ? data.gardenData[0].grid : [] // find way to fix, will always exist, made with garden init
+  const gardenId = page.url.searchParams.get('gardenId')
+  const currentGarden = gardenId ? data.gardenData.find((g) => g._id === gardenId) : data.gardenData[0]
+  const gardenGrid = currentGarden.grid 
   let grid: GridBoxType[] = $state(gardenGrid);        
   let editingGrid: GridBoxType[] = $state([]);           
   let gridToShow: GridBoxType[] = $state(grid);
@@ -78,10 +81,10 @@ const saveEdit = async function() {
   if(JSON.stringify(editingGrid) !== JSON.stringify(grid)) {
     // updated garden obj
     const newGarden = {
-      ...data.gardenData![0],
+      ...currentGarden,
       grid: editingGrid.map(cell => ({ ...cell }))
     };    
-    await fetch(`api/garden/${data.gardenData![0]._id}`, {
+    await fetch(`api/garden/${currentGarden._id}`, {
       method: "PUT",
       headers:  {
         "Content-Type": "application/json"
