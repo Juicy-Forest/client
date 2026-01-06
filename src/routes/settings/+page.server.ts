@@ -199,5 +199,58 @@ export const actions: Actions = {
       console.error("Garden name change error:", error);
       return fail(500, { error: "Internal server error" });
     }
+  },
+
+  removeMember: async ({ request, cookies, fetch }) => {
+    const data = await request.formData();
+    const gardenId = data.get("gardenId") as string;
+    const memberId = data.get("memberId") as string;
+    const token = cookies.get('auth-token');
+
+    if (!token) {
+      return fail(401, { error: "Not authenticated" });
+    }
+
+    if (!gardenId || !memberId) {
+      return fail(400, { error: "Garden ID and Member ID are required" });
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/garden/${gardenId}/removeMember`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-authorization': token,
+        },
+        body: JSON.stringify({ memberId }),
+      });
+
+      const contentType = response.headers.get('content-type');
+      let result;
+
+      if (contentType?.includes('application/json')) {
+        result = await response.json();
+      } else {
+        const text = await response.text();
+        console.error("API returned non-JSON response:", text);
+        return fail(500, { error: "Server error: Invalid response format" });
+      }
+
+      if (!response.ok) {
+        let errorMessage = result.error || "Failed to remove member";
+        if (response.status === 403) {
+          errorMessage = "Only the garden owner can remove members";
+        } else if (response.status === 404) {
+          errorMessage = "Garden or member not found";
+        }
+
+        return fail(response.status, { error: errorMessage });
+      }
+
+      return { success: true, message: "Member removed successfully!" };
+    } catch (error) {
+      console.error("Remove member error:", error);
+      return fail(500, { error: "Internal server error" });
+    }
   }
 };
