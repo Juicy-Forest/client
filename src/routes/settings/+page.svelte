@@ -115,7 +115,9 @@
                 return async ({ update, result }) => {
                   if (result.type === 'success') {
                   usernameSuccess = result.data?.message as string;
+                  user.username = result.data?.newUsername;
                   newUsername = '';
+                  setTimeout(() => location.reload(), 1000);
                   } else if (result.type === 'failure') {
                   usernameError = result.data?.error as string;
                 }
@@ -124,8 +126,9 @@
               }}>
                 <div class="space-y-4">
                   <div>
-                    <label class="block text-xs font-medium text-stone-600 mb-2">Current Username: {user.username}</label>
+                    <label for="newUsername" class="block text-xs font-medium text-stone-600 mb-2">Current Username: {user.username}</label>
                     <input
+                      id="newUsername"
                       type="text"
                       name="newUsername"
                       bind:value={newUsername}
@@ -151,7 +154,9 @@
                 return async ({ update, result }) => {
                   if (result.type === 'success') {
                   emailSuccess = result.data?.message as string;
+                  user.email = result.data?.newEmail;
                   newEmail = '';
+                  setTimeout(() => location.reload(), 1000);
                   } else if (result.type === 'failure') {
                   emailError = result.data?.error as string;
                 }
@@ -160,8 +165,9 @@
               }}>
                 <div class="space-y-4">
                   <div>
-                    <label class="block text-xs font-medium text-stone-600 mb-2">Current Email: {user.email}</label>
+                    <label for="newEmail" class="block text-xs font-medium text-stone-600 mb-2">Current Email: {user.email}</label>
                     <input
+                      id="newEmail"
                       type="email"
                       name="newEmail"
                       bind:value={newEmail}
@@ -196,8 +202,9 @@
               }}>
                 <div class="space-y-4">
                   <div>
-                    <label class="block text-xs font-medium text-stone-600 mb-2">New Password</label>
+                    <label for="newPassword" class="block text-xs font-medium text-stone-600 mb-2">New Password</label>
                     <input
+                      id="newPassword"
                       type="password"
                       name="newPassword"
                       bind:value={newPassword}
@@ -224,8 +231,9 @@
               <h3 class="mb-4 text-sm font-bold text-stone-800">Garden Preferences</h3>
               <div class="space-y-4">
                 <div>
-                  <label class="block text-xs font-medium text-stone-600 mb-2">Garden Name</label>
+                  <label for="gardenName" class="block text-xs font-medium text-stone-600 mb-2">Garden Name</label>
                   <input
+                    id="gardenName"
                     type="text"
                     class="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lime-400"
                     placeholder={gardens[0].name}

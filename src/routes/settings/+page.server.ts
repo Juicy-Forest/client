@@ -90,8 +90,8 @@ export const actions: Actions = {
       if (!response.ok) {
         return fail(response.status, { error: result.error || "Username change failed" });
       }
-      
-      return { success: true, message: "Username changed successfully!" };
+
+      return { success: true, message: "Username changed successfully!"};
     } catch (error) {
       console.error("Username change error:", error);
       return fail(500, { error: "Internal server error" });
@@ -135,15 +135,11 @@ export const actions: Actions = {
       if (!response.ok) {
         return fail(response.status, { error: result.error || "Email change failed" });
       }
-      
+
       return { success: true, message: "Email changed successfully!" };
     } catch (error) {
       console.error("Email change error:", error);
       return fail(500, { error: "Internal server error" });
     }
-  },
-
-//   updateEmail: async ({ request, cookies, fetch }) => {
-//     Similar logic for email update
-//   },
+  }
 };
