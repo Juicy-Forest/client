@@ -2,8 +2,11 @@
   import Option from '$lib/components/Settings/Option.svelte';
   import SettingsContent from '$lib/components/Settings/SettingsContent.svelte';
   import Logout from '$lib/components/Settings/Logout.svelte';
+  import InventoryDeleteModal from '$lib/components/inventory/InventoryDeleteModal.svelte';
 
   let activeTab = $state('profile');
+  let showDeleteGardenModal = $state(false);
+  let pendingGardenDelete: any = null;
   let { data } = $props();
   let user: any = $state(data.userData);
   let gardens = $state(data?.gardenData ?? []);
@@ -22,6 +25,37 @@
       color: 'bg-green-100 text-green-700'
     }
   ];
+
+  function openDeleteGardenModal(garden: any) {
+    pendingGardenDelete = garden;
+    showDeleteGardenModal = true;
+  }
+
+  function closeDeleteGardenModal() {
+    showDeleteGardenModal = false;
+    pendingGardenDelete = null;
+  }
+
+  async function confirmDeleteGarden() {
+    if (!pendingGardenDelete) return;
+    try {
+      const form = new FormData();
+      form.append('gardenId', pendingGardenDelete._id);
+
+      const response = await fetch('?/deleteGarden', {
+        method: 'POST',
+        body: form
+      });
+
+      if (response.ok) {
+        window.location.href = '/settings';
+      }
+    } catch (error) {
+      console.error('Failed to delete garden:', error);
+    } finally {
+      closeDeleteGardenModal();
+    }
+  }
 </script> 
 
 
@@ -73,8 +107,20 @@
       </header>
 
       <div class="flex-1 overflow-y-auto bg-stone-50/30 px-8 py-6">
-        <SettingsContent {activeTab} {user} {gardens} />
+        <SettingsContent {activeTab} {user} {gardens} {openDeleteGardenModal} />
       </div>
     </main>
   </div>
 </section>
+
+{#if showDeleteGardenModal}
+  <div class="fixed inset-0 z-[9999] flex items-center justify-center bg-stone-900/20 backdrop-blur-sm" onclick={closeDeleteGardenModal}>
+    <div class="w-full max-w-md rounded-[2rem] border border-stone-100 bg-white p-8" onclick={(e) => e.stopPropagation()}>
+      <InventoryDeleteModal 
+        item={{ name: pendingGardenDelete?.name }}
+        onCancel={closeDeleteGardenModal}
+        onDelete={confirmDeleteGarden}
+      />
+    </div>
+  </div>
+{/if}

@@ -24,6 +24,7 @@
   }>();
 
   let removingMemberId: string | null = $state(null);
+  let isDeletingGarden = $state(false);
 
   async function removeMember(memberId: string) {
     removingMemberId = memberId;
@@ -44,6 +45,30 @@
       console.error('Failed to remove member:', error);
     } finally {
       removingMemberId = null;
+    }
+  }
+
+  async function deleteGarden() {
+    if (!confirm('Are you sure you want to delete this garden? This cannot be undone.')) {
+      return;
+    }
+    isDeletingGarden = true;
+    try {
+      const form = new FormData();
+      form.append('gardenId', gardenId || '');
+
+      const response = await fetch('?/deleteGarden', {
+        method: 'POST',
+        body: form
+      });
+
+      if (response.ok) {
+        window.location.href = '/settings';
+      }
+    } catch (error) {
+      console.error('Failed to delete garden:', error);
+    } finally {
+      isDeletingGarden = false;
     }
   }
 </script>

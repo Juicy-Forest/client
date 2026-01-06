@@ -26,12 +26,14 @@
     user,
     gardens,
     formState,
-    clearAllMessages
+    clearAllMessages,
+    openDeleteGardenModal
   } = $props<{
     user: User;
     gardens: Garden[];
     formState: FormState;
     clearAllMessages: () => void;
+    openDeleteGardenModal: (garden: any) => void;
   }>();
 </script>
 
@@ -86,6 +88,15 @@
       />
 
       <GardenAccessCode joinCode={gardens[0]?.joinCode} />
+
+      <div class="flex justify-end pt-4">
+        <button
+          onclick={() => openDeleteGardenModal(gardens[0])}
+          class="rounded-lg bg-red-400 px-4 py-2 text-sm font-medium text-stone-800 hover:bg-red-500 transition-colors"
+        >
+          Delete Garden
+        </button>
+      </div>
     {:else}
       <GardenLockedView garden={gardens[0]} />
     {/if}

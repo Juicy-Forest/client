@@ -8,7 +8,7 @@
   // from server
   let gardenData: GardenData = data.gardenData;
   let sectionData: SectionData = data.sectionData.flat();
-  const gardenGrid = gardenData ? gardenData[0].grid : []; // find way to fix, will always exist, made with garden init
+  const gardenGrid = gardenData && gardenData.length > 0 ? gardenData[0].grid : []; // find way to fix, will always exist, made with garden init
   let grid: GridBoxType[] = $state(gardenGrid);
 
   let gardens = $state(data?.gardenData ?? []);
@@ -82,46 +82,52 @@
       </header>
 
       <div class="flex-1 overflow-y-auto pr-1">
-        <div class="flex flex-col gap-2">
-          <div
-            class="p-3 rounded-2xl border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50"
-          >
+        {#if gardens && gardens.length > 0}
+          <div class="flex flex-col gap-2">
             <div
-              class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
+              class="p-3 rounded-2xl border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50"
             >
-              <i class="fa-solid fa-location-pin"></i>
-            </div>
-            <div>
-              <p
-                class="text-xs font-medium text-stone-400 uppercase tracking-wide"
+              <div
+                class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
               >
-                Location
-              </p>
-              <p class="text-sm font-bold text-stone-700">
-                {gardens[0].location.address}
-              </p>
+                <i class="fa-solid fa-location-pin"></i>
+              </div>
+              <div>
+                <p
+                  class="text-xs font-medium text-stone-400 uppercase tracking-wide"
+                >
+                  Location
+                </p>
+                <p class="text-sm font-bold text-stone-700">
+                  {gardens[0].location.address}
+                </p>
+              </div>
+            </div>
+            <div
+              class="p-3 rounded-2xl border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50"
+            >
+              <div
+                class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
+              >
+                <i class="fa-solid fa-user"></i>
+              </div>
+              <div>
+                <p
+                  class="text-xs font-medium text-stone-400 uppercase tracking-wide"
+                >
+                  Member count
+                </p>
+                <p class="text-sm font-bold text-stone-700">
+                  {gardens[0].members.length} / {gardens[0].maxMembers} members
+                </p>
+              </div>
             </div>
           </div>
-          <div
-            class="p-3 rounded-2xl border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
-            >
-              <i class="fa-solid fa-user"></i>
-            </div>
-            <div>
-              <p
-                class="text-xs font-medium text-stone-400 uppercase tracking-wide"
-              >
-                Member count
-              </p>
-              <p class="text-sm font-bold text-stone-700">
-                {gardens[0].members.length} / {gardens[0].maxMembers} members
-              </p>
-            </div>
+        {:else}
+          <div class="p-3 rounded-2xl border border-stone-200 bg-white/50">
+            <p class="text-sm text-stone-600">No garden found</p>
           </div>
-        </div>
+        {/if}
 
         <div class="mt-8 px-2">
           <p

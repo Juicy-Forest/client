@@ -5,7 +5,8 @@
   let { 
     activeTab,
     user, 
-    gardens
+    gardens,
+    openDeleteGardenModal
   } = $props();
 
   let formState = $state({
@@ -27,5 +28,5 @@
 {#if activeTab === 'profile'}
   <ProfileSettings {user} {formState} {clearAllMessages} />
 {:else if activeTab === 'garden'}
-  <GardenSettings {user} {gardens} {formState} {clearAllMessages} />
+  <GardenSettings {user} {gardens} {formState} {clearAllMessages} {openDeleteGardenModal} />
 {/if}
