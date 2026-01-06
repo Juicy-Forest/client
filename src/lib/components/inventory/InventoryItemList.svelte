@@ -21,7 +21,7 @@
 
         const filteredSearchItems = $derived(
         searchBarInput.value != ""
-            ? filteredItems.filter((item) => item.name.includes(searchBarInput.value))
+            ? filteredItems.filter((item) => item.name.toLowerCase().includes(searchBarInput.value.toLowerCase()))
             : filteredItems,
     );
 
