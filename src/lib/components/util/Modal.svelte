@@ -8,7 +8,7 @@
 			class="fixed inset-0 transition-opacity"
 			aria-hidden="true"
 		>
-			<div class="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onclick={close}></div>
+			<div class="absolute inset-0 bg-stone-900/20 backdrop-blur-sm" onclick={close}></div>
 		</div>
 
 		<div
