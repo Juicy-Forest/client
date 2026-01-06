@@ -1,6 +1,7 @@
 import { invalidateAll } from "$app/navigation";
 
 class InventoryStore {
+    selectedGardenId = $state("");
     isModalOpen = $state(false);
     modalMode = $state("create"); 
     selectedItem = $state(null);
@@ -103,13 +104,19 @@ class InventoryStore {
         }
 
         const baseUrl = "http://localhost:3030/inventory/";
+
+        const payload = {
+            ...this.formData,
+            gardenId: this.selectedGardenId
+        };
+
         try {
             let response;
             if (this.modalMode === "create") {
                 response = await fetch(baseUrl, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(this.formData),
+                    body: JSON.stringify(payload),
                 });
             } else if (this.modalMode === "edit") {
                 response = await fetch(`${baseUrl}${this.selectedItem._id}`, {
