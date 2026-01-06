@@ -6,7 +6,7 @@
 
   let activeTab = $state('profile');
   let showDeleteGardenModal = $state(false);
-  let pendingGardenDelete: any = null;
+  let pendingGardenDelete: any = $state(null);
   let { data } = $props();
   let user: any = $state(data.userData);
   let gardens = $state(data?.gardenData ?? []);
@@ -114,8 +114,8 @@
 </section>
 
 {#if showDeleteGardenModal}
-  <div class="fixed inset-0 z-[9999] flex items-center justify-center bg-stone-900/20 backdrop-blur-sm" onclick={closeDeleteGardenModal}>
-    <div class="w-full max-w-md rounded-[2rem] border border-stone-100 bg-white p-8" onclick={(e) => e.stopPropagation()}>
+  <div class="fixed inset-0 z-[9999] flex items-center justify-center bg-stone-900/20 backdrop-blur-sm" role="presentation" onclick={closeDeleteGardenModal} onkeydown={(e) => e.key === 'Escape' && closeDeleteGardenModal()}>
+    <div class="w-full max-w-md rounded-[2rem] border border-stone-100 bg-white p-8" role="dialog" aria-modal="true" tabindex="0" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
       <InventoryDeleteModal 
         item={{ name: pendingGardenDelete?.name }}
         onCancel={closeDeleteGardenModal}
