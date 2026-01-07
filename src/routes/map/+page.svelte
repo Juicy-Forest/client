@@ -136,6 +136,8 @@ const handleIconPlacement = function(grid: GridBoxType) {
   }
 }
 
+const sectionDataForGarden = data.sectionData.filter((section: SectionInfo) => section.garden._id === currentGarden._id)
+
 </script>
 
 <section
@@ -145,7 +147,7 @@ const handleIconPlacement = function(grid: GridBoxType) {
     class="mx-auto grid w-full max-w-none items-start gap-8 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)]"
   >
     <!-- Sidebar -->
-  <MapSidebar updateLocalSectionData={updateLocalSectionData} updateSelectedIcon={updateSelectedIcon} selectedIcon={selectedIcon} plantTypes={plantTypes} updateSelectSectionId={updateSelectSectionId} selectedSectionId={selectedSectionId} sectionData={data.sectionData} isEditMode={isEditMode} gardenData={data.gardenData} />
+  <MapSidebar updateLocalSectionData={updateLocalSectionData} updateSelectedIcon={updateSelectedIcon} selectedIcon={selectedIcon} plantTypes={plantTypes} updateSelectSectionId={updateSelectSectionId} selectedSectionId={selectedSectionId} sectionData={sectionDataForGarden} isEditMode={isEditMode} gardenData={data.gardenData} />
     <!-- Main Content -->
     <div
       class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-[2.5rem] border border-stone-200/60 bg-white/80 shadow-xl shadow-stone-200/20 backdrop-blur-xl"
