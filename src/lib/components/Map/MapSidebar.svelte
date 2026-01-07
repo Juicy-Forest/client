@@ -15,6 +15,7 @@
     plantTypes,
     selectedIcon,
     updateSelectedIcon,
+    updateLocalSectionData
   } = $props();
   
   let gardenId = $derived(() => page.url.searchParams.get("gardenId"));
@@ -22,10 +23,7 @@
   const handleSectionClick = function (section: any) {
     if (isEditMode) {
       updateSelectSectionId(section._id);
-    } else {
-      // notify user they must be in edit mode first or let it
-      //  highlight all related section tiles
-    }
+    } 
   };
 
   function selectIcon(icon: IconType) {
@@ -45,10 +43,10 @@
 
   const updateGardenSections = (newSection: SectionInfo) => {
     sectionData = [...sectionData, newSection];
+    updateLocalSectionData(newSection)
   };
 
     const handleDeleteSection = async function (id: string) {
-      console.log('DELETING SECTION WWITH  ID":', id)
     const deleteSectionResponse = await fetch(`/api/section/${id}`, {
       method: "DELETE",
     });
@@ -60,7 +58,6 @@
     }
     await invalidate("data:sections");
     sectionData = sectionData.filter(s => s._id !== id);
-    console.log('UPDATED  SECTION DATA:', sectionData)
   };
 
 </script>

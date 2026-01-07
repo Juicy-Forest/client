@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { invalidate, invalidateAll } from "$app/navigation";
   import { page } from "$app/state";
 
   const { gardenData, isEditMode, onNewSection } = $props();
@@ -51,6 +50,7 @@
     if (parsedSectionResponse._id) {
       // await invalidate("data:sections");
       onNewSection(parsedSectionResponse)
+      console.log('Is edit mode:', isEditMode)
     } else {
       // Handle err
       console.log(

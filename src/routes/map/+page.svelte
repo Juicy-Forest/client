@@ -2,6 +2,7 @@
   import { page } from '$app/state';
   import MapSidebar from '$lib/components/Map/MapSidebar.svelte';
   import type { GridBoxType, IconType } from '$lib/types/garden.js';
+  import type { SectionData, SectionInfo } from '$lib/types/section.js';
   import { handleReturnGridClasses } from '$lib/utils/grid.js';
 
   const { data } = $props();
@@ -41,8 +42,17 @@
 // states
   let selectedSectionId = $state('')
   let isEditMode = $state(false);
+  let localSectionData: SectionData = $state(data.sectionData)
 
-  const updateSelectSectionId = (newSectionId: string) => selectedSectionId = newSectionId
+  const updateLocalSectionData = function(newItem: SectionInfo) {
+    localSectionData = [...localSectionData, newItem]
+  }
+
+  const updateSelectSectionId = (newSectionId: string) =>{
+    console.log(newSectionId)
+    selectedSectionId = newSectionId
+  }
+
   const updateSelectedIcon = (newIcon: IconType) => selectedIcon = newIcon
   const gardenId = page.url.searchParams.get('gardenId')
   const currentGarden = gardenId ? data.gardenData.find((g) => g._id === gardenId) : data.gardenData[0]
@@ -136,7 +146,7 @@ const handleIconPlacement = function(grid: GridBoxType) {
     class="mx-auto grid w-full max-w-none items-start gap-8 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)]"
   >
     <!-- Sidebar -->
-  <MapSidebar updateSelectedIcon={updateSelectedIcon} selectedIcon={selectedIcon} plantTypes={plantTypes} updateSelectSectionId={updateSelectSectionId} selectedSectionId={selectedSectionId} sectionData={data.sectionData} isEditMode={isEditMode} gardenData={data.gardenData} />
+  <MapSidebar updateLocalSectionData={updateLocalSectionData} updateSelectedIcon={updateSelectedIcon} selectedIcon={selectedIcon} plantTypes={plantTypes} updateSelectSectionId={updateSelectSectionId} selectedSectionId={selectedSectionId} sectionData={data.sectionData} isEditMode={isEditMode} gardenData={data.gardenData} />
     <!-- Main Content -->
     <div
       class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-[2.5rem] border border-stone-200/60 bg-white/80 shadow-xl shadow-stone-200/20 backdrop-blur-xl"
@@ -191,7 +201,7 @@ const handleIconPlacement = function(grid: GridBoxType) {
                       handleIconPlacement(gridItem)
                       updateCell(i)}}
                     class={`border border-black/30 cursor-pointer flex items-center justify-center w-7 h-7
-                    ${handleReturnGridClasses(gridItem.section, data.sectionData)}
+                    ${handleReturnGridClasses(gridItem.section, localSectionData)}
                     `}
                   >
                {#if (gridItem.plant)}
