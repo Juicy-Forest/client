@@ -3,7 +3,25 @@
   import type { SectionData, SectionInfo } from "$lib/types/section.js";
   import { handleReturnGridClasses } from "$lib/utils/grid.js";
   import { page } from '$app/stores';
-    import { setContext } from "svelte";
+  import { onMount } from 'svelte';
+  import { setContext } from "svelte";
+
+  let sensorData = $state({});
+
+  onMount(() => {
+    const ws = new WebSocket("ws://localhost:3034");
+    ws.onopen = () => {
+      console.log('client connected to sensors microservice');
+    }
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      // console.log(data);
+      sensorData = data;
+    }
+    return () => {
+      ws?.close();
+    }
+  });
 
   // State variables
   let { data } = $props();
@@ -465,10 +483,10 @@
                 <p
                   class="text-xs font-medium text-stone-400 uppercase tracking-wide"
                 >
-                  Humidity Level
+                  Humidity Level (%)
                 </p>
                 <p class="text-sm font-bold text-stone-700">
-                  {sectionToDisplay?.humidityLevel}
+                  {sensorData.humidity}
                 </p>
               </div>
             </div>
@@ -487,7 +505,7 @@
                   Temperature
                 </p>
                 <p class="text-sm font-bold text-stone-700">
-                  {sectionToDisplay?.temperature}
+                  {sensorData.temperature}
                 </p>
               </div>
             </div>
@@ -506,7 +524,7 @@
                   Soil Moisture
                 </p>
                 <p class="text-sm font-bold text-stone-700">
-                  {sectionToDisplay?.soilMoisture}
+                  {sensorData.soilMoisture}
                 </p>
               </div>
             </div>
@@ -522,10 +540,10 @@
                 <p
                   class="text-xs font-medium text-stone-400 uppercase tracking-wide"
                 >
-                  Last Watered
+                  Light intensity (lux)
                 </p>
                 <p class="text-sm font-bold text-stone-700">
-                  {sectionToDisplay?.lastWatered}
+                  {sensorData.lightIntensity}
                 </p>
               </div>
             </div>
