@@ -32,10 +32,18 @@
         <TaskHeader />
         <div class="flex flex-1 flex-col overflow-hidden bg-stone-50/30">
           <div class="flex-1 overflow-y-auto px-8 py-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="flex flex-col gap-4">
               {#each sections as section}
                 <TaskSection {section} {data} tasks={tasksBySection[section._id] || []}/>
-              {/each} 
+              {:else}
+                <div class="flex flex-col items-center justify-center gap-2 rounded-3xl border border-dashed border-stone-200 bg-stone-50/50 px-6 py-12 text-center text-sm text-stone-500">
+                  <div class="rounded-full bg-stone-100 p-3 text-stone-400">
+                    <i class="fa-solid fa-list-check text-xl"></i>
+                  </div>
+                  <p>No sections found.</p>
+                  <p class="text-xs text-stone-400">Create sections on the map to start adding tasks.</p>
+                </div>
+              {/each}
             </div>
           </div>
         </div>

@@ -106,18 +106,40 @@
 
 </script>
 
-<div class="flex flex-col gap-2 shadow-xl p-5 rounded-2xl">
-    <h2>{section.title}</h2>
-    <p>{section.assigned}</p>
-    {#each tasks as task (task._id)}
-      <Task key={task._id} {task} onEdit={openEditModal} onDelete={openDeleteModal}/>
-    {/each}
-
-    <button onclick={openCreateModal}
-        class="flex gap-2 rounded-xl bg-lime-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-lime-700 hover:shadow-md">
-        <i class="fa-solid fa-plus"></i>
-        Add Task
-    </button>
+<div class="rounded-2xl border border-stone-200/60 bg-white/60 p-5 backdrop-blur-sm">
+    <div class="mb-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div 
+                class="flex h-10 w-10 items-center justify-center rounded-xl text-white font-bold text-sm"
+                style="background-color: {section.color || '#84cc16'}"
+            >
+                {section.initials}
+            </div>
+            <div>
+                <h2 class="text-base font-semibold text-stone-800">{section.title}</h2>
+                <p class="text-xs text-stone-500">Assigned to {section.assigned}</p>
+            </div>
+        </div>
+        <button onclick={openCreateModal}
+            class="flex h-8 w-8 items-center justify-center rounded-lg bg-lime-600 text-white transition-colors hover:bg-lime-700"
+            aria-label="Add task"
+        >
+            <i class="fa-solid fa-plus text-sm"></i>
+        </button>
+    </div>
+    
+    <div class="flex flex-col gap-2">
+        {#each tasks as task (task._id)}
+            <Task key={task._id} {task} onEdit={openEditModal} onDelete={openDeleteModal}/>
+        {:else}
+            <div class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-stone-200 bg-stone-50/50 px-4 py-6 text-center">
+                <div class="rounded-full bg-stone-100 p-2 text-stone-400">
+                    <i class="fa-solid fa-clipboard-list text-base"></i>
+                </div>
+                <p class="text-xs text-stone-500">No tasks yet</p>
+            </div>
+        {/each}
+    </div>
 </div>
 
 <Modal
