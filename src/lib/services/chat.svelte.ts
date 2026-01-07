@@ -7,6 +7,7 @@ export class ChatService {
   ws: WebSocket | undefined = $state();
   typingTimeouts: Map<string, any> = new Map(); // Add this line
   userData: any = {};
+  currentGarden: any = ''; 
 
   constructor() {
     this.socketsSetup();
@@ -25,6 +26,10 @@ export class ChatService {
     this.userData = userData
   };
 
+  setCurrentGarden(currentGarden: any) {
+    this.currentGarden= currentGarden 
+  };
+
   setActiveChannel(channelId: string) {
     this.activeChannelId = channelId;
   };
@@ -33,7 +38,11 @@ export class ChatService {
     this.ws = new WebSocket("ws://localhost:3033");
 
     this.ws.onopen = () => {
+      console.log(this.currentGarden)
       console.log("Client: Connection established!");
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        this.ws.send(JSON.stringify({ type: 'getMessages', gardenId: this.currentGarden}));
+      }
     };
 
     this.ws.onmessage = (event) => {
@@ -118,6 +127,7 @@ export class ChatService {
       channelId: this.activeChannelId,
       channelName: this.channels.find(c => c._id === this.activeChannelId),
       avatarColor: this.userData.avatarColor,
+      gardenId: this.currentGarden
     });
 
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {

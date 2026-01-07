@@ -3,6 +3,7 @@
   import type { SectionData, SectionInfo } from "$lib/types/section.js";
   import { handleReturnGridClasses } from "$lib/utils/grid.js";
   import { page } from '$app/stores';
+    import { setContext } from "svelte";
 
   // State variables
   let { data } = $props();
