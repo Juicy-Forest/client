@@ -5,7 +5,7 @@
   import { invalidateAll } from "$app/navigation";
   import Modal from "../util/Modal.svelte";
 
-  let {section, data, tasks} = $props();
+  let {section, data, tasks, onTaskCreated} = $props();
 
   let modalMode = $state("create");
   let selectedTask = $state(null);
@@ -80,6 +80,11 @@
       if (response.ok) {
         closeModal();
         await invalidateAll(); // refreshes page data
+        
+        // Show success toast for task creation
+        if (modalMode === "create" && onTaskCreated) {
+          onTaskCreated("Task added successfully", `${formDataTask.name} has been added to ${section.title}`);
+        }
       } else {
         closeModal();
       }

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import InventoryFilter from "$lib/components/inventory/InventoryFilter.svelte";
 	import Modal from "$lib/components/util/Modal.svelte";
+	import Toast from "$lib/components/UI/Toast.svelte";
 	import { setContext } from "svelte";
 	import InventoryDeleteModal from "$lib/components/inventory/InventoryDeleteModal.svelte";
 	import InventoryCreateEditModal from "$lib/components/inventory/InventoryCreateEditModal.svelte";
@@ -59,3 +60,10 @@
 		<InventoryCreateEditModal bind:formData={inventoryStore.formData} errors={inventoryStore.errors} onCancel={inventoryStore.closeModal} onSubmit={() => inventoryStore.handleSubmit(data.inventory)} />
 	{/if}
 </Modal>
+
+<Toast 
+	bind:show={inventoryStore.showToast}
+	title={inventoryStore.toastMessage.title}
+	message={inventoryStore.toastMessage.message}
+	type="success"
+/>

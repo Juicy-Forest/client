@@ -5,6 +5,7 @@
   import SideBar from "$lib/components/Tasks/SideBar.svelte";
   import TaskHeader from "$lib/components/Tasks/TaskHeader.svelte";
   import TaskSection from "$lib/components/Tasks/TaskSection.svelte";
+  import Toast from "$lib/components/UI/Toast.svelte";
 
   let { data } = $props();
 
@@ -22,6 +23,17 @@
     return acc;
   }, {}));
 
+  let showToast = $state(false);
+  let toastMessage = $state({ title: "", message: "" });
+
+  function displayToast(title, message) {
+    toastMessage = { title, message };
+    showToast = true;
+    setTimeout(() => {
+      showToast = false;
+    }, 3000);
+  }
+
 </script>
 
 <section class="box-border min-h-screen bg-[#fdfcf8] px-4 pb-8 pt-12 text-stone-800 sm:px-8 lg:px-12">
@@ -34,7 +46,7 @@
           <div class="flex-1 overflow-y-auto px-8 py-6">
             <div class="flex flex-col gap-4">
               {#each sections as section}
-                <TaskSection {section} {data} tasks={tasksBySection[section._id] || []}/>
+                <TaskSection {section} {data} tasks={tasksBySection[section._id] || []} onTaskCreated={displayToast}/>
               {:else}
                 <div class="flex flex-col items-center justify-center gap-2 rounded-3xl border border-dashed border-stone-200 bg-stone-50/50 px-6 py-12 text-center text-sm text-stone-500">
                   <div class="rounded-full bg-stone-100 p-3 text-stone-400">
@@ -51,3 +63,10 @@
     </main>
   </div>
 </section>
+
+<Toast 
+  bind:show={showToast}
+  title={toastMessage.title}
+  message={toastMessage.message}
+  type="success"
+/>

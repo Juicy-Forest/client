@@ -4,8 +4,7 @@
   import type { GridBoxType, IconType } from '$lib/types/garden.js';
   import type { SectionData, SectionInfo } from '$lib/types/section.js';
   import { handleReturnGridClasses } from '$lib/utils/grid.js';
-  import { fly, fade } from 'svelte/transition';
-  import { cubicOut } from 'svelte/easing';
+  import Toast from '$lib/components/UI/Toast.svelte';
 
   const { data } = $props();
   export const plantTypes: IconType[] = [{
@@ -103,7 +102,6 @@ const saveEdit = async function() {
       },
       body: JSON.stringify({updatedGarden: newGarden})
     })
-
   } 
   grid = cloneGrid(editingGrid);
   exitEditMode();
@@ -238,21 +236,11 @@ const sectionDataForGarden = data.sectionData.filter((section: SectionInfo) => s
     </div>
   </div>
 
-  <!-- Success Toast -->
-  {#if showSuccessToast}
-    <div 
-      class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50"
-      transition:fly={{ y: 20, duration: 300, easing: cubicOut }}
-    >
-      <div class="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-3 shadow-lg backdrop-blur-xl">
-        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
-          <i class="fa-solid fa-check text-sm"></i>
-        </div>
-        <div>
-          <p class="text-sm font-semibold text-emerald-900">Changes saved successfully</p>
-          <p class="text-xs text-emerald-600">Your map has been updated</p>
-        </div>
-      </div>
-    </div>
-  {/if}
 </section>
+
+<Toast 
+  bind:show={showSuccessToast}
+  title="Changes saved successfully"
+  message="Your map has been updated"
+  type="success"
+/>
