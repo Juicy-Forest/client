@@ -60,45 +60,58 @@
   };
 </script>
 
-<div class="">
-  <p class="text-xs font-bold uppercase tracking-widest text-stone-400 mb-1">
-    Add section
+<div class="rounded-2xl border border-stone-200/60 bg-white/60 p-4">
+  <p class="text-xs font-bold uppercase tracking-widest text-stone-400 mb-3">
+    Add Section
   </p>
-  <p class="text-xs text-rose-400 font-semibold mb-1">
-    {newSectionErrorMsg}
-  </p>
-  <div class="w-full flex flex-col items-start gap-2 px-1">
+  
+  {#if newSectionErrorMsg}
+    <div class="mb-3 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-600 border border-red-200">
+      <i class="fa-solid fa-circle-exclamation mr-1.5"></i>
+      {newSectionErrorMsg}
+    </div>
+  {/if}
+  
+  <div class="flex flex-col gap-3">
     <input
-      onchange={(e) =>
-        handleNameChange((e.target as HTMLInputElement).value || "")}
+      onchange={(e) => handleNameChange((e.target as HTMLInputElement).value || "")}
       value={sectionName}
-      class="p-2 w-full rounded-md bg-none placeholder:text-xs text-black/80 border border-black/30"
+      class="w-full rounded-xl border border-stone-200 bg-white/80 px-3 py-2.5 text-sm text-stone-800 placeholder-stone-400 transition-all focus:border-lime-500 focus:outline-none focus:ring-2 focus:ring-lime-500/20"
       type="text"
       placeholder="Section name"
     />
     <input
-      onchange={(e) =>
-        handlePlantChange((e.target as HTMLInputElement).value || "")}
+      onchange={(e) => handlePlantChange((e.target as HTMLInputElement).value || "")}
       value={plants}
-      class="p-2 w-full rounded-md bg-none outline-none text-black/80 border placeholder:text-xs border-black/30"
+      class="w-full rounded-xl border border-stone-200 bg-white/80 px-3 py-2.5 text-sm text-stone-800 placeholder-stone-400 transition-all focus:border-lime-500 focus:outline-none focus:ring-2 focus:ring-lime-500/20"
       type="text"
       placeholder="Plants (comma separated)"
     />
-    <div class="flex flex-wrap gap-1 w-full h-fit">
-      {#each colorOptions as color (color.tailwindclass)}
-        <button
-          aria-label=" "
-          onclick={() => (selectedColor = color.tailwindclass)}
-          class="rounded-md w-5 h-5 cursor-pointer {color.tailwindclass} {selectedColor ===
-            color.tailwindclass && 'border border-black'}"
-        ></button>
-      {/each}
+    
+    <div>
+      <p class="text-xs text-stone-500 mb-2">Choose color</p>
+      <div class="flex flex-wrap gap-1.5">
+        {#each colorOptions as color (color.tailwindclass)}
+          <button
+            type="button"
+            aria-label="Select color"
+            onclick={() => (selectedColor = color.tailwindclass)}
+            class={`rounded-lg w-6 h-6 cursor-pointer transition-all ${color.tailwindclass} ${
+              selectedColor === color.tailwindclass 
+                ? 'ring-2 ring-stone-800 ring-offset-2 scale-110' 
+                : 'hover:scale-110'
+            }`}
+          ></button>
+        {/each}
+      </div>
     </div>
+    
     <button
+      type="button"
       onclick={() => handleCreateSection()}
-      class={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition-all ${isEditMode ? "bg-amber-100 text-amber-800 ring-1 ring-amber-200" : "bg-stone-100 text-stone-600 hover:bg-stone-200"}`}
+      class="flex w-full items-center justify-center gap-2 rounded-xl bg-lime-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-lime-700"
     >
-      <i class="fa-solid fa-pen"></i>
+      <i class="fa-solid fa-plus"></i>
       <span>Create Section</span>
     </button>
   </div>

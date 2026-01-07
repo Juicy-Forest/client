@@ -21,7 +21,7 @@ describe('InventorySearchBar', () => {
     const user = userEvent.setup();
     renderComponent('Initial');
     
-    const input = screen.getByPlaceholderText('Search for items');
+    const input = screen.getByPlaceholderText('Search items...');
     
     expect(input).toHaveValue('Initial');
 
@@ -35,7 +35,7 @@ describe('InventorySearchBar', () => {
     const user = userEvent.setup();
     renderComponent('Test');
     
-    const input = screen.getByPlaceholderText('Search for items');
+    const input = screen.getByPlaceholderText('Search items...');
     await user.type(input, '{Backspace}{Backspace}');
     
     expect(searchBarInput.value).toBe('Te');

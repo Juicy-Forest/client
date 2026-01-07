@@ -28,7 +28,7 @@ describe('TaskSection', () => {
     renderSection();
     
     expect(screen.getByText('My Tasks')).toBeInTheDocument();
-    expect(screen.getByText('John Doe')).toBeInTheDocument();
+    expect(screen.getByText('Assigned to John Doe')).toBeInTheDocument();
   });
 
   it('renders all tasks in the section', () => {
@@ -42,7 +42,7 @@ describe('TaskSection', () => {
     const user = userEvent.setup();
     renderSection();
     
-    await user.click(screen.getByRole('button', { name: /Add Task/i }));
+    await user.click(screen.getByLabelText('Add task'));
     
     expect(screen.getByText('Add New Item')).toBeInTheDocument();
   });
@@ -63,7 +63,7 @@ describe('TaskSection', () => {
     mockFetch.mockResolvedValueOnce({ ok: true });
     renderSection();
     
-    await user.click(screen.getByRole('button', { name: /Add Task/i }));
+    await user.click(screen.getByLabelText('Add task'));
     await user.type(screen.getByLabelText(/Name/i), 'New Task');
     await user.click(screen.getByRole('button', { name: 'Add Item' }));
     

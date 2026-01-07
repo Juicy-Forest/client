@@ -6,6 +6,8 @@ class InventoryStore {
     modalMode = $state("create"); 
     selectedItem = $state(null);
     errors = $state({});
+    showToast = $state(false);
+    toastMessage = $state({ title: "", message: "" });
     formData = $state({
         name: "",
         type: "plant",
@@ -62,6 +64,14 @@ class InventoryStore {
     closeModal = () => {
         this.isModalOpen = false;
         this.errors = {};
+    }
+
+    displayToast = (title, message) => {
+        this.toastMessage = { title, message };
+        this.showToast = true;
+        setTimeout(() => {
+            this.showToast = false;
+        }, 3000);
     }
 
     validateForm(inventory) {
@@ -133,6 +143,11 @@ class InventoryStore {
             if (response.ok) {
                 this.closeModal();
                 await invalidateAll();
+                
+                // Show success toast
+                if (this.modalMode === "create") {
+                    this.displayToast("Item added successfully", `${this.formData.name} has been added to your inventory`);
+                }
             }
         } catch (error) {
             console.error("Network Error", error);

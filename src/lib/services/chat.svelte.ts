@@ -7,7 +7,9 @@ export class ChatService {
   ws: WebSocket | undefined = $state();
   typingTimeouts: Map<string, any> = new Map(); // Add this line
   userData: any = {};
-  currentGarden: any = ''; 
+  currentGarden: any = '';
+  showToast: boolean = $state(false);
+  toastMessage: { title: string; message: string } = $state({ title: '', message: '' }); 
 
   constructor() {
     this.socketsSetup();
@@ -74,6 +76,16 @@ export class ChatService {
     });
     const channel = await response.json();
     this.channels.push(channel);
+    
+    this.displayToast("Channel created successfully", `#${name} is now available`);
+  }
+
+  displayToast(title: string, message: string) {
+    this.toastMessage = { title, message };
+    this.showToast = true;
+    setTimeout(() => {
+      this.showToast = false;
+    }, 3000);
   }
 
   processInitialLoad(data: any) {

@@ -76,9 +76,11 @@
 
   <div class="flex-1 overflow-y-auto pr-1">
     <div class="flex flex-col gap-3">
-      <div class="rounded-2xl border border-stone-200 bg-stone-50/50 p-4">
-        <div class="flex items-center gap-3 mb-2">
-          <span class="text-xl">📍</span>
+      <div class="rounded-2xl border border-stone-200 bg-white/50 p-3 transition-all hover:border-lime-200 hover:bg-lime-50/30">
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-lime-100 text-lime-700">
+            <i class="fa-solid fa-location-dot"></i>
+          </div>
           <div>
             <p class="text-sm font-bold text-stone-700">Amsterdam Garden</p>
             <p class="text-xs text-stone-500">Netherlands</p>
@@ -86,8 +88,7 @@
         </div>
       </div>
 
-      <div class=" mb-0 border-t border-stone-200"></div>
-      <!-- // show current sections -->
+      <!-- Sections -->
       <SidebarSections
         {selectedSectionId}
         sectionData={sectionData}
@@ -95,43 +96,45 @@
         {handleDeleteSection}
       />
 
-      {#if !selectedGardenSectionData || selectedGardenSectionData.length === 0}
-        <span class="font-semibold text-xs my-1"
-          >Note: Create a section to get started.</span
-        >
-      {/if}
       {#if isEditMode}
-        <div class="my-2 border-t border-stone-200"></div>
-        <!-- -----NEW SECTION ----- -->
+        <!-- New Section Form -->
         <CreateNewSection
           onNewSection={updateGardenSections}
           {isEditMode}
           {gardenData}
         />
-        <div class="my-2 border-t border-stone-200"></div>
 
-        <!-- ----- PLANTS ----- -->
-        <div class="w-full h-[30px]">
-          <p
-            class="text-xs font-bold uppercase tracking-widest text-stone-400 mb-1"
-          >
+        <!-- Plants Grid -->
+        <div class="rounded-2xl border border-stone-200/60 bg-white/60 p-4">
+          <p class="text-xs font-bold uppercase tracking-widest text-stone-400 mb-3">
             Add Plants
           </p>
           <div class="grid grid-cols-2 gap-2">
             {#each plantTypes as plant (plant.type)}
               <button
                 type="button"
-                class={`flex flex-col items-center justify-center gap-1 rounded-xl border p-3 transition-all border-stone-200 text-stone-600 hover:border-stone-300  cursor-pointer ${selectedIcon?.type === plant.type ? "bg-stone-200" : "hover:bg-stone-50"}
-             
-              `}
+                class={`flex flex-col items-center justify-center gap-1.5 rounded-xl border p-3 transition-all cursor-pointer ${
+                  selectedIcon?.type === plant.type 
+                    ? "bg-lime-100/60 border-lime-300 ring-1 ring-lime-200" 
+                    : "border-stone-200 bg-white/80 hover:bg-stone-50 hover:border-stone-300"
+                }`}
                 onclick={() => selectIcon(plant)}
               >
                 <span class="text-2xl">{plant.icon}</span>
-                <span class="text-[10px] font-bold uppercase tracking-wide"
-                  >{plant.type}</span
-                >
+                <span class={`text-[10px] font-bold uppercase tracking-wide ${
+                  selectedIcon?.type === plant.type ? "text-lime-700" : "text-stone-500"
+                }`}>{plant.type}</span>
               </button>
             {/each}
+          </div>
+        </div>
+      {:else}
+        <div class="rounded-2xl border border-dashed border-stone-200 bg-stone-50/30 p-4 text-center">
+          <div class="flex flex-col items-center gap-2">
+            <div class="rounded-full bg-stone-100 p-2 text-stone-400">
+              <i class="fa-solid fa-pen-to-square text-sm"></i>
+            </div>
+            <p class="text-xs text-stone-500">Click <span class="font-semibold text-lime-600">Edit Map</span> to add sections and plants</p>
           </div>
         </div>
       {/if}
