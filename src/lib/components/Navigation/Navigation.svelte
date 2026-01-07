@@ -104,7 +104,7 @@
           aria-label="Logout"
         >
           <i
-            class="fa-solid fa-lock group-hover:text-stone-800 text-stone-500 duration-200 text-lg"
+            class="fa-solid fa-right-from-bracket group-hover:text-stone-800 text-stone-500 duration-200 text-lg"
           ></i>
         </button>
       </form>
