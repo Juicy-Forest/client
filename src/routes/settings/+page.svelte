@@ -90,7 +90,7 @@
     </aside>
 
     <!-- main content -->
-    <main
+    <article
       class="flex h-[calc(100vh-10.5rem)] flex-col rounded-[2.5rem] border border-stone-200/60 bg-white/80 shadow-xl shadow-stone-200/20 backdrop-blur-xl"
     >
       <header
@@ -109,7 +109,7 @@
       <div class="flex-1 overflow-y-auto bg-stone-50/30 px-8 py-6">
         <SettingsContent {activeTab} {user} {gardens} {openDeleteGardenModal} />
       </div>
-    </main>
+    </article>
   </div>
 </section>
 
