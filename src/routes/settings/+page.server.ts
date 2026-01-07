@@ -87,6 +87,15 @@ export const actions: Actions = {
         return fail(500, { error: "Server error: Invalid response format" });
       }
       
+      if (result.accessToken) {
+        cookies.set("auth-token", result.accessToken, {
+          path: "/",
+          httpOnly: true,
+          secure: false, // Set to true in production with HTTPS
+          maxAge: 60 * 60 * 24 * 7, // 7 days
+        });
+      }
+
       if (!response.ok) {
         return fail(response.status, { error: result.error || "Username change failed" });
       }
