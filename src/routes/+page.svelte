@@ -33,8 +33,8 @@
   let sectionToDisplay: null | SectionInfo = $state(null);
   let user: any = $state(data.userData);
   let currentGarden = $state(gardens[0]);
-  let gardenGrid = $state(currentGarden?.grid ?? []);
-  let grid = $state(gardenGrid);
+  let gardenGrid = $derived(currentGarden?.grid ?? []);
+  let grid = $derived(gardenGrid);
 
   // Get current garden 
   $effect(() => {
