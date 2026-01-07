@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { invalidate, invalidateAll } from "$app/navigation";
   import { page } from "$app/state";
 
   const { gardenData, isEditMode, onNewSection } = $props();
