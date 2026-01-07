@@ -7,11 +7,9 @@
     let password = $state('');
     let confirmPassword = $state('');
     let error = $state('');
-    let success = $state('');
 
     function submit() {
         error = '';
-        success = '';
         if (password !== confirmPassword) {
             error = 'Passwords do not match';
             return;
@@ -23,11 +21,7 @@
     <div class="w-full max-w-lg">
         <div class="flex flex-col items-center mb-6">
             <div class="bg-emerald-600 rounded-full w-20 h-20 flex items-center justify-center shadow-md">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-10 h-10 text-white" fill="none" stroke="white" stroke-width="1.5">
-                    <path d="M12 20v-6" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M7 9c1.5-2 4-3 5-3s3.5 1 5 3" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M7 13c1.5 2 4 3 5 3s3.5-1 5-3" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <i class="fa-solid fa-seedling text-white text-4xl"></i>
             </div>
             <h1 class="mt-4 text-2xl font-medium text-gray-800">Juicy Forest</h1>
             <p class="text-gray-500 mt-2">Create your account</p>
@@ -36,10 +30,7 @@
         <form method="POST" action="?/register" use:enhance={() => {
             submit();
             return async ({ update, result }) => {
-                if (result.type === 'success') {
-                    success = result.data?.message as string;
-                    setTimeout(() => goto('/login'), 2000);
-                } else if (result.type === 'failure') {
+                if (result.type === 'failure') {
                     error = result.data?.error as string;
                 }
                 update();
@@ -67,10 +58,6 @@
 
             {#if error}
                 <p class="text-red-600 text-sm mb-4">{error}</p>
-            {/if}
-
-            {#if success}
-                <p class="text-green-600 text-sm mb-4">{success}</p>
             {/if}
 
             <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:opacity-95">Sign Up</button>

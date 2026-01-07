@@ -1,23 +1,36 @@
 <script lang="ts">
-  import type { GardenData, GridBoxType, IconType } from "$lib/types/garden.js";
+  import type { GardenData, Garden, GridBoxType, IconType } from "$lib/types/garden.js";
   import type { SectionData, SectionInfo } from "$lib/types/section.js";
   import { handleReturnGridClasses } from "$lib/utils/grid.js";
+  import { page } from '$app/stores';
 
   // State variables
   let { data } = $props();
   // from server
   let gardenData: GardenData = data.gardenData;
   let sectionData: SectionData = data.sectionData.flat();
-  const gardenGrid = gardenData && gardenData.length > 0 ? gardenData[0].grid : []; // find way to fix, will always exist, made with garden init
-  let grid: GridBoxType[] = $state(gardenGrid);
 
   let gardens = $state(data?.gardenData ?? []);
   let sectionToDisplay: null | SectionInfo = $state(null);
   let user: any = $state(data.userData);
+  let currentGarden = $state(gardens[0]);
+  let gardenGrid = $state(currentGarden?.grid ?? []);
+  let grid = $state(gardenGrid);
+
+  // Get current garden 
+  $effect(() => {
+    const gardenId = $page.url.searchParams.get('gardenId');
+    currentGarden = gardenId ? gardens.find(g => g._id === gardenId) || gardens[0] : gardens[0];
+    gardenGrid = currentGarden ? currentGarden.grid : [];
+    grid = gardenGrid;
+  });
+
+  // Filter sections for current garden
+  let currentSections = $derived(sectionData.filter(s => s.garden._id === currentGarden?._id));
 
   const handleInspectSection = function (sectionId: string | null) {
     if (!sectionId) return;
-    const section = sectionData.find((s: SectionInfo) => s._id === sectionId);
+    const section = currentSections.find((s: SectionInfo) => s._id === sectionId);
     if (!section) return;
     sectionToDisplay = section;
   };
@@ -82,52 +95,46 @@
       </header>
 
       <div class="flex-1 overflow-y-auto pr-1">
-        {#if gardens && gardens.length > 0}
-          <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-2">
+          <div
+            class="p-3 rounded-2xl border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50"
+          >
             <div
-              class="p-3 rounded-2xl border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50"
+              class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
             >
-              <div
-                class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
-              >
-                <i class="fa-solid fa-location-pin"></i>
-              </div>
-              <div>
-                <p
-                  class="text-xs font-medium text-stone-400 uppercase tracking-wide"
-                >
-                  Location
-                </p>
-                <p class="text-sm font-bold text-stone-700">
-                  {gardens[0].location.address}
-                </p>
-              </div>
+              <i class="fa-solid fa-location-pin"></i>
             </div>
-            <div
-              class="p-3 rounded-2xl border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50"
-            >
-              <div
-                class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
+            <div>
+              <p
+                class="text-xs font-medium text-stone-400 uppercase tracking-wide"
               >
-                <i class="fa-solid fa-user"></i>
-              </div>
-              <div>
-                <p
-                  class="text-xs font-medium text-stone-400 uppercase tracking-wide"
-                >
-                  Member count
-                </p>
-                <p class="text-sm font-bold text-stone-700">
-                  {gardens[0].members.length} / {gardens[0].maxMembers} members
-                </p>
-              </div>
+                Location
+              </p>
+              <p class="text-sm font-bold text-stone-700">
+                {currentGarden.location.address}
+              </p>
             </div>
           </div>
-        {:else}
-          <div class="p-3 rounded-2xl border border-stone-200 bg-white/50">
-            <p class="text-sm text-stone-600">No garden found</p>
+          <div
+            class="p-3 rounded-2xl border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50"
+          >
+            <div
+              class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
+            >
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <div>
+              <p
+                class="text-xs font-medium text-stone-400 uppercase tracking-wide"
+              >
+                Member count
+              </p>
+              <p class="text-sm font-bold text-stone-700">
+                {currentGarden.members.length} / {currentGarden.maxMembers} members
+              </p>
+            </div>
           </div>
-        {/if}
+        </div>
 
         <div class="mt-8 px-2">
           <p
@@ -194,8 +201,8 @@
                         gridItem.section && gridItem.section
                       )}
                     aria-label=" "
-                    class={`border border-black/30 cursor-pointer flex items-center justify-center w-7 h-7 
-                      ${handleReturnGridClasses(gridItem.section, sectionData)} `}
+                    class={`border border-black/30 cursor-pointer flex items-center justify-center w-7 h-7
+                      ${handleReturnGridClasses(gridItem.section, currentSections)} `}
                   >
                     {#if gridItem.plant}
                       <span class="text-lg leading-none"

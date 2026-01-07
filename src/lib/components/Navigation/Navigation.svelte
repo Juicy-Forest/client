@@ -30,8 +30,13 @@
       text: "Inventory",
       icon: "fa solid fa-box"
     },
-    
+
   ]
+
+  const dynamicLinks = $derived(navigationLinks.map(link => ({
+    ...link,
+    route: gardenData._id ? `${link.route}?gardenId=${gardenData._id}` : link.route
+  })));
 
   let notifications: {section: string, description: string}[] = [
     {
@@ -65,13 +70,18 @@
     <ul
       class="flex justify-center gap-6  px-8 items-center text-neutral-300"
     >
-    {#each navigationLinks as navItem (navItem.route)}
-      <li><NavLink route={navItem.route} text={navItem.text} icon={navItem.icon} orientation={"Vertical"} onClick={() => {}} /></li> | 
+    {#each dynamicLinks as navItem (navItem.route)}
+      <li><NavLink route={navItem.route} text={navItem.text} icon={navItem.icon} orientation={"Vertical"} onClick={() => {}} /></li> |
     {/each}
     </ul>
   </div>
   <!-- Notifications -->
-   <div class="w-[200px] flex hidden md:flex justify-end relative z-50">
+   <div class="w-[200px] flex hidden md:flex justify-end gap-2 relative z-50">
+    <form method="POST" action="/logout">
+      <button type="submit" class="flex items-center gap-2 group active:scale-[0.95] duration-200 transform cursor-pointer relative hover:bg-stone-100 duration-300 rounded-full p-3">
+        <i class="fa-solid fa-lock group-hover:text-stone-800 text-stone-500 duration-200 text-lg"></i>
+      </button>
+    </form>
     <button onclick={() => showNotificationTab = !showNotificationTab} class="flex items-center gap-2 group active:scale-[0.95] duration-200 transform cursor-pointer relative hover:bg-stone-100 duration-300 rounded-full p-3">
         {#if notifications.length > 0}
           <div class="bg-rose-500 h-4 w-4 rounded-full text-[10px] font-bold text-white flex items-center justify-center absolute top-1 right-1 ring-2 ring-white">{notifications.length}</div>
@@ -132,7 +142,7 @@
       <i class="fa-solid fa-x transform scale-[2] text-neutral-600"></i>
     </button>
     <ul class="flex flex-col items-center mt-[35%]">
-        {#each navigationLinks as navItem (navItem.route) }
+        {#each dynamicLinks as navItem (navItem.route) }
           <li class="text-2xl">
             <NavLink route={navItem.route} text={navItem.text} icon={navItem.icon} orientation={'Horizontal'} onClick={() => openNavbar = false} />
           </li>
@@ -140,4 +150,3 @@
     </ul>
     </div>
 </nav>
-
