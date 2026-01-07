@@ -16,21 +16,31 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-{#if !['/login', '/register', '/createjoin'].includes($page.url.pathname)}
-<Navigation gardenData={data ? {...data.currentGarden}: ''}/>
-{/if}
+<div class="min-h-screen" class:bg-main={!['/login', '/register', '/createjoin'].includes($page.url.pathname)}>
+	{#if !['/login', '/register', '/createjoin'].includes($page.url.pathname)}
+	<Navigation gardenData={data ? {...data.currentGarden}: ''}/>
+	{/if}
 
-<div class="page-transition">
-	{#key $page.url.pathname}
-		<div class="page-content">
-			{@render children()}
-		</div>
-	{/key}
+	<div class="page-transition" class:has-nav={!['/login', '/register', '/createjoin'].includes($page.url.pathname)}>
+		{#key $page.url.pathname}
+			<div class="page-content">
+				{@render children()}
+			</div>
+		{/key}
+	</div>
 </div>
 
 <style>
+	.bg-main {
+		background-color: #fdfcf8;
+	}
+
 	.page-transition {
 		display: grid;
+	}
+	
+	.page-transition.has-nav {
+		padding-top: 5rem;
 	}
 	
 	.page-transition > .page-content {

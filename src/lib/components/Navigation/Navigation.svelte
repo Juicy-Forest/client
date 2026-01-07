@@ -55,32 +55,27 @@
   let showNotificationTab = $state(false);
 </script>
 
-<nav class="w-full h-20 flex">
+<nav class="fixed top-0 left-0 right-0 z-40 px-4 pt-4">
   <!-- Navbar for screen size lg+ -->
-  <div
-    class="flex w-full h-full justify-between items-center px-2 sm:px-4 md:px-10"
-  >
-    <!-- Juicy forest icon -->
-    <div class="flex items-center gap-3 w-60">
-      <div
-        class="flex h-10 w-10 items-center justify-center rounded-full bg-lime-100 text-lime-700 shadow-sm"
-      >
-        <i class="fa-solid fa-seedling text-lg"></i>
+  <div class="mx-auto flex max-w-screen-2xl items-center justify-between gap-4">
+    <!-- Logo Pill -->
+    <div class="hidden md:flex items-center gap-3 rounded-full border border-stone-200/60 bg-white/80 px-4 py-2 shadow-lg shadow-stone-200/20 backdrop-blur-xl">
+      <div class="flex h-9 w-9 items-center justify-center rounded-full bg-lime-600 text-white">
+        <i class="fa-solid fa-seedling"></i>
       </div>
-      <div class="hidden flex-col md:hidden lg:flex">
-        <p
-          class="text-[10px] font-bold uppercase tracking-widest text-stone-400"
-        >
+      <div class="hidden flex-col lg:flex">
+        <p class="text-[9px] font-bold uppercase tracking-widest text-stone-400">
           Current Garden
         </p>
-        <p class="text-sm font-bold text-stone-700 leading-tight">
-          {gardenData.name}
+        <p class="text-sm font-bold text-stone-800 leading-tight">
+          {gardenData.name || 'Garden'}
         </p>
       </div>
     </div>
-    <!-- Center navbar -->
-    <div class="flex justify-center md:flex text-center items-center">
-      <ul class="flex justify-center gap-6 px-8 items-center text-neutral-300">
+
+    <!-- Center Navigation Pill -->
+    <div class="hidden md:flex">
+      <ul class="flex items-center gap-1 rounded-full border border-stone-200/60 bg-white/80 px-2 py-2 shadow-lg shadow-stone-200/20 backdrop-blur-xl">
         {#each dynamicLinks as navItem (navItem.route)}
           <li>
             <NavLink
@@ -91,55 +86,47 @@
               onClick={() => {}}
             />
           </li>
-           |
         {/each}
       </ul>
     </div>
-    <!-- Notifications -->
-    <div class="w-[200px] flex md:flex justify-end gap-2 relative z-50">
-      <form method="POST" action="/logout">
-        <button
-          type="submit"
-          class="flex items-center gap-2 group active:scale-[0.95] transform cursor-pointer relative hover:bg-stone-100 duration-300 rounded-full p-3"
-          aria-label="Logout"
-        >
-          <i
-            class="fa-solid fa-right-from-bracket group-hover:text-stone-800 text-stone-500 duration-200 text-lg"
-          ></i>
-        </button>
-      </form>
-      <button
-        onclick={() => (showNotificationTab = !showNotificationTab)}
-        class="flex items-center gap-2 group active:scale-[0.95] transform cursor-pointer relative hover:bg-stone-100 duration-300 rounded-full p-3"
-        aria-label="Notifications"
-      >
-        {#if notifications.length > 0}
-          <div
-            class="bg-rose-500 h-4 w-4 rounded-full text-[10px] font-bold text-white flex items-center justify-center absolute top-1 right-1 ring-2 ring-white"
-          >
-            {notifications.length}
-          </div>
-        {/if}
 
-        <i
-          class="fa-solid fa-bell group-hover:text-stone-800 text-stone-500 duration-200 text-lg"
-        ></i>
-      </button>
-      <button
-        onclick={() => {
-          goto("/settings");
-        }}
-        class="flex items-center gap-2 group active:scale-[0.95] transform cursor-pointer relative hover:bg-stone-100 duration-300 rounded-full p-3"
-        aria-label="Settings"
-      >
-        <i
-          class="fa-solid fa-gear group-hover:text-stone-800 text-stone-500 duration-200 text-lg"
-        ></i>
-      </button>
-      {#if showNotificationTab}
-        <div
-          class="absolute right-0 mt-14 w-80 origin-top-right rounded-3xl bg-white p-4 shadow-xl ring-1 ring-black/5 focus:outline-none border border-stone-100 z-50"
+    <!-- Action Buttons -->
+    <div class="hidden md:flex items-center gap-2 relative z-50">
+      <div class="flex items-center gap-1 rounded-full border border-stone-200/60 bg-white/80 px-1 py-1 shadow-lg shadow-stone-200/20 backdrop-blur-xl">
+        <button
+          onclick={() => (showNotificationTab = !showNotificationTab)}
+          class="relative flex h-9 w-9 items-center justify-center rounded-full text-stone-500 transition-all hover:bg-stone-100 hover:text-stone-800 active:scale-95"
+          aria-label="Notifications"
         >
+          {#if notifications.length > 0}
+            <div class="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white ring-2 ring-white">
+              {notifications.length}
+            </div>
+          {/if}
+          <i class="fa-solid fa-bell text-sm"></i>
+        </button>
+        
+        <button
+          onclick={() => goto("/settings")}
+          class="flex h-9 w-9 items-center justify-center rounded-full text-stone-500 transition-all hover:bg-stone-100 hover:text-stone-800 active:scale-95"
+          aria-label="Settings"
+        >
+          <i class="fa-solid fa-gear text-sm"></i>
+        </button>
+
+        <form method="POST" action="/logout" class="contents">
+          <button
+            type="submit"
+            class="flex h-9 w-9 items-center justify-center rounded-full text-stone-500 transition-all hover:bg-stone-100 hover:text-stone-800 active:scale-95"
+            aria-label="Logout"
+          >
+            <i class="fa-solid fa-right-from-bracket text-sm"></i>
+          </button>
+        </form>
+      </div>
+
+      {#if showNotificationTab}
+        <div class="absolute right-0 top-14 w-80 origin-top-right rounded-2xl border border-stone-200/60 bg-white/95 p-4 shadow-xl backdrop-blur-xl z-50">
           <div class="mb-4 flex items-center justify-between px-2">
             <div>
               <p class="text-sm font-bold text-stone-800">Notifications</p>
@@ -192,40 +179,98 @@
       {/if}
     </div>
   </div>
-  <!-- Navbar on small screens -->
-  <div
-    class={`md:hidden top-0 left-0 h-full w-[50%] flex justify-end items-center px-8 `}
-  >
-    <button aria-label=" " onclick={() => (openNavbar = true)}>
-      <i
-        class="fa-solid fa-bars text-neutral-600 transform scale-[2.5] cursor-pointer hover:opacity-80"
-      ></i> hi
+
+  <!-- Mobile Navigation -->
+  <div class="md:hidden flex items-center justify-between gap-3">
+    <!-- Mobile Logo -->
+    <div class="flex items-center gap-2 rounded-full border border-stone-200/60 bg-white/80 px-3 py-2 shadow-lg shadow-stone-200/20 backdrop-blur-xl">
+      <div class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-600 text-white">
+        <i class="fa-solid fa-seedling text-sm"></i>
+      </div>
+      <span class="text-sm font-bold text-stone-800">{gardenData.name || 'Garden'}</span>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button
+      onclick={() => (openNavbar = true)}
+      class="flex h-10 w-10 items-center justify-center rounded-full border border-stone-200/60 bg-white/80 text-stone-600 shadow-lg shadow-stone-200/20 backdrop-blur-xl transition-all active:scale-95"
+      aria-label="Menu"
+    >
+      <i class="fa-solid fa-bars"></i>
     </button>
   </div>
 
-  <!-- Absolute full screen navbar for mobile -->
-  <div
-    class={` ${openNavbar ? "block" : "hidden"} absolute h-screen w-screen z-100 bg-white top-1 left-1 rounded-md border-[#e5e5e5] border justify-center`}
-  >
-    <button
-      aria-label=" "
-      class="absolute top-5 right-15 cursor-pointer hover:opacity-80 duration-200"
-      onclick={() => (openNavbar = false)}
-    >
-      <i class="fa-solid fa-x transform scale-[2] text-neutral-600"></i>
-    </button>
-    <ul class="flex flex-col items-center mt-[35%]">
-      {#each dynamicLinks as navItem (navItem.route)}
-        <li class="text-2xl">
-          <NavLink
-            route={navItem.route}
-            text={navItem.text}
-            icon={navItem.icon}
-            orientation={"Horizontal"}
-            onClick={() => (openNavbar = false)}
-          />
-        </li>
-      {/each}
-    </ul>
-  </div>
+  <!-- Mobile Full Screen Menu -->
+  {#if openNavbar}
+    <div class="fixed inset-0 z-50 md:hidden">
+      <!-- Backdrop -->
+      <div class="absolute inset-0 bg-black/20 backdrop-blur-sm" onclick={() => (openNavbar = false)}></div>
+      
+      <!-- Menu Panel -->
+      <div class="absolute right-4 top-4 bottom-4 w-[280px] rounded-3xl border border-stone-200/60 bg-white/95 shadow-2xl backdrop-blur-xl">
+        <div class="flex h-full flex-col p-6">
+          <!-- Header -->
+          <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center gap-2">
+              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-lime-600 text-white">
+                <i class="fa-solid fa-seedling"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold uppercase tracking-widest text-stone-400">Menu</p>
+                <p class="text-sm font-bold text-stone-800">{gardenData.name || 'Garden'}</p>
+              </div>
+            </div>
+            <button
+              onclick={() => (openNavbar = false)}
+              class="flex h-8 w-8 items-center justify-center rounded-full text-stone-400 transition-all hover:bg-stone-100 hover:text-stone-600"
+              aria-label="Close"
+            >
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Navigation Links -->
+          <ul class="flex-1 space-y-2">
+            {#each dynamicLinks as navItem (navItem.route)}
+              <li>
+                <button
+                  onclick={() => {
+                    goto(navItem.route);
+                    openNavbar = false;
+                  }}
+                  class="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left transition-all hover:bg-stone-100"
+                >
+                  <i class="{navItem.icon} text-stone-500"></i>
+                  <span class="font-medium text-stone-700">{navItem.text}</span>
+                </button>
+              </li>
+            {/each}
+          </ul>
+
+          <!-- Bottom Actions -->
+          <div class="space-y-2 border-t border-stone-200 pt-4">
+            <button
+              onclick={() => {
+                goto("/settings");
+                openNavbar = false;
+              }}
+              class="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left transition-all hover:bg-stone-100"
+            >
+              <i class="fa-solid fa-gear text-stone-500"></i>
+              <span class="font-medium text-stone-700">Settings</span>
+            </button>
+            <form method="POST" action="/logout" class="contents">
+              <button
+                type="submit"
+                class="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left transition-all hover:bg-red-50"
+              >
+                <i class="fa-solid fa-right-from-bracket text-stone-500"></i>
+                <span class="font-medium text-stone-700">Logout</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  {/if}
 </nav>
