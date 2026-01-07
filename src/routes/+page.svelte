@@ -4,7 +4,6 @@
   import { handleReturnGridClasses } from "$lib/utils/grid.js";
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
-  import { setContext } from "svelte";
 
   let sensorData = $state({});
 
@@ -26,7 +25,6 @@
   // State variables
   let { data } = $props();
   // from server
-  let gardenData: GardenData = data.gardenData;
   let sectionData: SectionData = data.sectionData.flat();
 
   let gardens = $state(data?.gardenData ?? []);
