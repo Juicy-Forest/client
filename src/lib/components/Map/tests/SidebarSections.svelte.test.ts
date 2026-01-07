@@ -96,15 +96,15 @@ describe('SidebarSections', () => {
   it('renders delete button for each section', () => {
     renderComponent();
     
-    const allButtons = screen.getAllByRole('button');
-    expect(allButtons.length).toBe(2);
+    const deleteButtons = screen.getAllByLabelText('Delete section');
+    expect(deleteButtons.length).toBe(2);
   });
 
   it('calls handleSectionClick when section is clicked', async () => {
     const user = userEvent.setup();
     renderComponent();
     
-    const sectionElement = screen.getByText('Vegetable Garden').closest('div');
+    const sectionElement = screen.getByText('Vegetable Garden').closest('[role="button"]');
     if (sectionElement) {
       await user.click(sectionElement);
     }
@@ -116,7 +116,7 @@ describe('SidebarSections', () => {
     const user = userEvent.setup();
     renderComponent();
     
-    const deleteButtons = screen.getAllByRole('button');
+    const deleteButtons = screen.getAllByLabelText('Delete section');
     await user.click(deleteButtons[0]);
     
     expect(mockHandleDeleteSection).toHaveBeenCalledWith('section-1');
@@ -125,15 +125,15 @@ describe('SidebarSections', () => {
   it('applies selected styling to selected section', () => {
     renderComponent([mockSection1, mockSection2], 'section-1');
     
-    const sectionElement = screen.getByText('Vegetable Garden').closest('div');
-    expect(sectionElement).toHaveClass('font-semibold');
+    const sectionElement = screen.getByText('Vegetable Garden').closest('[role="button"]');
+    expect(sectionElement).toHaveClass('bg-lime-100/60');
   });
 
   it('does not apply selected styling to unselected sections', () => {
     renderComponent([mockSection1, mockSection2], 'section-1');
     
-    const sectionElement = screen.getByText('Flower Bed').closest('div');
-    expect(sectionElement).not.toHaveClass('font-semibold');
+    const sectionElement = screen.getByText('Flower Bed').closest('[role="button"]');
+    expect(sectionElement).not.toHaveClass('bg-lime-100/60');
   });
 
   it('renders empty state when no sections provided', () => {
@@ -146,19 +146,21 @@ describe('SidebarSections', () => {
   it('applies section color class to section element', () => {
     renderComponent();
     
-    const section1Element = screen.getByText('Vegetable Garden').closest('div');
-    expect(section1Element).toHaveClass('bg-green-300');
+    const section1Container = screen.getByText('Vegetable Garden').closest('[role="button"]');
+    const section1ColorDot = section1Container?.querySelector('.bg-green-300');
+    expect(section1ColorDot).toBeInTheDocument();
     
-    const section2Element = screen.getByText('Flower Bed').closest('div');
-    expect(section2Element).toHaveClass('bg-rose-400');
+    const section2Container = screen.getByText('Flower Bed').closest('[role="button"]');
+    const section2ColorDot = section2Container?.querySelector('.bg-rose-400');
+    expect(section2ColorDot).toBeInTheDocument();
   });
 
   it('handles multiple section clicks correctly', async () => {
     const user = userEvent.setup();
     renderComponent();
     
-    const section1Element = screen.getByText('Vegetable Garden').closest('div');
-    const section2Element = screen.getByText('Flower Bed').closest('div');
+    const section1Element = screen.getByText('Vegetable Garden').closest('[role="button"]');
+    const section2Element = screen.getByText('Flower Bed').closest('[role="button"]');
     
     if (section1Element) {
       await user.click(section1Element);

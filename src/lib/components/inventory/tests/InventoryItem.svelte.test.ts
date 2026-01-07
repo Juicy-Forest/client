@@ -20,15 +20,17 @@ describe('InventoryItem', () => {
     
     // Core Logic: Does the data show up?
     expect(screen.getByText('Tomato')).toBeInTheDocument();
-    expect(screen.getByText(/⭐ plant/)).toBeInTheDocument();
-    expect(screen.getByText(/5 pots/)).toBeInTheDocument();
+    expect(screen.getByText('Important')).toBeInTheDocument(); // Important badge
+    expect(screen.getByText('plant')).toBeInTheDocument(); // Type badge
+    expect(screen.getByText(/5/)).toBeInTheDocument(); // Quantity
+    expect(screen.getByText(/pots/)).toBeInTheDocument(); // Quantity type
   });
 
   it('triggers onEdit with item data', async () => {
     const user = userEvent.setup();
     renderItem();
 
-    await user.click(screen.getByRole('button', { name: 'Edit' }));
+    await user.click(screen.getByRole('button', { name: 'Edit item' }));
 
     expect(mockOnEdit).toHaveBeenCalledWith(mockItem);
   });
@@ -37,7 +39,7 @@ describe('InventoryItem', () => {
     const user = userEvent.setup();
     renderItem();
 
-    await user.click(screen.getByRole('button', { name: 'Delete' }));
+    await user.click(screen.getByRole('button', { name: 'Delete item' }));
 
     expect(mockOnDelete).toHaveBeenCalledWith(mockItem);
   });

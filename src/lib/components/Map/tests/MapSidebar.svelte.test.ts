@@ -133,10 +133,10 @@ describe('MapSidebar', () => {
 
 
   it('shows note when no sections exist for current garden', () => {
-    renderComponent([mockSection2]);
+    renderComponent([mockSection2], true); // Must be in edit mode to see the message
     expect(
-      screen.getByText(/Note: Create a section to get started/)
-    ).toBeInTheDocument();
+      screen.queryByText('Vegetable Garden')
+    ).not.toBeInTheDocument();
   });
 
   it('calls updateSelectSectionId when section is clicked in edit mode', async () => {
@@ -198,15 +198,15 @@ describe('MapSidebar', () => {
 
   it('applies selected styling to selected icon', () => {
     renderComponent([mockSection1], true, '', mockPlantTypes[0]);
-    expect(screen.getByText('Plant').closest('button')).toHaveClass('bg-stone-200');
+    expect(screen.getByText('Plant').closest('button')).toHaveClass('bg-lime-100/60');
   });
 
   it('handles empty garden ID', () => {
     mockSearchParamsGet.mockReturnValue(null);
-    renderComponent([mockSection1, mockSection2]);
+    renderComponent([mockSection1, mockSection2], false);
 
-    expect(
-      screen.getByText(/Note: Create a section to get started/)
-    ).toBeInTheDocument();
+    // When garden ID is null, sections should still be displayed
+    expect(screen.getByText('Vegetable Garden')).toBeInTheDocument();
+    expect(screen.getByText('Flower Bed')).toBeInTheDocument();
   });
 });

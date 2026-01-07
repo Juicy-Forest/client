@@ -56,19 +56,19 @@ describe('TaskComponent', () => {
   it('does not show expand button for short descriptions', () => {
     renderTask();
     
-    expect(screen.queryByText(/See more/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Show more/i)).not.toBeInTheDocument();
   });
 
   it('shows and toggles expand/collapse for long descriptions', async () => {
     const user = userEvent.setup();
     renderTask(mockTaskLong);
     
-    expect(screen.getByText('See more ▼')).toBeInTheDocument();
+    expect(screen.getByText('Show more')).toBeInTheDocument();
     
-    await user.click(screen.getByText('See more ▼'));
-    expect(screen.getByText('See less ▲')).toBeInTheDocument();
+    await user.click(screen.getByText('Show more'));
+    expect(screen.getByText('Show less')).toBeInTheDocument();
     
-    await user.click(screen.getByText('See less ▲'));
-    expect(screen.getByText('See more ▼')).toBeInTheDocument();
+    await user.click(screen.getByText('Show less'));
+    expect(screen.getByText('Show more')).toBeInTheDocument();
   });
 });

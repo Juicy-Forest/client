@@ -77,8 +77,9 @@ describe('CreateNewSection', () => {
     
     await user.click(firstColorButton);
     
-    // Color should be selected (border class applied)
-    expect(firstColorButton).toHaveClass('border');
+    // Color should be selected (ring classes applied)
+    expect(firstColorButton).toHaveClass('ring-2');
+    expect(firstColorButton).toHaveClass('ring-stone-800');
   });
 
   it('allows entering section name', async () => {
