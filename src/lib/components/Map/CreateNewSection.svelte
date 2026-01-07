@@ -50,7 +50,6 @@
     if (parsedSectionResponse._id) {
       // await invalidate("data:sections");
       onNewSection(parsedSectionResponse)
-      console.log('Is edit mode:', isEditMode)
     } else {
       // Handle err
       console.log(
