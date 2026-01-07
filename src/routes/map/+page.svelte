@@ -164,52 +164,65 @@ const sectionDataForGarden = data.sectionData.filter((section: SectionInfo) => s
               : "Visualize and manage plants in your garden."}
           </p>
         </div>
-        <div class="w-fit flex items-center gap-2">
+        <div class="flex items-center gap-3">
         {#if (isEditMode)}
-
-          <span
-          class="flex items-center h-full gap-2 rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700"
-          >
-          <div class="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></div>
-          Editing Active
+          <span class="flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1.5 text-xs font-semibold text-amber-700">
+            <div class="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></div>
+            Editing
           </span>
 
-        <div class="flex gap-3 h-full items-center">
-          <button onclick={cancelEdit} class="px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-100 transition cursor-pointer">
-            Cancel
-          </button>
-          
-          <button onclick={saveEdit} class="px-4 py-2 rounded-md bg-green-200 cursor-pointer text-green-700 hover:bg-green-300 duration-300">
-            Save
-          </button>
-        </div>
+          <div class="flex gap-2 items-center">
+            <button 
+              onclick={cancelEdit} 
+              class="flex h-9 items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 text-xs font-semibold text-stone-600 transition-all hover:bg-stone-50 hover:border-stone-300"
+            >
+              <i class="fa-solid fa-xmark text-stone-400"></i>
+              Cancel
+            </button>
+            
+            <button 
+              onclick={saveEdit} 
+              class="flex h-9 items-center gap-2 rounded-xl bg-lime-600 px-4 text-xs font-semibold text-white shadow-sm transition-all hover:bg-lime-700"
+            >
+              <i class="fa-solid fa-check"></i>
+              Save
+            </button>
+          </div>
         {:else}
-        <button onclick={enterEditMode} class="px-4 py-2 rounded-md bg-green-200 cursor-pointer text-green-700 hover:bg-green-300 duration-300">
-          Edit
-        </button>
+          <button 
+            onclick={enterEditMode} 
+            class="flex h-9 items-center gap-2 rounded-xl bg-lime-600 px-4 text-xs font-semibold text-white shadow-sm transition-all hover:bg-lime-700"
+          >
+            <i class="fa-solid fa-pen-to-square"></i>
+            Edit Map
+          </button>
         {/if}
       </div>
       </header>
 
       <!-- Content -->
-      <div class="flex flex-1 flex-col overflow-hidden">
-          <div class="relative flex items-center justify-center mx-auto h-full w-fit overflow-hidden rounded-md border-stone-200" >
-            <div class="grid grid-cols-20 grid-rows-20 border-black/30 border">
-                {#each gridToShow as gridItem, i (gridItem.index)}
-                  <button
-                    aria-label=" "
-                    onclick={() => {
-                      handleIconPlacement(gridItem)
-                      updateCell(i)}}
-                    class={`border border-black/30 cursor-pointer flex items-center justify-center w-7 h-7
-                    ${handleReturnGridClasses(gridItem.section, localSectionData)}
-                    `}
-                  >
-               {#if (gridItem.plant)}
-                      <span class="text-lg leading-none">{typeToIcon(gridItem.plant)}</span>
-               {/if}
-              </button>
-                {/each}
+      <div class="flex flex-1 flex-col overflow-hidden bg-stone-50/30">
+          <div class="flex flex-1 items-center justify-center overflow-hidden px-8 py-6">
+            <div class="relative rounded-2xl border border-stone-200/60 bg-white/60 p-4 shadow-sm backdrop-blur-sm">
+              <div class="rounded-xl overflow-hidden border border-stone-300/50 shadow-inner">
+                <div class="grid grid-cols-20 grid-rows-20">
+                  {#each gridToShow as gridItem, i (gridItem.index)}
+                    <button
+                      aria-label="Grid cell"
+                      onclick={() => {
+                        handleIconPlacement(gridItem)
+                        updateCell(i)}}
+                      class={`border border-stone-300/40 cursor-pointer flex items-center justify-center w-7 h-7 transition-all hover:brightness-95
+                      ${handleReturnGridClasses(gridItem.section, localSectionData)}
+                      `}
+                    >
+                      {#if (gridItem.plant)}
+                        <span class="text-lg leading-none drop-shadow-sm">{typeToIcon(gridItem.plant)}</span>
+                      {/if}
+                    </button>
+                  {/each}
+                </div>
+              </div>
             </div>
           </div>
       </div>
