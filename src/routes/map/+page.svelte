@@ -4,6 +4,8 @@
   import type { GridBoxType, IconType } from '$lib/types/garden.js';
   import type { SectionData, SectionInfo } from '$lib/types/section.js';
   import { handleReturnGridClasses } from '$lib/utils/grid.js';
+  import { fly, fade } from 'svelte/transition';
+  import { cubicOut } from 'svelte/easing';
 
   const { data } = $props();
   export const plantTypes: IconType[] = [{
@@ -43,6 +45,7 @@
   let selectedSectionId = $state('')
   let isEditMode = $state(false);
   let localSectionData: SectionData = $state(data.sectionData)
+  let showSuccessToast = $state(false);
 
   const updateLocalSectionData = function(newItem: SectionInfo) {
     localSectionData = [...localSectionData, newItem]
@@ -104,6 +107,12 @@ const saveEdit = async function() {
   } 
   grid = cloneGrid(editingGrid);
   exitEditMode();
+  
+  // Show success toast
+  showSuccessToast = true;
+  setTimeout(() => {
+    showSuccessToast = false;
+  }, 3000);
 }
 
 const cancelEdit = function() {
@@ -228,4 +237,22 @@ const sectionDataForGarden = data.sectionData.filter((section: SectionInfo) => s
       </div>
     </div>
   </div>
+
+  <!-- Success Toast -->
+  {#if showSuccessToast}
+    <div 
+      class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50"
+      transition:fly={{ y: 20, duration: 300, easing: cubicOut }}
+    >
+      <div class="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-3 shadow-lg backdrop-blur-xl">
+        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+          <i class="fa-solid fa-check text-sm"></i>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-emerald-900">Changes saved successfully</p>
+          <p class="text-xs text-emerald-600">Your map has been updated</p>
+        </div>
+      </div>
+    </div>
+  {/if}
 </section>
