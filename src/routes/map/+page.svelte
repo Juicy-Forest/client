@@ -49,7 +49,6 @@
   }
 
   const updateSelectSectionId = (newSectionId: string) =>{
-    console.log(newSectionId)
     selectedSectionId = newSectionId
   }
 
