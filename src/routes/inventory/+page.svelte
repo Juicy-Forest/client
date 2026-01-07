@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import InventoryFilter from "$lib/components/inventory/InventoryFilter.svelte";
 	import Modal from "$lib/components/util/Modal.svelte";
 	import { setContext } from "svelte";
@@ -7,8 +7,18 @@
 	import { inventoryStore } from "$lib/stores/inventoryStore.svelte";
 	import InventoryItemList from "$lib/components/inventory/InventoryItemList.svelte";
 	import InventoryHeader from "$lib/components/inventory/InventoryHeader.svelte";
+	import { page } from '$app/stores';
 
 	let { data } = $props();
+
+	$effect(() => {
+        const id: string = $page.url.searchParams.get('gardenId');
+        inventoryStore.selectedGardenId = id;
+    });
+
+	const itemsForThisGarden = $derived(
+        data.inventory.filter((item) => item.gardenId === inventoryStore.selectedGardenId)
+    );
 
 	const selectedInventoryType = $state({ selectedInventoryType: "all" });
 	setContext("selectedInventoryType", selectedInventoryType);
@@ -27,8 +37,8 @@
 		<div
 			class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-[2.5rem] border border-stone-200/60 bg-white/80 shadow-xl shadow-stone-200/20 backdrop-blur-xl"
 		>
-			<InventoryHeader inventory={data.inventory} />
-			<InventoryItemList inventory={data.inventory} />
+			<InventoryHeader inventory={itemsForThisGarden} />
+			<InventoryItemList inventory={itemsForThisGarden} />
 		</div>
 	</div>
 </section>
@@ -46,6 +56,6 @@
 		<InventoryDeleteModal item={inventoryStore.selectedItem} onCancel={inventoryStore.closeModal} onDelete={() => inventoryStore.handleSubmit(data.inventory)} />
 	{:else}
 	<!-- dont remove the bind here, works without but needed to stop svelte from spamming yellow errors in console -->
-		<InventoryCreateEditModal bind:formData={inventoryStore.formData}  errors={inventoryStore.errors} onCancel={inventoryStore.closeModal} onSubmit={() => inventoryStore.handleSubmit(data.inventory)} />
+		<InventoryCreateEditModal bind:formData={inventoryStore.formData} errors={inventoryStore.errors} onCancel={inventoryStore.closeModal} onSubmit={() => inventoryStore.handleSubmit(data.inventory)} />
 	{/if}
 </Modal>
