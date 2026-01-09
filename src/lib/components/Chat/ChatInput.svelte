@@ -1,19 +1,27 @@
 <script lang="ts">
-  let { activeChannelLabel, onSendMessage } = $props();
-  let draftMessage = $state('');
+  import type { ChatService } from "$lib/services/chat.svelte";
+  import { getContext } from "svelte";
+
+  let draftMessage = $state("");
+  const chat: ChatService = getContext("chatService");
 
   function handleSubmit(e: Event) {
     e.preventDefault();
     if (draftMessage.trim()) {
-      onSendMessage(draftMessage);
-      draftMessage = '';
+      chat.sendMessage(draftMessage);
+      draftMessage = "";
     }
   }
 </script>
 
-<form class="border-t border-stone-100 bg-white px-8 py-5" onsubmit={handleSubmit}>
+<form
+  class="border-t border-stone-100 bg-white px-8 py-5"
+  onsubmit={handleSubmit}
+>
   <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-    <div class="flex flex-1 items-center gap-3 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-2 transition-all">
+    <div
+      class="flex flex-1 items-center gap-3 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-2 transition-all"
+    >
       <button
         class="flex h-9 w-9 items-center justify-center rounded-xl text-stone-400 transition hover:bg-stone-200 hover:text-stone-600"
         type="button"
@@ -24,7 +32,8 @@
       <input
         class="flex-1 border-none bg-transparent text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-0"
         type="text"
-        placeholder={`Message #${activeChannelLabel}...`}
+        oninput={() => chat.sendActivity()}
+        placeholder={`Message #${chat.activeChannel.name}...`}
         bind:value={draftMessage}
       />
     </div>
@@ -37,4 +46,3 @@
     </button>
   </div>
 </form>
-

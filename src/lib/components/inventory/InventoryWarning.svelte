@@ -2,7 +2,7 @@
     // @ts-nocheck
     const { inventory } = $props();
     
-    const warningItems = $derived(inventory.filter((item) => item.quantity < item.desiredQuantity));
+    const warningItems = $derived(inventory.filter((item) => item.quantity < item.desiredQuantity && item.isImportant === true));
 
     let isCollapsed = $state(false);
 

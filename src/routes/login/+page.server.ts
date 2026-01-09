@@ -29,7 +29,7 @@ export const actions: Actions = {
       const result = await response.json();
 
       if (!response.ok) {
-        return fail(response.status, { error: result.message || "Login failed" });
+        return fail(response.status, { error: result.message || "Incorrect email or password" });
       }
 
       // Store the token from the server response
@@ -47,6 +47,6 @@ export const actions: Actions = {
     }
 
     // Redirect to createjoin page after successful login
-    redirect(308, '/createjoin');
+    throw redirect(303, '/createjoin');
   },
 };
