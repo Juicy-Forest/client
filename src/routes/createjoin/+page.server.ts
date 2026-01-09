@@ -59,9 +59,9 @@ export const actions: Actions = {
       const result = await response.json();
 
       if (!response.ok) {
-        return fail(response.status, { error: result.message || "Failed to create garden" });
+        return fail(response.status, { error: "The name already exists"});
       }
-
+      
       return {
         success: true,
         message: `Food garden "${result.name}" created successfully!`,

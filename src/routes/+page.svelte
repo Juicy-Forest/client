@@ -1,23 +1,54 @@
 <script lang="ts">
-  import type { GardenData, GridBoxType, IconType } from "$lib/types/garden.js";
+  import type { GardenData, Garden, GridBoxType, IconType } from "$lib/types/garden.js";
   import type { SectionData, SectionInfo } from "$lib/types/section.js";
   import { handleReturnGridClasses } from "$lib/utils/grid.js";
+  import { page } from '$app/stores';
+  import { onMount } from 'svelte';
+  import { fly, fade } from 'svelte/transition';
+
+  let sensorData = $state({});
+
+  onMount(() => {
+    const ws = new WebSocket("ws://localhost:3034");
+    ws.onopen = () => {
+      console.log('client connected to sensors microservice');
+    }
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      // console.log(data);
+      sensorData = data;
+    }
+    return () => {
+      ws?.close();
+    }
+  });
 
   // State variables
   let { data } = $props();
   // from server
-  let gardenData: GardenData = data.gardenData;
   let sectionData: SectionData = data.sectionData.flat();
-  const gardenGrid = gardenData ? gardenData[0].grid : []; // find way to fix, will always exist, made with garden init
-  let grid: GridBoxType[] = $state(gardenGrid);
 
   let gardens = $state(data?.gardenData ?? []);
   let sectionToDisplay: null | SectionInfo = $state(null);
   let user: any = $state(data.userData);
+  let currentGarden = $state(gardens[0]);
+  let gardenGrid = $derived(currentGarden?.grid ?? []);
+  let grid = $derived(gardenGrid);
+
+  // Get current garden 
+  $effect(() => {
+    const gardenId = $page.url.searchParams.get('gardenId');
+    currentGarden = gardenId ? gardens.find(g => g._id === gardenId) || gardens[0] : gardens[0];
+    gardenGrid = currentGarden ? currentGarden.grid : [];
+    grid = gardenGrid;
+  });
+
+  // Filter sections for current garden
+  let currentSections = $derived(sectionData.filter(s => s.garden._id === currentGarden?._id));
 
   const handleInspectSection = function (sectionId: string | null) {
     if (!sectionId) return;
-    const section = sectionData.find((s: SectionInfo) => s._id === sectionId);
+    const section = currentSections.find((s: SectionInfo) => s._id === sectionId);
     if (!section) return;
     sectionToDisplay = section;
   };
@@ -98,7 +129,7 @@
                 Location
               </p>
               <p class="text-sm font-bold text-stone-700">
-                {gardens[0].location.address}
+                {currentGarden.location.address}
               </p>
             </div>
           </div>
@@ -117,7 +148,7 @@
                 Member count
               </p>
               <p class="text-sm font-bold text-stone-700">
-                {gardens[0].members.length} / {gardens[0].maxMembers} members
+                {currentGarden.members.length} / {currentGarden.maxMembers} members
               </p>
             </div>
           </div>
@@ -173,66 +204,28 @@
 
       <!-- Content -->
       <div class="flex flex-1 flex-col overflow-hidden bg-stone-50/30">
-        <div class="flex-1 overflow-hidden px-8 py-6">
-          <div
-            class="relative mx-auto h-full w-fit overflow-hidden rounded-md border-stone-200"
-          >
-            <div class="relative rounded-md overflow-hidden w-[600px]">
-              <div
-                class=" w-fit h-fit inset mx-auto border-black/30 border z-10 grid grid-cols-20 grid-rows-20"
-              >
+        <div class="flex flex-1 items-center justify-center overflow-hidden px-8 py-6">
+          <div class="relative rounded-2xl border border-stone-200/60 bg-white/60 p-4 shadow-sm backdrop-blur-sm">
+            <div class="rounded-xl overflow-hidden border border-stone-300/50 shadow-inner">
+              <div class="grid grid-cols-20 grid-rows-20">
                 {#each grid as gridItem, i (gridItem.index)}
                   <button
                     onclick={() =>
                       handleInspectSection(
                         gridItem.section && gridItem.section
                       )}
-                    aria-label=" "
-                    class={`border border-black/30 cursor-pointer flex items-center justify-center w-7 h-7 
-                      ${handleReturnGridClasses(gridItem.section, sectionData)} `}
+                    aria-label="Grid cell"
+                    class={`border border-stone-300/40 cursor-pointer flex items-center justify-center w-7 h-7 transition-all hover:brightness-95
+                      ${handleReturnGridClasses(gridItem.section, currentSections)} `}
                   >
                     {#if gridItem.plant}
-                      <span class="text-lg leading-none"
+                      <span class="text-lg leading-none drop-shadow-sm"
                         >{typeToIcon(gridItem.plant)}</span
                       >
                     {/if}
                   </button>
                 {/each}
               </div>
-              <!-- {#each sectionInfo as sectionItem (sectionItem.sectionName)}
-                <div class="w-1/2 h-1/2 p-1">
-                  <button
-                    on:click={(e) => handleInspectSection(sectionItem)}
-                    class={`w-full h-full rounded-2xl border-2 p-4 flex flex-col justify-between transition-all duration-200 hover:scale-[0.98] cursor-pointer ${sectionItem.issues.length > 0 ? "bg-rose-500/20 border-rose-400 hover:border-rose-500 hover:bg-rose-500/30" : "bg-green-600/20 border-green-500 hover:border-green-400 hover:bg-green-600/30"}`}
-                  >
-                    <div class="flex items-center justify-between">
-                      <div class="rounded-full bg-white px-3 py-1 shadow-sm">
-                        <p class="text-xs font-bold text-stone-700">
-                          {sectionItem.assignedTo}
-                        </p>
-                      </div>
-                      {#if sectionItem.issues.length > 0}
-                        <div
-                          class="flex h-6 w-6 items-center justify-center rounded-full bg-rose-100 text-rose-600 shadow-sm"
-                        >
-                          <i class="fa-solid fa-exclamation text-xs"></i>
-                        </div>
-                      {:else}
-                        <div
-                          class="flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-green-600 shadow-sm"
-                        >
-                          <i class="fa-solid fa-check text-xs"></i>
-                        </div>
-                      {/if}
-                    </div>
-                    <p
-                      class="text-white font-bold text-lg drop-shadow-md text-left"
-                    >
-                      {sectionItem.sectionName}
-                    </p>
-                  </button>
-                </div>
-              {/each} -->
             </div>
           </div>
         </div>
@@ -381,152 +374,121 @@
     <!-- Section info opened on click of section -->
 
     {#if sectionToDisplay}
+      <!-- Backdrop -->
+      <div 
+        class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+        onclick={() => (sectionToDisplay = null)}
+        role="button"
+        tabindex="-1"
+        aria-label="Close panel"
+        transition:fade={{ duration: 200 }}
+      ></div>
+      
+      <!-- Panel -->
       <div
-        class="absolute flex flex-col min-w-[400px] max-w-[500px] right-0 top-0 h-screen border border-gray-300 bg-white shadow-xl z-100"
+        class="fixed flex flex-col w-[420px] right-0 top-0 h-screen bg-white/95 backdrop-blur-xl shadow-2xl z-50 border-l border-stone-200/60"
+        transition:fly={{ x: 420, duration: 300, opacity: 1 }}
       >
-        <div
-          class="w-full p-7 flex items-center justify-between border-b border-gray-300"
-        >
-          <div class="flex items-center gap-2">
-            {#if sectionToDisplay && sectionToDisplay?.issues.length > 0}
-              <div class="w-3 h-3 rounded-full bg-rose-600"></div>
-            {/if}
-            {#if sectionToDisplay && sectionToDisplay?.issues.length == 0}
-              <div class="w-3 h-3 rounded-full bg-green-600"></div>
-            {/if}
-            <div class="flex flex-col gap-1 items-stary">
-              <p>
-                {sectionToDisplay?.sectionName}
-              </p>
-              <p class="text-xs text-neutral-700">
-                Assigned to: <span class="font-semibold text-black">
-                  {sectionToDisplay.assignedTo}
-                </span>
-              </p>
+        <!-- Header -->
+        <div class="px-6 py-5 border-b border-stone-100 bg-white/80">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class={`flex h-10 w-10 items-center justify-center rounded-xl ${sectionToDisplay?.issues?.length > 0 ? 'bg-rose-100 text-rose-600' : 'bg-emerald-100 text-emerald-600'}`}>
+                <i class={`fa-solid ${sectionToDisplay?.issues?.length > 0 ? 'fa-exclamation' : 'fa-check'} text-sm`}></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-stone-800">{sectionToDisplay?.sectionName}</h3>
+                <p class="text-xs text-stone-500">
+                  Assigned to <span class="font-semibold text-stone-700">{sectionToDisplay.assignedTo}</span>
+                </p>
+              </div>
             </div>
+            <button 
+              onclick={() => (sectionToDisplay = null)}
+              class="flex h-8 w-8 items-center justify-center rounded-lg text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-600"
+              aria-label="Close panel"
+            >
+              <i class="fa-solid fa-xmark"></i>
+            </button>
           </div>
-          <button aria-label=" " onclick={() => (sectionToDisplay = null)}>
-            <i
-              class="fa-solid fa-x cursor-pointer hover:text-rose-400 duration-300"
-            ></i>
-          </button>
         </div>
-        <!-- Error part -->
-        <div class="flex flex-col p-4">
-          <div
-            class="{sectionToDisplay?.issues &&
-            sectionToDisplay?.issues.length > 0
-              ? 'border-rose-400 bg-rose-200'
-              : 'border-green-400 bg-green-200'} border p-4 rounded-md mb-8"
-          >
+        
+        <!-- Content -->
+        <div class="flex-1 overflow-y-auto px-6 py-5">
+          <!-- Status Banner -->
+          <div class={`rounded-2xl p-4 mb-6 ${sectionToDisplay?.issues?.length > 0 ? 'bg-rose-50 border border-rose-200' : 'bg-emerald-50 border border-emerald-200'}`}>
             {#if sectionToDisplay?.issues && sectionToDisplay.issues.length > 0}
-              <p class="text-rose-600">⚠️ Unresolved issues</p>
-              {#each sectionToDisplay.issues as issue (issue.issueDescription)}
-                <div class="flex items-center gap-2">
-                  <p class="max-w-[75%] w-fit">
-                    {issue.issueDescription}
-                    ({issue.criticalLevel})
-                  </p>
-                  <!-- <button class="px-3 py-2 rounded-md border border-lime-200 bg-lime-100 text-lime-700">Resolve</button> -->
-                </div>
-              {/each}
-            {:else}
-              <p class="text-green-700">
-                <i class="fa-solid fa-face-grin-beam mr-2"></i>
-                No issues found.
-              </p>
-            {/if}
-          </div>
-          <p class="mb-2">Real-time information</p>
-          <div class="flex flex-col gap-4">
-            <div
-              class="p-3 rounded-md border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50 w-full"
-            >
-              <div
-                class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
-              >
-                <i class="fa-solid fa-leaf text-sm"></i>
+              <div class="flex items-center gap-2 mb-3">
+                <i class="fa-solid fa-triangle-exclamation text-rose-500"></i>
+                <p class="text-sm font-semibold text-rose-700">Unresolved Issues</p>
               </div>
-              <div>
-                <p
-                  class="text-xs font-medium text-stone-400 uppercase tracking-wide"
-                >
-                  Humidity Level
-                </p>
-                <p class="text-sm font-bold text-stone-700">
-                  {sectionToDisplay?.humidityLevel}
-                </p>
-              </div>
-            </div>
-            <div
-              class="p-3 rounded-md border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50 w-full"
-            >
-              <div
-                class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
-              >
-                <i class="fa-solid fa-leaf text-sm"></i>
-              </div>
-              <div>
-                <p
-                  class="text-xs font-medium text-stone-400 uppercase tracking-wide"
-                >
-                  Temperature
-                </p>
-                <p class="text-sm font-bold text-stone-700">
-                  {sectionToDisplay?.temperature}
-                </p>
-              </div>
-            </div>
-            <div
-              class="p-3 rounded-md border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50 w-full"
-            >
-              <div
-                class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
-              >
-                <i class="fa-solid fa-leaf text-sm"></i>
-              </div>
-              <div>
-                <p
-                  class="text-xs font-medium text-stone-400 uppercase tracking-wide"
-                >
-                  Soil Moisture
-                </p>
-                <p class="text-sm font-bold text-stone-700">
-                  {sectionToDisplay?.soilMoisture}
-                </p>
-              </div>
-            </div>
-            <div
-              class="p-3 rounded-md border border-stone-200 bg-white/50 flex items-center gap-3 transition-all hover:border-lime-200 hover:bg-lime-50/50 w-full"
-            >
-              <div
-                class="flex h-8 w-8 items-center justify-center rounded-full bg-lime-100 text-lime-700"
-              >
-                <i class="fa-solid fa-leaf text-sm"></i>
-              </div>
-              <div>
-                <p
-                  class="text-xs font-medium text-stone-400 uppercase tracking-wide"
-                >
-                  Last Watered
-                </p>
-                <p class="text-sm font-bold text-stone-700">
-                  {sectionToDisplay?.lastWatered}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="my-4 mt-8 flex flex-col gap-2">
-            <p>Plants in this section</p>
-            {#if sectionToDisplay}
-              <div class="flex flex-col gap-4">
-                {#each sectionToDisplay.plants as plant (plant)}
-                  <div
-                    class="w-full rounded-md bg-[#f0fdf4] text-black text-sm border-[#baf8cf] border text-neural-600 p-3"
-                  >
-                    {plant}
+              <div class="space-y-2">
+                {#each sectionToDisplay.issues as issue (issue.issueDescription)}
+                  <div class="flex items-start gap-2 text-sm text-rose-600 bg-white/60 rounded-lg px-3 py-2">
+                    <i class="fa-solid fa-circle text-[4px] mt-2 shrink-0"></i>
+                    <span>{issue.issueDescription} <span class="text-rose-400">({issue.criticalLevel})</span></span>
                   </div>
                 {/each}
+              </div>
+            {:else}
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                <p class="text-sm font-medium text-emerald-700">All systems healthy — no issues detected</p>
+              </div>
+            {/if}
+          </div>
+
+          <!-- Sensor Data -->
+          <div class="mb-6">
+            <p class="text-xs font-bold uppercase tracking-widest text-stone-400 mb-3">Real-time Sensors</p>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="p-3 rounded-xl border border-stone-200 bg-white/80">
+                <div class="flex items-center gap-2 mb-1">
+                  <i class="fa-solid fa-droplet text-sky-500 text-xs"></i>
+                  <span class="text-xs text-stone-500">Humidity</span>
+                </div>
+                <p class="text-lg font-bold text-stone-800">{sensorData.humidity}<span class="text-sm text-stone-400">%</span></p>
+              </div>
+              <div class="p-3 rounded-xl border border-stone-200 bg-white/80">
+                <div class="flex items-center gap-2 mb-1">
+                  <i class="fa-solid fa-temperature-half text-orange-500 text-xs"></i>
+                  <span class="text-xs text-stone-500">Temperature</span>
+                </div>
+                <p class="text-lg font-bold text-stone-800">{sensorData.temperature}<span class="text-sm text-stone-400">°C</span></p>
+              </div>
+              <div class="p-3 rounded-xl border border-stone-200 bg-white/80">
+                <div class="flex items-center gap-2 mb-1">
+                  <i class="fa-solid fa-water text-cyan-500 text-xs"></i>
+                  <span class="text-xs text-stone-500">Soil Moisture</span>
+                </div>
+                <p class="text-lg font-bold text-stone-800">{sensorData.soilMoisture}<span class="text-sm text-stone-400">%</span></p>
+              </div>
+              <div class="p-3 rounded-xl border border-stone-200 bg-white/80">
+                <div class="flex items-center gap-2 mb-1">
+                  <i class="fa-solid fa-sun text-amber-500 text-xs"></i>
+                  <span class="text-xs text-stone-500">Light</span>
+                </div>
+                <p class="text-lg font-bold text-stone-800">{sensorData.lightIntensity}<span class="text-sm text-stone-400"> lux</span></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Plants -->
+          <div>
+            <p class="text-xs font-bold uppercase tracking-widest text-stone-400 mb-3">Plants in Section</p>
+            {#if sectionToDisplay?.plants?.length > 0}
+              <div class="flex flex-wrap gap-2">
+                {#each sectionToDisplay.plants as plant (plant)}
+                  <span class="inline-flex items-center gap-1.5 rounded-full bg-lime-100 px-3 py-1.5 text-sm font-medium text-lime-800">
+                    <i class="fa-solid fa-seedling text-xs text-lime-600"></i>
+                    {plant}
+                  </span>
+                {/each}
+              </div>
+            {:else}
+              <div class="flex flex-col items-center justify-center rounded-xl border border-dashed border-stone-200 bg-stone-50/50 py-6 text-center">
+                <i class="fa-solid fa-seedling text-stone-300 text-xl mb-2"></i>
+                <p class="text-xs text-stone-500">No plants in this section</p>
               </div>
             {/if}
           </div>
