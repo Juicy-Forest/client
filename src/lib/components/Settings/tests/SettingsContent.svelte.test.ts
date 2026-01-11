@@ -76,14 +76,12 @@ describe('SettingsContent', () => {
 
   it('maintains separate form state for each field', () => {
     renderContent('profile');
-    // Form state should be available for username field
     const inputs = screen.getAllByPlaceholderText(/New username/i);
     expect(inputs.length).toBeGreaterThan(0);
   });
 
   it('renders ProfileSettings component when tab is active', () => {
     renderContent('profile');
-    // ProfileSettings should render with form fields
     expect(screen.getAllByText(/Change Username|Change Email/i).length).toBeGreaterThan(0);
   });
 
@@ -105,13 +103,11 @@ describe('SettingsContent', () => {
 
   it('passes gardens to GardenSettings component', () => {
     renderContent('garden');
-    // Garden name should be visible if gardens array is passed
     expect(screen.getByText(/Current Garden Name: My Garden/)).toBeInTheDocument();
   });
 
   it('passes openDeleteGardenModal callback to GardenSettings', () => {
     renderContent('garden');
-    // If garden is rendered, the callback is available
     expect(screen.getByText('Garden Preferences')).toBeInTheDocument();
   });
 });

@@ -54,7 +54,6 @@ describe('GardenMembers', () => {
   it('shows remove button for non-owner members when isOwner is true', () => {
     renderComponent(true);
     const removeButtons = screen.getAllByText(/Remove/);
-    // Should have 2 remove buttons (for non-owner members)
     expect(removeButtons.length).toBeGreaterThanOrEqual(2);
   });
 
@@ -67,13 +66,11 @@ describe('GardenMembers', () => {
   it('displays member avatars with first letter of email', () => {
     const { container } = renderComponent();
     const avatars = container.querySelectorAll('.rounded-full');
-    // Should have avatars for each member
     expect(avatars.length).toBeGreaterThanOrEqual(mockMembers.length);
   });
 
   it('does not show remove button for owner even when isOwner is true', () => {
     renderComponent(true);
-    // Owner's remove button should not exist
     const ownerRow = screen.getByText('owner@example.com').closest('div');
     const removeBtn = ownerRow?.querySelector('button');
     expect(removeBtn).not.toBeInTheDocument();

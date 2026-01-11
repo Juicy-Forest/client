@@ -127,7 +127,6 @@ describe('settingHelpers', () => {
         data: { message: 'Success!' }
       };
 
-      // Should not throw error
       expect(() => handler({ update: updateFn, result })).not.toThrow();
     });
 
