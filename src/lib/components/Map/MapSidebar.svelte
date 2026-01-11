@@ -1,7 +1,7 @@
 <script lang="ts">
   import { invalidate } from "$app/navigation";
   import { page } from "$app/state";
-  import type { IconType } from "$lib/types/garden";
+  import type { IconType, Garden } from "$lib/types/garden";
   import type { SectionInfo } from "$lib/types/section";
   import CreateNewSection from "./CreateNewSection.svelte";
   import SidebarSections from "./SidebarSections.svelte";
@@ -19,6 +19,11 @@
   } = $props();
   
   let gardenId = $derived(() => page.url.searchParams.get("gardenId"));
+
+  let currentGarden = $derived((): Garden => {
+    const id = gardenId();
+    return id ? gardenData.find((g: Garden) => g._id === id) || gardenData[0] : gardenData[0];
+  });
 
   const handleSectionClick = function (section: any) {
     if (isEditMode) {
@@ -82,8 +87,7 @@
             <i class="fa-solid fa-location-dot"></i>
           </div>
           <div>
-            <p class="text-sm font-bold text-stone-700">Amsterdam Garden</p>
-            <p class="text-xs text-stone-500">Netherlands</p>
+            <p class="text-sm font-bold text-stone-700">{currentGarden().location.address}</p>
           </div>
         </div>
       </div>
