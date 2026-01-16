@@ -1,4 +1,4 @@
-import { SvelteMap } from 'svelte/reactivity';
+import { SvelteMap } from "svelte/reactivity";
 
 export class ChatService {
   channels: any[] = $state([]);
