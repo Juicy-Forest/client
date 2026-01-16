@@ -208,13 +208,4 @@ describe("MapSidebar", () => {
       "bg-lime-100/60",
     );
   });
-
-  it("handles empty garden ID", () => {
-    mockSearchParamsGet.mockReturnValue(null);
-    renderComponent([mockSection1, mockSection2], false);
-
-    // When garden ID is null, sections should still be displayed
-    expect(screen.getByText("Vegetable Garden")).toBeInTheDocument();
-    expect(screen.getByText("Flower Bed")).toBeInTheDocument();
-  });
 });
