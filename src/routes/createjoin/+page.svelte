@@ -50,7 +50,7 @@
 	}
 
 	function selectGarden(garden: any) {
-		goto('/?gardenId=' + garden._id);
+		goto(`/?gardenId=${  garden._id}`);
 	}
 
 	function copyCode(code: string) {

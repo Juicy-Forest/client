@@ -1,3 +1,5 @@
+import { SvelteMap } from 'svelte/reactivity';
+
 export class ChatService {
   channels: any[] = $state([]);
 
@@ -5,7 +7,7 @@ export class ChatService {
   messages: any[] = $state([]);
   peopleTyping: any[] = $state([]);
   ws: WebSocket | undefined = $state();
-  typingTimeouts: Map<string, any> = new Map(); // Add this line
+  typingTimeouts: SvelteMap<string, any> = new SvelteMap();
   userData: any = {};
   currentGarden: any = "";
   showToast: boolean = $state(false);
