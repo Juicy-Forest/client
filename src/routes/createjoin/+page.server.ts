@@ -1,10 +1,10 @@
 import { fail } from "@sveltejs/kit";
-import type { PageServerLoad, Actions } from './$types';
+import type { PageServerLoad, Actions } from "./$types";
 
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3030";
 
 export const load: PageServerLoad = async ({ cookies, fetch }) => {
-  const token = cookies.get('auth-token');
+  const token = cookies.get("auth-token");
 
   if (!token) {
     return { joinedGardens: [] };
@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ cookies, fetch }) => {
   try {
     const response = await fetch(`${API_BASE_URL}/garden/user`, {
       headers: {
-        'x-authorization': token,
+        "x-authorization": token,
       },
     });
 
@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ cookies, fetch }) => {
       return { joinedGardens };
     }
   } catch (error) {
-    console.error('Failed to fetch joined gardens:', error);
+    console.error("Failed to fetch joined gardens:", error);
   }
 
   return { joinedGardens: [] };
@@ -38,17 +38,17 @@ export const actions: Actions = {
       return fail(400, { error: "Name and location are required" });
     }
 
-    const token = cookies.get('auth-token');
+    const token = cookies.get("auth-token");
     if (!token) {
       return fail(401, { error: "Not authenticated" });
     }
 
     try {
       const response = await fetch(`${API_BASE_URL}/garden`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'x-authorization': token,
+          "Content-Type": "application/json",
+          "x-authorization": token,
         },
         body: JSON.stringify({
           name,
@@ -59,9 +59,9 @@ export const actions: Actions = {
       const result = await response.json();
 
       if (!response.ok) {
-        return fail(response.status, { error: "The name already exists"});
+        return fail(response.status, { error: "The name already exists" });
       }
-      
+
       return {
         success: true,
         message: `Food garden "${result.name}" created successfully!`,
@@ -81,17 +81,17 @@ export const actions: Actions = {
       return fail(400, { error: "Join code is required" });
     }
 
-    const token = cookies.get('auth-token');
+    const token = cookies.get("auth-token");
     if (!token) {
       return fail(401, { error: "Not authenticated" });
     }
 
     try {
       const response = await fetch(`${API_BASE_URL}/garden/join`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'x-authorization': token,
+          "Content-Type": "application/json",
+          "x-authorization": token,
         },
         body: JSON.stringify({
           joinCode: joinCode.trim().toUpperCase(),
@@ -101,7 +101,9 @@ export const actions: Actions = {
       const result = await response.json();
 
       if (!response.ok) {
-        return fail(response.status, { error: result.message || "Failed to join garden" });
+        return fail(response.status, {
+          error: result.message || "Failed to join garden",
+        });
       }
 
       return {

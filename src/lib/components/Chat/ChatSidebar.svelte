@@ -31,7 +31,7 @@
         Channels
       </p>
       <h1 class="mt-1 text-lg font-bold tracking-tight text-stone-800">
-        Camp Atlas
+        Chat
       </h1>
     </div>
     <form onsubmit={handleCreateChannel} class="flex w-full gap-2">

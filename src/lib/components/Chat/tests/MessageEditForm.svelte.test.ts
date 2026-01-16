@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/svelte';
-import userEvent from '@testing-library/user-event';
-import MessageEditForm from '../MessageEditForm.svelte';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen } from "@testing-library/svelte";
+import userEvent from "@testing-library/user-event";
+import MessageEditForm from "../MessageEditForm.svelte";
 
-describe('MessageEditForm', () => {
+describe("MessageEditForm", () => {
   let mockOnSave: ReturnType<typeof vi.fn>;
   let mockOnCancel: ReturnType<typeof vi.fn>;
 
@@ -12,55 +12,55 @@ describe('MessageEditForm', () => {
     mockOnCancel = vi.fn();
   });
 
-  const renderForm = (initialContent = 'Original message') =>
+  const renderForm = (initialContent = "Original message") =>
     render(MessageEditForm, {
-      props: { initialContent, onSave: mockOnSave, onCancel: mockOnCancel }
+      props: { initialContent, onSave: mockOnSave, onCancel: mockOnCancel },
     });
 
-  it('renders textarea with initial content', () => {
-    renderForm('Hello world');
-    expect(screen.getByRole('textbox')).toHaveValue('Hello world');
+  it("renders textarea with initial content", () => {
+    renderForm("Hello world");
+    expect(screen.getByRole("textbox")).toHaveValue("Hello world");
   });
 
-  it('calls onSave with trimmed content when Save is clicked', async () => {
+  it("calls onSave with trimmed content when Save is clicked", async () => {
     const user = userEvent.setup();
-    renderForm('Original');
+    renderForm("Original");
 
-    const textarea = screen.getByRole('textbox');
+    const textarea = screen.getByRole("textbox");
     await user.clear(textarea);
-    await user.type(textarea, '  Updated content  ');
-    await user.click(screen.getByRole('button', { name: 'Save' }));
+    await user.type(textarea, "  Updated content  ");
+    await user.click(screen.getByRole("button", { name: "Save" }));
 
-    expect(mockOnSave).toHaveBeenCalledWith('Updated content');
+    expect(mockOnSave).toHaveBeenCalledWith("Updated content");
   });
 
-  it('calls onCancel when Cancel is clicked', async () => {
+  it("calls onCancel when Cancel is clicked", async () => {
     const user = userEvent.setup();
     renderForm();
 
-    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
 
     expect(mockOnCancel).toHaveBeenCalled();
   });
 
-  it('calls onSave on Enter key', async () => {
+  it("calls onSave on Enter key", async () => {
     const user = userEvent.setup();
-    renderForm('Original');
+    renderForm("Original");
 
-    const textarea = screen.getByRole('textbox');
+    const textarea = screen.getByRole("textbox");
     await user.clear(textarea);
-    await user.type(textarea, 'New content');
-    await user.keyboard('{Enter}');
+    await user.type(textarea, "New content");
+    await user.keyboard("{Enter}");
 
-    expect(mockOnSave).toHaveBeenCalledWith('New content');
+    expect(mockOnSave).toHaveBeenCalledWith("New content");
   });
 
-  it('calls onCancel on Escape key', async () => {
+  it("calls onCancel on Escape key", async () => {
     const user = userEvent.setup();
     renderForm();
 
-    await user.click(screen.getByRole('textbox'));
-    await user.keyboard('{Escape}');
+    await user.click(screen.getByRole("textbox"));
+    await user.keyboard("{Escape}");
 
     expect(mockOnCancel).toHaveBeenCalled();
   });

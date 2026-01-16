@@ -60,6 +60,7 @@
   const gardenGrid = currentGarden.grid 
   let grid: GridBoxType[] = $state(gardenGrid);        
   let editingGrid: GridBoxType[] = $state([]);           
+  // svelte-ignore state_referenced_locally
   let gridToShow: GridBoxType[] = $state(grid);
   let selectedIcon: IconType | null = $state(null);
 

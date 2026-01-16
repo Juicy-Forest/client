@@ -57,7 +57,7 @@
 
             <button type="submit" class="w-full bg-lime-600 text-white py-2.5 rounded-xl text-sm font-semibold shadow-sm transition-all hover:bg-lime-700 hover:shadow-md">Sign In</button>
 
-            <p class="text-center text-stone-500 text-sm mt-6">Don't have an account? <button type="button" on:click={() => goto('/register')} class="text-lime-600 font-semibold bg-transparent border-none cursor-pointer hover:text-lime-700 transition-colors">Sign up</button></p>
+            <p class="text-center text-stone-500 text-sm mt-6">Don't have an account? <button type="button" onclick={() => goto('/register')} class="text-lime-600 font-semibold bg-transparent border-none cursor-pointer hover:text-lime-700 transition-colors">Sign up</button></p>
         </form>
     </div>
 </main>

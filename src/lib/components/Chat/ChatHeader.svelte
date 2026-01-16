@@ -12,7 +12,7 @@
   <div>
     <div class="flex items-center gap-2">
       <span class="flex h-2 w-2 rounded-full bg-lime-500 shadow-[0_0_8px_rgba(132,204,22,0.5)]"></span>
-      <h2 class="text-lg font-bold text-stone-800">#{activeChannel.name}</h2>
+      <h2 class="text-lg font-bold text-stone-800">#{(activeChannel as any).name}</h2>
     </div>
   </div>
   <!-- <div class="flex items-center gap-3 text-xs font-medium text-stone-500"> -->

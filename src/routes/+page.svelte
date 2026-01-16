@@ -375,14 +375,13 @@
 
     {#if sectionToDisplay}
       <!-- Backdrop -->
-      <div 
+      <button
         class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
         onclick={() => (sectionToDisplay = null)}
-        role="button"
         tabindex="-1"
         aria-label="Close panel"
         transition:fade={{ duration: 200 }}
-      ></div>
+      ></button>
       
       <!-- Panel -->
       <div
@@ -447,28 +446,28 @@
                   <i class="fa-solid fa-droplet text-sky-500 text-xs"></i>
                   <span class="text-xs text-stone-500">Humidity</span>
                 </div>
-                <p class="text-lg font-bold text-stone-800">{sensorData.humidity}<span class="text-sm text-stone-400">%</span></p>
+                <p class="text-lg font-bold text-stone-800">{(sensorData as any).humidity}<span class="text-sm text-stone-400">%</span></p>
               </div>
               <div class="p-3 rounded-xl border border-stone-200 bg-white/80">
                 <div class="flex items-center gap-2 mb-1">
                   <i class="fa-solid fa-temperature-half text-orange-500 text-xs"></i>
                   <span class="text-xs text-stone-500">Temperature</span>
                 </div>
-                <p class="text-lg font-bold text-stone-800">{sensorData.temperature}<span class="text-sm text-stone-400">°C</span></p>
+                <p class="text-lg font-bold text-stone-800">{(sensorData as any).temperature}<span class="text-sm text-stone-400">°C</span></p>
               </div>
               <div class="p-3 rounded-xl border border-stone-200 bg-white/80">
                 <div class="flex items-center gap-2 mb-1">
                   <i class="fa-solid fa-water text-cyan-500 text-xs"></i>
                   <span class="text-xs text-stone-500">Soil Moisture</span>
                 </div>
-                <p class="text-lg font-bold text-stone-800">{sensorData.soilMoisture}<span class="text-sm text-stone-400">%</span></p>
+                <p class="text-lg font-bold text-stone-800">{(sensorData as any).soilMoisture}<span class="text-sm text-stone-400">%</span></p>
               </div>
               <div class="p-3 rounded-xl border border-stone-200 bg-white/80">
                 <div class="flex items-center gap-2 mb-1">
                   <i class="fa-solid fa-sun text-amber-500 text-xs"></i>
                   <span class="text-xs text-stone-500">Light</span>
                 </div>
-                <p class="text-lg font-bold text-stone-800">{sensorData.lightIntensity}<span class="text-sm text-stone-400"> lux</span></p>
+                <p class="text-lg font-bold text-stone-800">{(sensorData as any).lightIntensity}<span class="text-sm text-stone-400"> lux</span></p>
               </div>
             </div>
           </div>

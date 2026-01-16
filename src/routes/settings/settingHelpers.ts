@@ -7,23 +7,33 @@ export function createFieldEnhancer(config: {
 }) {
   return () => {
     config.clearAllMessages();
-    return async ({ update, result }: { update: () => void; result: Record<string, unknown> }) => {
-      if (result.type === 'success') {
+    return async ({
+      update,
+      result,
+    }: {
+      update: () => void;
+      result: Record<string, unknown>;
+    }) => {
+      if (result.type === "success") {
         const field = config.formState[config.fieldName];
         if (field) {
-          const successData = result.data as Record<string, unknown> | undefined;
-          field.success = (successData?.message as string) ?? '';
-          field.value = '';
+          const successData = result.data as
+            | Record<string, unknown>
+            | undefined;
+          field.success = (successData?.message as string) ?? "";
+          field.value = "";
         }
         config.onSuccess?.(result.data as Record<string, unknown>);
         if (config.shouldReload) {
           setTimeout(() => location.reload(), 1000);
         }
-      } else if (result.type === 'failure') {
+      } else if (result.type === "failure") {
         const field = config.formState[config.fieldName];
         if (field) {
-          const failureData = result.data as Record<string, unknown> | undefined;
-          field.error = (failureData?.error as string) ?? '';
+          const failureData = result.data as
+            | Record<string, unknown>
+            | undefined;
+          field.error = (failureData?.error as string) ?? "";
         }
       }
       update();

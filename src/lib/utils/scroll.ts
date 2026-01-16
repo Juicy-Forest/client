@@ -6,12 +6,15 @@ import { tick } from "svelte";
  * @param threshold - Distance from bottom in pixels (default: 100)
  * @returns true if the container is within threshold pixels of the bottom
  */
-export function isAtBottom(container: HTMLElement | null, threshold: number = 100): boolean {
+export function isAtBottom(
+  container: HTMLElement | null,
+  threshold: number = 100,
+): boolean {
   if (!container) return false;
-  
+
   const position = container.scrollTop + container.clientHeight;
   const bottom = container.scrollHeight;
-  
+
   return bottom - position < threshold;
 }
 
@@ -21,7 +24,7 @@ export function isAtBottom(container: HTMLElement | null, threshold: number = 10
  */
 export function scrollToBottom(container: HTMLElement | null): void {
   if (!container) return;
-  
+
   container.scrollTo({
     top: container.scrollHeight,
     behavior: "smooth",
@@ -35,7 +38,7 @@ export function scrollToBottom(container: HTMLElement | null): void {
  */
 export function scrollToBottomInstant(container: HTMLElement | null): void {
   if (!container) return;
-  
+
   tick().then(() => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
@@ -55,7 +58,7 @@ export function scrollToBottomInstant(container: HTMLElement | null): void {
  */
 export function smoothScrollToBottom(container: HTMLElement | null): void {
   if (!container) return;
-  
+
   tick().then(() => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
@@ -64,4 +67,3 @@ export function smoothScrollToBottom(container: HTMLElement | null): void {
     });
   });
 }
-

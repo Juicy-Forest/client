@@ -1,15 +1,18 @@
 export class ChatService {
   channels: any[] = $state([]);
 
-  activeChannelId: string = $state('');
+  activeChannelId: string = $state("");
   messages: any[] = $state([]);
   peopleTyping: any[] = $state([]);
   ws: WebSocket | undefined = $state();
   typingTimeouts: Map<string, any> = new Map(); // Add this line
   userData: any = {};
-  currentGarden: any = '';
+  currentGarden: any = "";
   showToast: boolean = $state(false);
-  toastMessage: { title: string; message: string } = $state({ title: '', message: '' }); 
+  toastMessage: { title: string; message: string } = $state({
+    title: "",
+    message: "",
+  });
 
   constructor() {
     this.socketsSetup();
@@ -21,43 +24,48 @@ export class ChatService {
   }
 
   get activeChannel() {
-    return this.channels.find((channel) => channel._id === this.activeChannelId) ?? '';
+    return (
+      this.channels.find((channel) => channel._id === this.activeChannelId) ??
+      ""
+    );
   }
 
   setUserData(userData: any) {
-    this.userData = userData
-  };
+    this.userData = userData;
+  }
 
   setCurrentGarden(currentGarden: any) {
-    this.currentGarden= currentGarden 
-  };
+    this.currentGarden = currentGarden;
+  }
 
   setActiveChannel(channelId: string) {
     this.activeChannelId = channelId;
-  };
+  }
 
   socketsSetup() {
     this.ws = new WebSocket("ws://localhost:3033");
 
     this.ws.onopen = () => {
-      console.log(this.currentGarden)
+      console.log(this.currentGarden);
       console.log("Client: Connection established!");
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-        this.ws.send(JSON.stringify({ type: 'getMessages', gardenId: this.currentGarden}));
+        this.ws.send(
+          JSON.stringify({ type: "getMessages", gardenId: this.currentGarden }),
+        );
       }
     };
 
     this.ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      if (data.type === 'activity') {
+      if (data.type === "activity") {
         this.processActivity(data);
-      } else if (data.type === 'initialLoad') {
+      } else if (data.type === "initialLoad") {
         this.processInitialLoad(data);
-      } else if (data.type === 'text') {
+      } else if (data.type === "text") {
         this.messages.push(data.payload);
-      } else if (data.type === 'editMessage') {
-        this.processEditedMessage(data.payload)
-      } else if (data.type === 'deleteMessage') {
+      } else if (data.type === "editMessage") {
+        this.processEditedMessage(data.payload);
+      } else if (data.type === "deleteMessage") {
         this.processDeletedMessage(data.payload);
       }
     };
@@ -69,15 +77,18 @@ export class ChatService {
 
   async createChannel(name: string, gardenId: string) {
     const bodyObj = { name: name, gardenId: gardenId };
-    const response = await fetch('http://localhost:3030/channel', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(bodyObj)
+    const response = await fetch("http://localhost:3030/channel", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(bodyObj),
     });
     const channel = await response.json();
     this.channels.push(channel);
-    
-    this.displayToast("Channel created successfully", `#${name} is now available`);
+
+    this.displayToast(
+      "Channel created successfully",
+      `#${name} is now available`,
+    );
   }
 
   displayToast(title: string, message: string) {
@@ -89,14 +100,19 @@ export class ChatService {
   }
 
   processInitialLoad(data: any) {
-    data.messages.forEach((message: any) => this.messages.push(message.payload));
+    data.messages.forEach((message: any) =>
+      this.messages.push(message.payload),
+    );
     data.channels.forEach((channel: any) => this.channels.push(channel));
   }
 
   processActivity(data: any) {
     const username = data.payload.username;
 
-    if (!this.peopleTyping.find(p => p.username === username) && this.activeChannelId === data.channelId) {
+    if (
+      !this.peopleTyping.find((p) => p.username === username) &&
+      this.activeChannelId === data.channelId
+    ) {
       this.peopleTyping.push(data.payload);
     }
 
@@ -105,7 +121,9 @@ export class ChatService {
     }
 
     const timeoutId = setTimeout(() => {
-      this.peopleTyping = this.peopleTyping.filter(p => p.username !== username);
+      this.peopleTyping = this.peopleTyping.filter(
+        (p) => p.username !== username,
+      );
       this.typingTimeouts.delete(username);
     }, 1000);
 
@@ -113,7 +131,9 @@ export class ChatService {
   }
 
   processEditedMessage(editedMessage: any) {
-    const messageIndex = this.messages.findIndex(m => m._id == editedMessage._id)
+    const messageIndex = this.messages.findIndex(
+      (m) => m._id == editedMessage._id,
+    );
     if (messageIndex !== -1) {
       this.messages[messageIndex] = {
         ...this.messages[messageIndex],
@@ -124,22 +144,24 @@ export class ChatService {
   }
 
   processDeletedMessage(deletedMessage: any) {
-    const messageIndex = this.messages.findIndex(m => m._id == deletedMessage._id)
+    const messageIndex = this.messages.findIndex(
+      (m) => m._id == deletedMessage._id,
+    );
     if (messageIndex !== -1) {
       this.messages.splice(messageIndex, 1);
     }
   }
 
   sendMessage(content: string) {
-    if (!content.trim()) return
+    if (!content.trim()) return;
 
     const load = JSON.stringify({
       type: "message",
       content: content,
       channelId: this.activeChannelId,
-      channelName: this.channels.find(c => c._id === this.activeChannelId),
+      channelName: this.channels.find((c) => c._id === this.activeChannelId),
       avatarColor: this.userData.avatarColor,
-      gardenId: this.currentGarden
+      gardenId: this.currentGarden,
     });
 
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
@@ -148,7 +170,7 @@ export class ChatService {
   }
 
   sendEditedMessage(messageId: string, newContent: string) {
-    if (!newContent.trim()) return
+    if (!newContent.trim()) return;
 
     const load = JSON.stringify({
       type: "editMessage",
@@ -159,7 +181,7 @@ export class ChatService {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(load);
     }
-  };
+  }
 
   deleteMessage(messageId: string) {
     if (!messageId) {
@@ -186,5 +208,5 @@ export class ChatService {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(load);
     }
-  };
+  }
 }

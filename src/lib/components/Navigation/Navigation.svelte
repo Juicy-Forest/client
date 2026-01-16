@@ -204,7 +204,7 @@
   {#if openNavbar}
     <div class="fixed inset-0 z-50 md:hidden">
       <!-- Backdrop -->
-      <div class="absolute inset-0 bg-black/20 backdrop-blur-sm" onclick={() => (openNavbar = false)}></div>
+      <button class="absolute inset-0 bg-black/20 backdrop-blur-sm" onclick={() => (openNavbar = false)} title="button"></button>
       
       <!-- Menu Panel -->
       <div class="absolute right-4 top-4 bottom-4 w-[280px] rounded-3xl border border-stone-200/60 bg-white/95 shadow-2xl backdrop-blur-xl">

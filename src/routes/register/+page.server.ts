@@ -22,9 +22,9 @@ export const actions: Actions = {
 
       // Make API call to backend
       const response = await fetch(`${API_BASE_URL}/users/register`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           username,
@@ -36,7 +36,9 @@ export const actions: Actions = {
       const result = await response.json();
 
       if (!response.ok) {
-        return fail(response.status, { error: result.error || "Registration failed" });
+        return fail(response.status, {
+          error: result.error || "Registration failed",
+        });
       }
 
       // Store the token from the server response (login new account)
@@ -54,6 +56,6 @@ export const actions: Actions = {
     }
 
     // Redirect to createjoin page after successful registration and login
-    throw redirect(303, '/createjoin');
+    throw redirect(303, "/createjoin");
   },
 };

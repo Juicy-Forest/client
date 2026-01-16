@@ -20,6 +20,8 @@
   
   let gardenId = $derived(() => page.url.searchParams.get("gardenId"));
 
+  let selectedGarden = gardenData.filter((garden) => garden._id === gardenId());
+
   const handleSectionClick = function (section: any) {
     if (isEditMode) {
       updateSelectSectionId(section._id);
@@ -82,7 +84,7 @@
             <i class="fa-solid fa-location-dot"></i>
           </div>
           <div>
-            <p class="text-sm font-bold text-stone-700">Amsterdam Garden</p>
+            <p class="text-sm font-bold text-stone-700">{selectedGarden[0].name}</p>
             <p class="text-xs text-stone-500">Netherlands</p>
           </div>
         </div>

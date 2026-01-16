@@ -13,7 +13,7 @@
 	let { data } = $props();
 
 	$effect(() => {
-        const id: string = $page.url.searchParams.get('gardenId');
+        const id: string = $page.url.searchParams.get('gardenId')!;
         inventoryStore.selectedGardenId = id;
     });
 

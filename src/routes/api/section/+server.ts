@@ -18,7 +18,7 @@ export async function POST({ request, cookies, fetch }) {
           "X-Authorization": token,
         },
         body: JSON.stringify({ ...body }),
-      }
+      },
     );
 
     const data = await backendRes.json();

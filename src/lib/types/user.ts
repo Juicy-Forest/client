@@ -1,6 +1,6 @@
 export type UserType = {
-    email: string
-    token: string
-    username: string
-    _id:string 
-}
+  email: string;
+  token: string;
+  username: string;
+  _id: string;
+};

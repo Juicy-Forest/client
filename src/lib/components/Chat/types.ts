@@ -16,12 +16,3 @@ export type Message = {
   timestamp: string;
   content: string;
 };
-
-
-
-
-
-
-
-
-

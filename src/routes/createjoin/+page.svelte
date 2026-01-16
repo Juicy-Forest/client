@@ -88,6 +88,8 @@
 											<div class="font-semibold text-stone-800 truncate">{garden.name}</div>
 											<div class="text-xs text-stone-500">{garden.members?.length || 0} members</div>
 											<div class="text-xs text-stone-400 mt-1">
+												<!-- svelte-ignore a11y_click_events_have_key_events -->
+												<!-- svelte-ignore a11y_no_static_element_interactions -->
 												Code: <span class="cursor-pointer font-mono text-stone-600 hover:text-lime-600 transition-colors" onclick={(e) => { e.stopPropagation(); copyCode(garden.joinCode || 'N/A'); }}>{garden.joinCode || 'N/A'}</span>
 											</div>
 										</div>
@@ -135,6 +137,7 @@
 					return async ({ update, result }) => {
 						if (result.type === 'success') {
 							success = result.data?.message as string;
+							// @ts-ignore
 							createdGardenCode = result.data?.garden?.joinCode;
 							gardenName = '';
 							gardenLocation = '';
