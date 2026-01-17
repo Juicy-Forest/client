@@ -40,13 +40,3 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Discord notification on failure
-        if: failure()
-        uses: sarisia/actions-status-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          status: ${{ job.status }}
-          title: "Frontend Build Failed"
-          description: "The frontend build has failed. Please check the logs."
-          color: 0xff0000
-          username: GitHub Actions
