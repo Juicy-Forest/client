@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { page } from "$app/stores";
-  import ChatHeader from "$lib/components/Chat/ChatHeader.svelte";
-  import ChatInput from "$lib/components/Chat/ChatInput.svelte";
-  import ChatMessages from "$lib/components/Chat/ChatMessages.svelte";
-  import ChatSidebar from "$lib/components/Chat/ChatSidebar.svelte";
-  import Toast from "$lib/components/UI/Toast.svelte";
-  import { ChatService } from "$lib/services/chat.svelte.js";
-  import { getContext, setContext } from "svelte";
+  import { page } from '$app/stores';
+  import ChatHeader from '$lib/components/Chat/ChatHeader.svelte';
+  import ChatInput from '$lib/components/Chat/ChatInput.svelte';
+  import ChatMessages from '$lib/components/Chat/ChatMessages.svelte';
+  import ChatSidebar from '$lib/components/Chat/ChatSidebar.svelte';
+  import Toast from '$lib/components/UI/Toast.svelte';
+  import { ChatService } from '$lib/services/chat.svelte.js';
+  import { getContext, setContext } from 'svelte';
 
   const chat = new ChatService();
-  setContext("chatService", chat);
+  setContext('chatService', chat);
   // const currentGarden = getContext("currentGarden");
 
   const { data } = $props();

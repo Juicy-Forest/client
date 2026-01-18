@@ -7,40 +7,40 @@
     onCreate: (name: string, topic: string) => void;
   }
 
-  let { isOpen, onClose, onCreate }: Props = $props();
+  const { isOpen, onClose, onCreate }: Props = $props();
   
   let newChannelName = $state('');
   let newChannelTopic = $state('');
 
   function handleCreate() {
-    onCreate(newChannelName, newChannelTopic);
-    // Reset form after attempt (logic for success/fail is in parent/service, but typically we close or error)
-    // Here we assume if the modal closes, we might want to reset, or we let the user edit if it failed.
-    // The parent controls `isOpen`.
-    // Let's rely on parent closing the modal to reset this component state if we used `key` block or similar, 
-    // but simplified: we'll just emit.
-    // To truly reset, we might want to watch `isOpen` or just reset on successful submit.
-    // For now, let's keep it simple.
+      onCreate(newChannelName, newChannelTopic);
+      // Reset form after attempt (logic for success/fail is in parent/service, but typically we close or error)
+      // Here we assume if the modal closes, we might want to reset, or we let the user edit if it failed.
+      // The parent controls `isOpen`.
+      // Let's rely on parent closing the modal to reset this component state if we used `key` block or similar, 
+      // but simplified: we'll just emit.
+      // To truly reset, we might want to watch `isOpen` or just reset on successful submit.
+      // For now, let's keep it simple.
     
-    // Actually, checking original code:
-    // It resets when opening.
+      // Actually, checking original code:
+      // It resets when opening.
   }
   
   // Watch for opening to reset
   $effect(() => {
-    if (isOpen) {
-       // logic to reset if needed, but the original code reset on `openCreateModal` function.
-       // We can just reset inputs when valid submit happens, or leave it.
-       // Let's reset on open.
-    } else {
-        newChannelName = '';
-        newChannelTopic = '';
-    }
+      if (isOpen) {
+          // logic to reset if needed, but the original code reset on `openCreateModal` function.
+          // We can just reset inputs when valid submit happens, or leave it.
+          // Let's reset on open.
+      } else {
+          newChannelName = '';
+          newChannelTopic = '';
+      }
   });
 
   function onSubmit(e: Event) {
-    e.preventDefault();
-    handleCreate();
+      e.preventDefault();
+      handleCreate();
   }
 </script>
 

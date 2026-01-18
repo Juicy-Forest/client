@@ -1,7 +1,7 @@
 <script>
-    import InventoryWarning from "./InventoryWarning.svelte";
-    import InventorySearchBar from "./InventorySearchBar.svelte";
-    import { inventoryStore } from "$lib/stores/inventoryStore.svelte";
+    import InventoryWarning from './InventoryWarning.svelte';
+    import InventorySearchBar from './InventorySearchBar.svelte';
+    import { inventoryStore } from '$lib/stores/inventoryStore.svelte';
 
     const { inventory } = $props();
 </script>

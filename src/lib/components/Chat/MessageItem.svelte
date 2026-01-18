@@ -1,78 +1,78 @@
 <script lang="ts">
-  import { fly } from "svelte/transition";
-  import { cubicOut } from "svelte/easing";
-  import Avatar from "./Avatar.svelte";
-  import MessageMenuButton from "./MessageMenuButton.svelte";
-  import MessageMenuPopup from "./MessageMenuPopup.svelte";
-  import MessageContent from "./MessageContent.svelte";
-  import MessageEditForm from "./MessageEditForm.svelte";
-  import MessageUnsendModal from "./MessageUnsendModal.svelte";
-    import type { ChatService } from "$lib/services/chat.svelte";
-    import { getContext } from "svelte";
+  import { fly } from 'svelte/transition';
+  import { cubicOut } from 'svelte/easing';
+  import Avatar from './Avatar.svelte';
+  import MessageMenuButton from './MessageMenuButton.svelte';
+  import MessageMenuPopup from './MessageMenuPopup.svelte';
+  import MessageContent from './MessageContent.svelte';
+  import MessageEditForm from './MessageEditForm.svelte';
+  import MessageUnsendModal from './MessageUnsendModal.svelte';
+    import type { ChatService } from '$lib/services/chat.svelte';
+    import { getContext } from 'svelte';
 
-  let { message, isSelf, isRepeated } = $props();
+  const { message, isSelf, isRepeated } = $props();
   let showMenu = $state(false);
   let isEditing = $state(false);
   let showUnsendModal = $state(false);
 
-  const chat: ChatService= getContext('chatService')
+  const chat: ChatService= getContext('chatService');
   function formatTime(timestamp: string) {
-    const date = new Date(timestamp);
+      const date = new Date(timestamp);
 
-    return date.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+      return date.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+      });
   }
 
   function toggleMenu() {
-    showMenu = !showMenu;
+      showMenu = !showMenu;
   }
 
   function closeMenu() {
-    showMenu = false;
+      showMenu = false;
   }
 
   function handleEdit() {
-    closeMenu();
-    isEditing = true;
+      closeMenu();
+      isEditing = true;
   }
 
   function handleEditSave(newContent: string) {
-    chat.sendEditedMessage(message._id, newContent);
-    isEditing = false;
+      chat.sendEditedMessage(message._id, newContent);
+      isEditing = false;
   }
 
   function handleEditCancel() {
-    isEditing = false;
+      isEditing = false;
   }
 
   function handleUnsend() {
-    closeMenu();
-    showUnsendModal = true;
+      closeMenu();
+      showUnsendModal = true;
   }
 
   function handleUnsendConfirm() {
-    chat.deleteMessage(message._id);
-    showUnsendModal = false;
+      chat.deleteMessage(message._id);
+      showUnsendModal = false;
   }
 
   function handleUnsendCancel() {
-    showUnsendModal = false;
+      showUnsendModal = false;
   }
 </script>
 
 <article
-  class={`group flex gap-5 ${isSelf ? "flex-row-reverse" : ""} ${isRepeated ? "mt-1" : "mt-5"}`}
+  class={`group flex gap-5 ${isSelf ? 'flex-row-reverse' : ''} ${isRepeated ? 'mt-1' : 'mt-5'}`}
   in:fly={{ y: 20, duration: 300, easing: cubicOut }}
 >
   <!-- Avatar - Hidden for repeated messages but keeps spacing -->
   <Avatar author={message.author} {isRepeated}/>
 
-  <div class={`flex max-w-[55%] flex-1 flex-col ${isSelf ? "items-end" : ""}`}>
+  <div class={`flex max-w-[55%] flex-1 flex-col ${isSelf ? 'items-end' : ''}`}>
     {#if !isRepeated}
       <header
-        class={`flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm ${isSelf ? "flex-row-reverse" : ""}`}
+        class={`flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm ${isSelf ? 'flex-row-reverse' : ''}`}
       >
         <p class={`font-bold ${message.author.color}`}>
           {message.author.username}
@@ -101,11 +101,11 @@
 
       <div
         class={`rounded-2xl border px-6 py-3.5 text-[15px] break-all text-wrap leading-relaxed shadow-sm
-          ${isRepeated ? "mt-0.5" : "mt-2"}
+          ${isRepeated ? 'mt-0.5' : 'mt-2'}
           ${
             isSelf
-              ? `border-lime-200 bg-lime-50 text-stone-800 ring-1 ring-lime-900/5 ${isRepeated ? "rounded-r-md" : "rounded-tr-sm"}`
-              : `border-stone-100 bg-white text-stone-700 ring-1 ring-stone-900/5 ${isRepeated ? "rounded-l-md" : "rounded-tl-sm"}`
+                ? `border-lime-200 bg-lime-50 text-stone-800 ring-1 ring-lime-900/5 ${isRepeated ? 'rounded-r-md' : 'rounded-tr-sm'}`
+                : `border-stone-100 bg-white text-stone-700 ring-1 ring-stone-900/5 ${isRepeated ? 'rounded-l-md' : 'rounded-tl-sm'}`
           }`}
       >
         {#if isEditing}

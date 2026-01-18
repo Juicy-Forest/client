@@ -1,24 +1,24 @@
 <script lang="ts">
-  import { getContext } from "svelte";
-  import ChannelItem from "./ChannelItem.svelte";
-  import type { ChatService } from "$lib/services/chat.svelte";
+  import { getContext } from 'svelte';
+  import ChannelItem from './ChannelItem.svelte';
+  import type { ChatService } from '$lib/services/chat.svelte';
 
   interface Props {
     gardenId: string;
   }
 
-  const chat: ChatService = getContext("chatService");
-  let { gardenId }: Props = $props();
+  const chat: ChatService = getContext('chatService');
+  const { gardenId }: Props = $props();
 
   function handleCreateChannel(e: SubmitEvent) {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const name = formData.get("channelName") as string;
+      e.preventDefault();
+      const formData = new FormData(e.target as HTMLFormElement);
+      const name = formData.get('channelName') as string;
 
-    if (name?.trim()) {
-      chat.createChannel(name.trim(), gardenId);
-      (e.target as HTMLFormElement).reset();
-    }
+      if (name?.trim()) {
+          chat.createChannel(name.trim(), gardenId);
+          (e.target as HTMLFormElement).reset();
+      }
   }
 </script>
 

@@ -9,12 +9,12 @@
     email: string;
   }
 
-  let {
-    members,
-    owner,
-    isOwner = false,
-    gardenId,
-    onMemberRemoved
+  const {
+      members,
+      owner,
+      isOwner = false,
+      gardenId,
+      onMemberRemoved
   } = $props<{
     members: Member[];
     owner: Owner;
@@ -27,49 +27,49 @@
   let isDeletingGarden = $state(false);
 
   async function removeMember(memberId: string) {
-    removingMemberId = memberId;
-    try {
-      const form = new FormData();
-      form.append('gardenId', gardenId || '');
-      form.append('memberId', memberId);
+      removingMemberId = memberId;
+      try {
+          const form = new FormData();
+          form.append('gardenId', gardenId || '');
+          form.append('memberId', memberId);
 
-      const response = await fetch('?/removeMember', {
-        method: 'POST',
-        body: form
-      });
+          const response = await fetch('?/removeMember', {
+              method: 'POST',
+              body: form
+          });
 
-      if (response.ok) {
-        onMemberRemoved?.();
+          if (response.ok) {
+              onMemberRemoved?.();
+          }
+      } catch (error) {
+          console.error('Failed to remove member:', error);
+      } finally {
+          removingMemberId = null;
       }
-    } catch (error) {
-      console.error('Failed to remove member:', error);
-    } finally {
-      removingMemberId = null;
-    }
   }
 
   async function deleteGarden() {
-    if (!confirm('Are you sure you want to delete this garden? This cannot be undone.')) {
-      return;
-    }
-    isDeletingGarden = true;
-    try {
-      const form = new FormData();
-      form.append('gardenId', gardenId || '');
-
-      const response = await fetch('?/deleteGarden', {
-        method: 'POST',
-        body: form
-      });
-
-      if (response.ok) {
-        window.location.href = '/settings';
+      if (!confirm('Are you sure you want to delete this garden? This cannot be undone.')) {
+          return;
       }
-    } catch (error) {
-      console.error('Failed to delete garden:', error);
-    } finally {
-      isDeletingGarden = false;
-    }
+      isDeletingGarden = true;
+      try {
+          const form = new FormData();
+          form.append('gardenId', gardenId || '');
+
+          const response = await fetch('?/deleteGarden', {
+              method: 'POST',
+              body: form
+          });
+
+          if (response.ok) {
+              window.location.href = '/settings';
+          }
+      } catch (error) {
+          console.error('Failed to delete garden:', error);
+      } finally {
+          isDeletingGarden = false;
+      }
   }
 </script>
 

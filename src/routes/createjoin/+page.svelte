@@ -26,36 +26,36 @@
 	$: joinedGardens = data.joinedGardens || [];
 
 	function chooseCreate() {
-		step = 'create-details';
-		error = '';
-		success = '';
-		createdGardenCode = '';
+	    step = 'create-details';
+	    error = '';
+	    success = '';
+	    createdGardenCode = '';
 	}
 
 	function chooseJoin() {
-		step = 'join';
-		joinError = '';
-		joinSuccess = '';
+	    step = 'join';
+	    joinError = '';
+	    joinSuccess = '';
 	}
 
 	function back() {
-		if (step === 'create-details') {
-			step = 'choose';
-			return;
-		}
-		if (step === 'join') {
-			step = 'choose';
-			return;
-		}
+	    if (step === 'create-details') {
+	        step = 'choose';
+	        return;
+	    }
+	    if (step === 'join') {
+	        step = 'choose';
+	        return;
+	    }
 	}
 
 	function selectGarden(garden: any) {
-		goto('/?gardenId=' + garden._id);
+	    goto('/?gardenId=' + garden._id);
 	}
 
 	function copyCode(code: string) {
-		navigator.clipboard.writeText(code);
-		alert('Code copied to clipboard!');
+	    navigator.clipboard.writeText(code);
+	    alert('Code copied to clipboard!');
 	}
 </script>
 
@@ -132,17 +132,17 @@
 				<p class="text-stone-500 text-sm mt-2 mb-6">Choose a name and location for your food garden</p>
 
 				<form method="POST" action="?/create" use:enhance={() => {
-					return async ({ update, result }) => {
-						if (result.type === 'success') {
-							success = result.data?.message as string;
-							createdGardenCode = result.data?.garden?.joinCode;
-							gardenName = '';
-							gardenLocation = '';
-						} else if (result.type === 'failure') {
-							error = result.data?.error as string;
-						}
-						update();
-					};
+				    return async ({ update, result }) => {
+				        if (result.type === 'success') {
+				            success = result.data?.message as string;
+				            createdGardenCode = result.data?.garden?.joinCode;
+				            gardenName = '';
+				            gardenLocation = '';
+				        } else if (result.type === 'failure') {
+				            error = result.data?.error as string;
+				        }
+				        update();
+				    };
 				}}>
 					<div class="mb-5">
 						<label for="name" class="block text-sm font-semibold text-stone-700 mb-2">Name</label>
@@ -190,17 +190,17 @@
 				<p class="text-stone-500 text-sm mt-2 mb-4">Enter the garden code provided by your admin</p>
 
 				<form method="POST" action="?/join" use:enhance={() => {
-					return async ({ update, result }) => {
-						if (result.type === 'success') {
-							joinSuccess = result.data?.message as string;
-							gardenCode = '';
-							// Reload to update garden list
-							setTimeout(() => window.location.reload(), 1500);
-						} else if (result.type === 'failure') {
-							joinError = result.data?.error as string;
-						}
-						update();
-					};
+				    return async ({ update, result }) => {
+				        if (result.type === 'success') {
+				            joinSuccess = result.data?.message as string;
+				            gardenCode = '';
+				            // Reload to update garden list
+				            setTimeout(() => window.location.reload(), 1500);
+				        } else if (result.type === 'failure') {
+				            joinError = result.data?.error as string;
+				        }
+				        update();
+				    };
 				}}>
 					<div class="mt-2 flex items-center gap-3">
 						<input name="joinCode" type="text" bind:value={gardenCode} placeholder="Enter garden code" class="flex-1 rounded-xl border border-stone-200 bg-white/80 px-4 py-2.5 text-sm text-stone-800 placeholder-stone-400 transition-all focus:border-lime-500 focus:outline-none focus:ring-2 focus:ring-lime-500/20 font-mono" required />

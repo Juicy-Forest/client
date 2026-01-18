@@ -1,7 +1,7 @@
 <script lang="ts">
-  import TypingDots from "./TypingDots.svelte";
+  import TypingDots from './TypingDots.svelte';
 
-  let { peopleTyping = [] }: { peopleTyping: any[] } = $props();
+  const { peopleTyping = [] }: { peopleTyping: any[] } = $props();
 </script>
 
 {#if peopleTyping.length > 0}
@@ -15,11 +15,11 @@
             title={person.username}
           >
             {person.username
-              .split(" ")
-              .map((part: string) => part[0])
-              .join("")
-              .slice(0, 2)
-              .toUpperCase()}
+                .split(' ')
+                .map((part: string) => part[0])
+                .join('')
+                .slice(0, 2)
+                .toUpperCase()}
           </div>
         {/each}
       </div>

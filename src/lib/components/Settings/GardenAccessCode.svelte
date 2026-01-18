@@ -1,6 +1,6 @@
 <script lang="ts">
-  let {
-    joinCode
+  const {
+      joinCode
   } = $props<{
     joinCode: string;
   }>();
@@ -16,9 +16,9 @@
     <button
       type="button"
       onclick={() => {
-        if (joinCode) {
-          navigator.clipboard.writeText(joinCode);
-        }
+          if (joinCode) {
+              navigator.clipboard.writeText(joinCode);
+          }
       }}
       class="rounded-lg bg-lime-400 px-4 py-2 text-sm font-medium text-stone-800 hover:bg-lime-500 transition-colors"
     >

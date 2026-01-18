@@ -14,9 +14,9 @@
       onclick={() => handleSectionClick(section)}
       onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSectionClick(section); }}
       class={`group flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm transition-all duration-200 cursor-pointer ${
-        selectedSectionId === section._id
-          ? 'bg-lime-100/60 ring-1 ring-lime-200/60 shadow-sm'
-          : 'hover:bg-stone-100/50'
+          selectedSectionId === section._id
+              ? 'bg-lime-100/60 ring-1 ring-lime-200/60 shadow-sm'
+              : 'hover:bg-stone-100/50'
       }`}
     >
       <div class="flex items-center gap-3">

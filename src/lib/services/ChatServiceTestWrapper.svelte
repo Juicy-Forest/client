@@ -4,7 +4,7 @@
   const chatService = new ChatService();
   
   export function getChatService() {
-    return chatService;
+      return chatService;
   }
 </script>
 
