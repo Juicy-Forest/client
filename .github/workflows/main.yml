@@ -37,7 +37,7 @@ jobs:
         with:
           projectBaseDir: .
           args: >
-            -Dsonar.projectKey=client
+            -Dsonar.projectKey=Juicy-Forest_client
             -Dsonar.organization=juicy-forest-2
             -Dsonar.sources=src
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
