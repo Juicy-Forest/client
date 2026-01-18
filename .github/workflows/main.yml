@@ -30,12 +30,12 @@ jobs:
         run: npm run test:coverage
 
       - name: Run SonarCloud analysis
-        uses: sonarsource/sonarqube-scan-action@v4
+        uses: sonarsource/sonarqube-scan-action@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-          projectBaseDir: ./client
+          projectBaseDir: .
           args: >
             -Dsonar.projectKey=client
             -Dsonar.organization=juicy-forest-2
