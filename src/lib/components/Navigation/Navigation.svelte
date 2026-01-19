@@ -1,55 +1,55 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
-  import NavLink from "./NavLink.svelte";
+  import { goto } from '$app/navigation';
+  import NavLink from './NavLink.svelte';
   let openNavbar = $state(false);
 
   const { gardenData } = $props();
-  let navigationLinks = [
-    {
-      route: "/",
-      text: "Home",
-      icon: "fa solid fa-home",
-    },
-    {
-      route: "/map",
-      text: "Map",
-      icon: "fa solid fa-map",
-    },
-    {
-      route: "/tasks",
-      text: "Tasks",
-      icon: "fa solid fa-tasks",
-    },
-    {
-      route: "/chat",
-      text: "Chat",
-      icon: "fa solid fa-message",
-    },
-    {
-      route: "/inventory",
-      text: "Inventory",
-      icon: "fa solid fa-box",
-    },
+  const navigationLinks = [
+      {
+          route: '/',
+          text: 'Home',
+          icon: 'fa solid fa-home',
+      },
+      {
+          route: '/map',
+          text: 'Map',
+          icon: 'fa solid fa-map',
+      },
+      {
+          route: '/tasks',
+          text: 'Tasks',
+          icon: 'fa solid fa-tasks',
+      },
+      {
+          route: '/chat',
+          text: 'Chat',
+          icon: 'fa solid fa-message',
+      },
+      {
+          route: '/inventory',
+          text: 'Inventory',
+          icon: 'fa solid fa-box',
+      },
   ];
 
   const dynamicLinks = $derived(
-    navigationLinks.map((link) => ({
-      ...link,
-      route: gardenData._id
-        ? `${link.route}?gardenId=${gardenData._id}`
-        : link.route,
-    })),
+      navigationLinks.map((link) => ({
+          ...link,
+          route: gardenData._id
+              ? `${link.route}?gardenId=${gardenData._id}`
+              : link.route,
+      })),
   );
 
-  let notifications: { section: string; description: string }[] = [
-    {
-      section: "South section - Flowers",
-      description: "Low soil moisture (35%) - requires watering",
-    },
-    {
-      section: "South section - Flowers",
-      description: "Not watered for 8 hours",
-    },
+  const notifications: { section: string; description: string }[] = [
+      {
+          section: 'South section - Flowers',
+          description: 'Low soil moisture (35%) - requires watering',
+      },
+      {
+          section: 'South section - Flowers',
+          description: 'Not watered for 8 hours',
+      },
   ];
 
   let showNotificationTab = $state(false);
@@ -82,7 +82,7 @@
               route={navItem.route}
               text={navItem.text}
               icon={navItem.icon}
-              orientation={"Vertical"}
+              orientation="Vertical"
               onClick={() => {}}
             />
           </li>
@@ -107,7 +107,7 @@
         </button>
         
         <button
-          onclick={() => goto("/settings")}
+          onclick={() => goto('/settings')}
           class="flex h-9 w-9 items-center justify-center rounded-full text-stone-500 transition-all hover:bg-stone-100 hover:text-stone-800 active:scale-95"
           aria-label="Settings"
         >
@@ -131,7 +131,7 @@
             <div>
               <p class="text-sm font-bold text-stone-800">Notifications</p>
               <p
-                class={`${notifications.length > 0 ? "block" : "hidden"} text-xs text-stone-500`}
+                class={`${notifications.length > 0 ? 'block' : 'hidden'} text-xs text-stone-500`}
               >
                 {notifications.length} alerts require attention
               </p>
@@ -161,7 +161,7 @@
                 </div>
               </div>
             {/each}
-            {#if notifications.length == 0}
+            {#if notifications.length === 0}
               <div
                 class="flex flex-col items-center justify-center py-8 text-center"
               >
@@ -235,8 +235,8 @@
               <li>
                 <button
                   onclick={() => {
-                    goto(navItem.route);
-                    openNavbar = false;
+                      goto(navItem.route);
+                      openNavbar = false;
                   }}
                   class="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left transition-all hover:bg-stone-100"
                 >
@@ -251,8 +251,8 @@
           <div class="space-y-2 border-t border-stone-200 pt-4">
             <button
               onclick={() => {
-                goto("/settings");
-                openNavbar = false;
+                  goto('/settings');
+                  openNavbar = false;
               }}
               class="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left transition-all hover:bg-stone-100"
             >

@@ -2,7 +2,7 @@
   import { setContext } from 'svelte';
   import MessageItem from '../MessageItem.svelte';
 
-  let { message, isSelf, isRepeated, chatService } = $props();
+  const { message, isSelf, isRepeated, chatService } = $props();
 
   setContext('chatService', chatService);
 </script>

@@ -1,4 +1,4 @@
-import type { Garden } from "./garden";
+import type { Garden } from './garden';
 
 export type IssueType = {
     solved: boolean;

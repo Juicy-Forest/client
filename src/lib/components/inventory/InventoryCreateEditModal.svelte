@@ -21,8 +21,8 @@
             bind:value={formData.name}
             class={`w-full rounded-xl border bg-stone-50 px-4 py-2.5 text-sm text-stone-800 placeholder:text-stone-400 focus:bg-white focus:outline-none focus:ring-2 transition-all ${
                 errors.name
-                    ? "border-red-300 focus:border-red-400 focus:ring-red-100"
-                    : "border-stone-200 focus:border-lime-300 focus:ring-lime-100"
+                    ? 'border-red-300 focus:border-red-400 focus:ring-red-100'
+                    : 'border-stone-200 focus:border-lime-300 focus:ring-lime-100'
             }`}
             placeholder="e.g. Tomato Seeds"
         />
@@ -70,8 +70,8 @@
                 bind:value={formData.quantity}
                 class={`w-full rounded-xl border bg-stone-50 px-4 py-2.5 text-sm text-stone-800 placeholder:text-stone-400 focus:bg-white focus:outline-none focus:ring-2 transition-all ${
                     errors.quantity
-                        ? "border-red-300 focus:border-red-400 focus:ring-red-100"
-                        : "border-stone-200 focus:border-lime-300 focus:ring-lime-100"
+                        ? 'border-red-300 focus:border-red-400 focus:ring-red-100'
+                        : 'border-stone-200 focus:border-lime-300 focus:ring-lime-100'
                 }`}
             />
             {#if errors.quantity}
@@ -152,8 +152,8 @@
                                 bind:value={formData.desiredQuantity}
                                 class={`w-full rounded-lg border bg-white px-3 py-1.5 text-sm text-stone-800 focus:outline-none focus:ring-2 ${
                                     errors.desiredQuantity
-                                        ? "border-red-300 focus:border-red-400 focus:ring-red-100"
-                                        : "border-stone-200 focus:border-lime-300 focus:ring-lime-100"
+                                        ? 'border-red-300 focus:border-red-400 focus:ring-red-100'
+                                        : 'border-stone-200 focus:border-lime-300 focus:ring-lime-100'
                                 }`}
                             />
                         </div>

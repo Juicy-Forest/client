@@ -1,4 +1,4 @@
-import { tick } from "svelte";
+import { tick } from 'svelte';
 
 /**
  * Check if a scrollable container is scrolled near the bottom
@@ -7,12 +7,12 @@ import { tick } from "svelte";
  * @returns true if the container is within threshold pixels of the bottom
  */
 export function isAtBottom(container: HTMLElement | null, threshold: number = 100): boolean {
-  if (!container) return false;
+    if (!container) return false;
   
-  const position = container.scrollTop + container.clientHeight;
-  const bottom = container.scrollHeight;
+    const position = container.scrollTop + container.clientHeight;
+    const bottom = container.scrollHeight;
   
-  return bottom - position < threshold;
+    return bottom - position < threshold;
 }
 
 /**
@@ -20,12 +20,12 @@ export function isAtBottom(container: HTMLElement | null, threshold: number = 10
  * @param container - The scrollable HTMLElement
  */
 export function scrollToBottom(container: HTMLElement | null): void {
-  if (!container) return;
+    if (!container) return;
   
-  container.scrollTo({
-    top: container.scrollHeight,
-    behavior: "smooth",
-  });
+    container.scrollTo({
+        top: container.scrollHeight,
+        behavior: 'smooth',
+    });
 }
 
 /**
@@ -34,18 +34,18 @@ export function scrollToBottom(container: HTMLElement | null): void {
  * @param container - The scrollable HTMLElement
  */
 export function scrollToBottomInstant(container: HTMLElement | null): void {
-  if (!container) return;
+    if (!container) return;
   
-  tick().then(() => {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        container.scrollTo({
-          top: container.scrollHeight,
-          behavior: "instant",
+    tick().then(() => {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                container.scrollTo({
+                    top: container.scrollHeight,
+                    behavior: 'instant',
+                });
+            });
         });
-      });
     });
-  });
 }
 
 /**
@@ -54,14 +54,14 @@ export function scrollToBottomInstant(container: HTMLElement | null): void {
  * @param container - The scrollable HTMLElement
  */
 export function smoothScrollToBottom(container: HTMLElement | null): void {
-  if (!container) return;
+    if (!container) return;
   
-  tick().then(() => {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        scrollToBottom(container);
-      });
+    tick().then(() => {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                scrollToBottom(container);
+            });
+        });
     });
-  });
 }
 

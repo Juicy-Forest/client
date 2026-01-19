@@ -6,8 +6,8 @@
     members: Array<{ _id: string; email: string }>;
   }
 
-  let {
-    garden
+  const {
+      garden
   } = $props<{
     garden: Garden;
   }>();

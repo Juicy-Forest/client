@@ -5,33 +5,33 @@ import InventoryHeader from '../InventoryHeader.svelte';
 import { inventoryStore } from '$lib/stores/inventoryStore.svelte';
 
 vi.mock('$lib/stores/inventoryStore.svelte', () => ({
-  inventoryStore: { openCreateModal: vi.fn() }
+    inventoryStore: { openCreateModal: vi.fn() }
 }));
 
 vi.mock('../InventoryWarning.svelte', () => ({ default: vi.fn() }));
 vi.mock('../InventorySearchBar.svelte', () => ({ default: vi.fn() }));
 
 describe('InventoryHeader', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
 
-  const renderComponent = (inventory = []) => render(InventoryHeader, { props: { inventory } });
+    const renderComponent = (inventory = []) => render(InventoryHeader, { props: { inventory } });
 
-  it('displays the correct item count', () => {
-    const { rerender } = renderComponent([{ id: 1 }, { id: 2 }]);
-    expect(screen.getByText('2 items')).toBeInTheDocument();
+    it('displays the correct item count', () => {
+        const { rerender } = renderComponent([{ id: 1 }, { id: 2 }]);
+        expect(screen.getByText('2 items')).toBeInTheDocument();
 
-    rerender({ inventory: [] });
-    expect(screen.getByText('0 items')).toBeInTheDocument();
-  });
+        rerender({ inventory: [] });
+        expect(screen.getByText('0 items')).toBeInTheDocument();
+    });
 
-  it('opens the create modal when Add Item is clicked', async () => {
-    const user = userEvent.setup();
-    renderComponent();
+    it('opens the create modal when Add Item is clicked', async () => {
+        const user = userEvent.setup();
+        renderComponent();
     
-    await user.click(screen.getByRole('button', { name: /Add Item/i }));
+        await user.click(screen.getByRole('button', { name: /Add Item/i }));
     
-    expect(inventoryStore.openCreateModal).toHaveBeenCalledTimes(1);
-  });
+        expect(inventoryStore.openCreateModal).toHaveBeenCalledTimes(1);
+    });
 });

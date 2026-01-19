@@ -1,40 +1,40 @@
 <script lang="ts">
-  import MessageItem from "./MessageItem.svelte";
-  import TypingIndicator from "./TypingIndicator.svelte";
+  import MessageItem from './MessageItem.svelte';
+  import TypingIndicator from './TypingIndicator.svelte';
   import {
-    isAtBottom,
-    smoothScrollToBottom,
-    scrollToBottomInstant,
-  } from "$lib/utils/scroll";
-  import type { ChatService } from "$lib/services/chat.svelte";
-  import { getContext } from "svelte";
+      isAtBottom,
+      smoothScrollToBottom,
+      scrollToBottomInstant,
+  } from '$lib/utils/scroll';
+  import type { ChatService } from '$lib/services/chat.svelte';
+  import { getContext } from 'svelte';
 
-  const chat: ChatService = getContext("chatService");
+  const chat: ChatService = getContext('chatService');
 
-  let messages: any[] = $derived(
-    chat.messages.filter(
-      (message) => message.channelId === chat.activeChannelId,
-    ),
+  const messages: any[] = $derived(
+      chat.messages.filter(
+          (message) => message.channelId === chat.activeChannelId,
+      ),
   );
 
   let scrollContainer: HTMLDivElement;
 
   $effect(() => {
-    const channelId = chat.activeChannelId;
-    scrollToBottomInstant(scrollContainer);
+      const channelId = chat.activeChannelId;
+      scrollToBottomInstant(scrollContainer);
   });
 
   $effect(() => {
-    const count = messages.length;
-    const typingCount = chat.peopleTyping.length;
+      const count = messages.length;
+      const typingCount = chat.peopleTyping.length;
 
-    if ((count > 0 || typingCount > 0) && scrollContainer) {
-      const shouldScroll = isAtBottom(scrollContainer);
+      if ((count > 0 || typingCount > 0) && scrollContainer) {
+          const shouldScroll = isAtBottom(scrollContainer);
 
-      if (shouldScroll) {
-        smoothScrollToBottom(scrollContainer);
+          if (shouldScroll) {
+              smoothScrollToBottom(scrollContainer);
+          }
       }
-    }
   });
 </script>
 

@@ -1,31 +1,31 @@
 <script lang="ts">
-  let { initialContent, onSave, onCancel } = $props();
+  const { initialContent, onSave, onCancel } = $props();
   
   let content = $state(initialContent);
   let textareaEl: HTMLTextAreaElement;
 
   // Auto-focus when mounted
   $effect(() => {
-    textareaEl?.focus();
+      textareaEl?.focus();
   });
 
   function handleKeydown(e: KeyboardEvent) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSave();
-    }
-    if (e.key === "Escape") {
-      onCancel();
-    }
+      if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          handleSave();
+      }
+      if (e.key === 'Escape') {
+          onCancel();
+      }
   }
 
   function handleSave() {
-    const trimmed = content.trim();
-    if (trimmed && trimmed !== initialContent) {
-      onSave(trimmed);
-    } else {
-      onCancel();
-    }
+      const trimmed = content.trim();
+      if (trimmed && trimmed !== initialContent) {
+          onSave(trimmed);
+      } else {
+          onCancel();
+      }
   }
 </script>
 

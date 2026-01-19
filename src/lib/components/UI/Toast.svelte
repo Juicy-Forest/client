@@ -9,45 +9,45 @@
     type?: 'success' | 'info' | 'warning' | 'error';
   }
 
-  let { show = $bindable(false), title, message, type = 'success' }: Props = $props();
+  const { show = $bindable(false), title, message, type = 'success' }: Props = $props();
 
   const typeConfig = {
-    success: {
-      bgColor: 'bg-emerald-50',
-      borderColor: 'border-emerald-200',
-      iconBg: 'bg-emerald-100',
-      iconColor: 'text-emerald-600',
-      titleColor: 'text-emerald-900',
-      messageColor: 'text-emerald-600',
-      icon: 'fa-check'
-    },
-    info: {
-      bgColor: 'bg-sky-50',
-      borderColor: 'border-sky-200',
-      iconBg: 'bg-sky-100',
-      iconColor: 'text-sky-600',
-      titleColor: 'text-sky-900',
-      messageColor: 'text-sky-600',
-      icon: 'fa-info'
-    },
-    warning: {
-      bgColor: 'bg-amber-50',
-      borderColor: 'border-amber-200',
-      iconBg: 'bg-amber-100',
-      iconColor: 'text-amber-600',
-      titleColor: 'text-amber-900',
-      messageColor: 'text-amber-600',
-      icon: 'fa-exclamation'
-    },
-    error: {
-      bgColor: 'bg-red-50',
-      borderColor: 'border-red-200',
-      iconBg: 'bg-red-100',
-      iconColor: 'text-red-600',
-      titleColor: 'text-red-900',
-      messageColor: 'text-red-600',
-      icon: 'fa-xmark'
-    }
+      success: {
+          bgColor: 'bg-emerald-50',
+          borderColor: 'border-emerald-200',
+          iconBg: 'bg-emerald-100',
+          iconColor: 'text-emerald-600',
+          titleColor: 'text-emerald-900',
+          messageColor: 'text-emerald-600',
+          icon: 'fa-check'
+      },
+      info: {
+          bgColor: 'bg-sky-50',
+          borderColor: 'border-sky-200',
+          iconBg: 'bg-sky-100',
+          iconColor: 'text-sky-600',
+          titleColor: 'text-sky-900',
+          messageColor: 'text-sky-600',
+          icon: 'fa-info'
+      },
+      warning: {
+          bgColor: 'bg-amber-50',
+          borderColor: 'border-amber-200',
+          iconBg: 'bg-amber-100',
+          iconColor: 'text-amber-600',
+          titleColor: 'text-amber-900',
+          messageColor: 'text-amber-600',
+          icon: 'fa-exclamation'
+      },
+      error: {
+          bgColor: 'bg-red-50',
+          borderColor: 'border-red-200',
+          iconBg: 'bg-red-100',
+          iconColor: 'text-red-600',
+          titleColor: 'text-red-900',
+          messageColor: 'text-red-600',
+          icon: 'fa-xmark'
+      }
   };
 
   const config = $derived(typeConfig[type]);

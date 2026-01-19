@@ -8,56 +8,56 @@
 
   const { data } = $props();
   export const plantTypes: IconType[] = [{
-    type: "Plant",
-    icon: "🌱"
+      type: 'Plant',
+      icon: '🌱'
   }, {
-    type: "Bush",
-    icon: "🌿"
+      type: 'Bush',
+      icon: '🌿'
   },
   {
-    type: "Tree",
-    icon: "🌾"
+      type: 'Tree',
+      icon: '🌾'
   },
   {
-    type: "Flower",
-    icon: "🌸"
+      type: 'Flower',
+      icon: '🌸'
   },
   {
-    type: "Greenhouse",
-    icon: "🏡"
+      type: 'Greenhouse',
+      icon: '🏡'
   },
   {
-    type: "Pathway",
-    icon: "⬜"
+      type: 'Pathway',
+      icon: '⬜'
   },
   {
-    type: "Pond",
-    icon: "🐸"
+      type: 'Pond',
+      icon: '🐸'
   },
   {
-    type: "Fence",
-    icon: "🪜"
+      type: 'Fence',
+      icon: '🪜'
   },
-];
+  ];
 
 // states
-  let selectedSectionId = $state('')
+  let selectedSectionId = $state('');
   let isEditMode = $state(false);
-  let localSectionData: SectionData = $state(data.sectionData)
+  let localSectionData: SectionData = $state(data.sectionData);
   let showSuccessToast = $state(false);
 
   const updateLocalSectionData = function(newItem: SectionInfo) {
-    localSectionData = [...localSectionData, newItem]
-  }
+      localSectionData = [...localSectionData, newItem];
+  };
 
   const updateSelectSectionId = (newSectionId: string) =>{
-    selectedSectionId = newSectionId
-  }
+      selectedSectionId = newSectionId;
+  };
 
-  const updateSelectedIcon = (newIcon: IconType) => selectedIcon = newIcon
-  const gardenId = page.url.searchParams.get('gardenId')
-  const currentGarden = gardenId ? data.gardenData.find((g) => g._id === gardenId) : data.gardenData[0]
-  const gardenGrid = currentGarden.grid 
+  const updateSelectedIcon = (newIcon: IconType) => selectedIcon = newIcon;
+  const gardenId = page.url.searchParams.get('gardenId');
+  const currentGarden = gardenId ? data.gardenData.find((g) => g._id === gardenId) : data.gardenData[0];
+  const gardenGrid = currentGarden.grid; 
   let grid: GridBoxType[] = $state(gardenGrid);        
   let editingGrid: GridBoxType[] = $state([]);           
   let gridToShow: GridBoxType[] = $state(grid);
@@ -66,84 +66,84 @@
 
   // handlers and functionality
   const updateCell = function (i: number) {
-    if(!isEditMode) return
-    const next = [...editingGrid];
-    if(selectedSectionId) {
-      next[i] = { ...next[i], section: next[i].section ? null : selectedSectionId };
-    } else if (selectedIcon) {
-      next[i] = {...next[i], plant: selectedIcon.type}
-    }
-    // const selectedSection = data.sectionData?.find((s: any) => s._id === selectedSectionId)
-    editingGrid = next;
-    gridToShow = next; 
-  }
+      if(!isEditMode) return;
+      const next = [...editingGrid];
+      if(selectedSectionId) {
+          next[i] = { ...next[i], section: next[i].section ? null : selectedSectionId };
+      } else if (selectedIcon) {
+          next[i] = {...next[i], plant: selectedIcon.type};
+      }
+      // const selectedSection = data.sectionData?.find((s: any) => s._id === selectedSectionId)
+      editingGrid = next;
+      gridToShow = next; 
+  };
 
   const cloneGrid = function (source: GridBoxType[]): GridBoxType[] {
-    return source.map((cell) => ({ ...cell }));
+      return source.map((cell) => ({ ...cell }));
   };
 
   const enterEditMode = function() {
-    editingGrid = cloneGrid(grid);
-    gridToShow = editingGrid;
-    isEditMode = true;
-  }
+      editingGrid = cloneGrid(grid);
+      gridToShow = editingGrid;
+      isEditMode = true;
+  };
 
 const saveEdit = async function() {
-  if(JSON.stringify(editingGrid) !== JSON.stringify(grid)) {
+    if(JSON.stringify(editingGrid) !== JSON.stringify(grid)) {
     // updated garden obj
-    const newGarden = {
-      ...currentGarden,
-      grid: editingGrid.map(cell => ({ ...cell }))
-    };    
-    await fetch(`api/garden/${currentGarden._id}`, {
-      method: "PUT",
-      headers:  {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({updatedGarden: newGarden})
-    })
-  } 
-  grid = cloneGrid(editingGrid);
-  exitEditMode();
+        const newGarden = {
+            ...currentGarden,
+            grid: editingGrid.map(cell => ({ ...cell }))
+        };    
+        await fetch(`api/garden/${currentGarden._id}`, {
+            method: 'PUT',
+            headers:  {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({updatedGarden: newGarden})
+        });
+    } 
+    grid = cloneGrid(editingGrid);
+    exitEditMode();
   
-  // Show success toast
-  showSuccessToast = true;
-  setTimeout(() => {
-    showSuccessToast = false;
-  }, 3000);
-}
+    // Show success toast
+    showSuccessToast = true;
+    setTimeout(() => {
+        showSuccessToast = false;
+    }, 3000);
+};
 
 const cancelEdit = function() {
-  exitEditMode();
-}
+    exitEditMode();
+};
 
 const exitEditMode = function() {
-  gridToShow = grid;
-  editingGrid = [];
-  isEditMode = false;
-}
+    gridToShow = grid;
+    editingGrid = [];
+    isEditMode = false;
+};
 
 
 const typeToIcon = function(type: string) {
-  const res = plantTypes.find((obj) => obj.type === type) as IconType
-  return res.icon 
-}
+    const res = plantTypes.find((obj) => obj.type === type) as IconType;
+    return res.icon; 
+};
 
 
 const handleIconPlacement = function(grid: GridBoxType) {
-  if(selectedIcon) {
-    const updatedGrid = gridToShow.map((tile: GridBoxType) => {
-      if(tile.index === grid.index) {
-        return {...tile, plant: selectedIcon!.type}
-      } else {
-        return tile
-      }
-    })
-    gridToShow = updatedGrid
-  }
-}
+    if(selectedIcon) {
+        const updatedGrid = gridToShow.map((tile: GridBoxType) => {
+            if(tile.index === grid.index) {
+                return {...tile, plant: selectedIcon!.type};
+            } else {
+                return tile;
+            }
+        });
+        gridToShow = updatedGrid;
+    }
+};
 
-const sectionDataForGarden = data.sectionData.filter((section: SectionInfo) => section.garden._id === currentGarden._id)
+const sectionDataForGarden = data.sectionData.filter((section: SectionInfo) => section.garden._id === currentGarden._id);
 
 </script>
 
@@ -154,7 +154,7 @@ const sectionDataForGarden = data.sectionData.filter((section: SectionInfo) => s
     class="mx-auto grid w-full max-w-none items-start gap-8 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)]"
   >
     <!-- Sidebar -->
-  <MapSidebar updateLocalSectionData={updateLocalSectionData} updateSelectedIcon={updateSelectedIcon} selectedIcon={selectedIcon} plantTypes={plantTypes} updateSelectSectionId={updateSelectSectionId} selectedSectionId={selectedSectionId} sectionData={sectionDataForGarden} isEditMode={isEditMode} gardenData={data.gardenData} />
+  <MapSidebar {updateLocalSectionData} {updateSelectedIcon} {selectedIcon} {plantTypes} {updateSelectSectionId} {selectedSectionId} sectionData={sectionDataForGarden} {isEditMode} gardenData={data.gardenData} />
     <!-- Main Content -->
     <div
       class="flex h-[calc(100vh-10.5rem)] flex-col overflow-hidden rounded-[2.5rem] border border-stone-200/60 bg-white/80 shadow-xl shadow-stone-200/20 backdrop-blur-xl"
@@ -167,8 +167,8 @@ const sectionDataForGarden = data.sectionData.filter((section: SectionInfo) => s
           <h2 class="text-lg font-bold text-stone-800">Interactive Layout</h2>
           <p class="mt-0.5 text-sm text-stone-500">
             {isEditMode
-              ? "Select an item from the sidebar and click on the map to place it."
-              : "Visualize and manage plants in your garden."}
+                ? 'Select an item from the sidebar and click on the map to place it.'
+                : 'Visualize and manage plants in your garden.'}
           </p>
         </div>
         <div class="flex items-center gap-3">
@@ -217,8 +217,8 @@ const sectionDataForGarden = data.sectionData.filter((section: SectionInfo) => s
                     <button
                       aria-label="Grid cell"
                       onclick={() => {
-                        handleIconPlacement(gridItem)
-                        updateCell(i)}}
+                          handleIconPlacement(gridItem);
+                          updateCell(i);}}
                       class={`border border-stone-300/40 cursor-pointer flex items-center justify-center w-7 h-7 transition-all hover:brightness-95
                       ${handleReturnGridClasses(gridItem.section, localSectionData)}
                       `}
