@@ -8,13 +8,13 @@
   const dispatch = createEventDispatcher();
 
   const close = () => {
-    dispatch('close');
+      dispatch('close');
   };
 
   const handleKeydown = (e: KeyboardEvent) => {
-    if (isOpen && e.key === 'Escape') {
-      close();
-    }
+      if (isOpen && e.key === 'Escape') {
+          close();
+      }
   };
 </script>
 

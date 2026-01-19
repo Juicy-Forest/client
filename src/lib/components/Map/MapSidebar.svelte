@@ -1,64 +1,64 @@
 <script lang="ts">
-  import { invalidate } from "$app/navigation";
-  import { page } from "$app/state";
-  import type { IconType } from "$lib/types/garden";
-  import type { SectionInfo } from "$lib/types/section";
-  import CreateNewSection from "./CreateNewSection.svelte";
-  import SidebarSections from "./SidebarSections.svelte";
+  import { invalidate } from '$app/navigation';
+  import { page } from '$app/state';
+  import type { IconType } from '$lib/types/garden';
+  import type { SectionInfo } from '$lib/types/section';
+  import CreateNewSection from './CreateNewSection.svelte';
+  import SidebarSections from './SidebarSections.svelte';
 
   const {
-    sectionData: initSectionData,
-    isEditMode,
-    gardenData,
-    selectedSectionId,
-    updateSelectSectionId,
-    plantTypes,
-    selectedIcon,
-    updateSelectedIcon,
-    updateLocalSectionData
+      sectionData: initSectionData,
+      isEditMode,
+      gardenData,
+      selectedSectionId,
+      updateSelectSectionId,
+      plantTypes,
+      selectedIcon,
+      updateSelectedIcon,
+      updateLocalSectionData
   } = $props();
   
-  let gardenId = $derived(() => page.url.searchParams.get("gardenId"));
+  const gardenId = $derived(() => page.url.searchParams.get('gardenId'));
 
   const handleSectionClick = function (section: any) {
-    if (isEditMode) {
-      updateSelectSectionId(section._id);
-    } 
+      if (isEditMode) {
+          updateSelectSectionId(section._id);
+      } 
   };
 
   function selectIcon(icon: IconType) {
-    updateSelectedIcon(selectedIcon === icon ? null : icon);
-    updateSelectSectionId("");
+      updateSelectedIcon(selectedIcon === icon ? null : icon);
+      updateSelectSectionId('');
   }
 
   let sectionData = $state<SectionInfo[]>(
-    structuredClone(initSectionData)
+      structuredClone(initSectionData)
   );
 
-  let selectedGardenSectionData = $derived(() => {
-    const id = gardenId();
-    if (!id) return [];
-    return sectionData.filter(s => s.garden._id === id);
+  const selectedGardenSectionData = $derived(() => {
+      const id = gardenId();
+      if (!id) return [];
+      return sectionData.filter(s => s.garden._id === id);
   });
 
   const updateGardenSections = (newSection: SectionInfo) => {
-    sectionData = [...sectionData, newSection];
-    updateLocalSectionData(newSection)
+      sectionData = [...sectionData, newSection];
+      updateLocalSectionData(newSection);
   };
 
     const handleDeleteSection = async function (id: string) {
-    const deleteSectionResponse = await fetch(`/api/section/${id}`, {
-      method: "DELETE",
-    });
+        const deleteSectionResponse = await fetch(`/api/section/${id}`, {
+            method: 'DELETE',
+        });
 
-    const parsedRes = await deleteSectionResponse.json();
-    if (parsedRes.status === 500) {
-      // handle error message, (use toastify for errors)
-      return;
-    }
-    await invalidate("data:sections");
-    sectionData = sectionData.filter(s => s._id !== id);
-  };
+        const parsedRes = await deleteSectionResponse.json();
+        if (parsedRes.status === 500) {
+            // handle error message, (use toastify for errors)
+            return;
+        }
+        await invalidate('data:sections');
+        sectionData = sectionData.filter(s => s._id !== id);
+    };
 
 </script>
 
@@ -91,7 +91,7 @@
       <!-- Sections -->
       <SidebarSections
         {selectedSectionId}
-        sectionData={sectionData}
+        {sectionData}
         {handleSectionClick}
         {handleDeleteSection}
       />
@@ -114,15 +114,15 @@
               <button
                 type="button"
                 class={`flex flex-col items-center justify-center gap-1.5 rounded-xl border p-3 transition-all cursor-pointer ${
-                  selectedIcon?.type === plant.type 
-                    ? "bg-lime-100/60 border-lime-300 ring-1 ring-lime-200" 
-                    : "border-stone-200 bg-white/80 hover:bg-stone-50 hover:border-stone-300"
+                    selectedIcon?.type === plant.type 
+                        ? 'bg-lime-100/60 border-lime-300 ring-1 ring-lime-200' 
+                        : 'border-stone-200 bg-white/80 hover:bg-stone-50 hover:border-stone-300'
                 }`}
                 onclick={() => selectIcon(plant)}
               >
                 <span class="text-2xl">{plant.icon}</span>
                 <span class={`text-[10px] font-bold uppercase tracking-wide ${
-                  selectedIcon?.type === plant.type ? "text-lime-700" : "text-stone-500"
+                    selectedIcon?.type === plant.type ? 'text-lime-700' : 'text-stone-500'
                 }`}>{plant.type}</span>
               </button>
             {/each}

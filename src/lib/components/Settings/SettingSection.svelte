@@ -2,14 +2,14 @@
   import { enhance } from '$app/forms';
   import type { Snippet } from 'svelte';
 
-  let {
-    title,
-    action,
-    fieldName,
-    error,
-    success,
-    onEnhance,
-    children
+  const {
+      title,
+      action,
+      fieldName,
+      error,
+      success,
+      onEnhance,
+      children
   }: {
     title: string;
     action: string;

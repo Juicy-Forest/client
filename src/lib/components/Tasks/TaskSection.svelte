@@ -1,112 +1,111 @@
 <script>
     //@ts-nocheck
-  import Task from "./Task.svelte";
-  import TaskModel from "./TaskModel.svelte";
-  import { invalidateAll } from "$app/navigation";
-  import Modal from "../util/Modal.svelte";
+  import Task from './Task.svelte';
+  import TaskModel from './TaskModel.svelte';
+  import { invalidateAll } from '$app/navigation';
+  import Modal from '../util/Modal.svelte';
 
-  let {section, data, tasks, onTaskCreated} = $props();
+  const {section, data, tasks, onTaskCreated} = $props();
 
-  let modalMode = $state("create");
+  let modalMode = $state('create');
   let selectedTask = $state(null);
   let isModalOpen = $state(false);
 
   let formDataTask = $state({
-    name: "",
-    description: "",
-    isComplete: false,
+      name: '',
+      description: '',
+      isComplete: false,
   });
 
   function openEditModal(task) {
-    selectedTask = task;
-    formDataTask = {
-      name: task.name,
-      description: task.description,
-      isComplete: task.isComplete,
-    };
-    modalMode = "edit";
-    isModalOpen = true;
+      selectedTask = task;
+      formDataTask = {
+          name: task.name,
+          description: task.description,
+          isComplete: task.isComplete,
+      };
+      modalMode = 'edit';
+      isModalOpen = true;
   }
 
   function openDeleteModal(task) {
-    selectedTask = task;
-    modalMode = "delete";
-    isModalOpen = true;
+      selectedTask = task;
+      modalMode = 'delete';
+      isModalOpen = true;
   }
 
   function resetForm() {
-    formDataTask = {
-      name: "",
-      description: "",
-      isComplete: false,
-      sectionId: section._id,
+      formDataTask = {
+          name: '',
+          description: '',
+          isComplete: false,
+          sectionId: section._id,
 
-    };
-    selectedTask = null;
+      };
+      selectedTask = null;
   }
 
   function openCreateModal() {
-    resetForm();
-    modalMode = "create";
-    isModalOpen = true;
+      resetForm();
+      modalMode = 'create';
+      isModalOpen = true;
   }
 
   function closeModal() {
-    isModalOpen = false;
+      isModalOpen = false;
 
   }
     async function handleSubmit() {
-    const baseUrl = "http://localhost:3030/tasks/";
-    try {
-      let response;
-      if (modalMode === "create") {
-        response = await fetch(baseUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formDataTask),
-        });
-      } else if (modalMode === "edit") {
-        response = await fetch(`${baseUrl}${selectedTask?._id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formDataTask),
-        });
-      } else if (modalMode === "delete") {
-        response = await fetch(`${baseUrl}${selectedTask?._id}`, {
-          method: "DELETE",
-        });
-      }
+        const baseUrl = 'http://localhost:3030/tasks/';
+        try {
+            let response;
+            if (modalMode === 'create') {
+                response = await fetch(baseUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formDataTask),
+                });
+            } else if (modalMode === 'edit') {
+                response = await fetch(`${baseUrl}${selectedTask?._id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formDataTask),
+                });
+            } else if (modalMode === 'delete') {
+                response = await fetch(`${baseUrl}${selectedTask?._id}`, {
+                    method: 'DELETE',
+                });
+            }
 
-      if (response.ok) {
-        closeModal();
-        await invalidateAll(); // refreshes page data
+            if (response.ok) {
+                closeModal();
+                await invalidateAll(); // refreshes page data
         
-        // Show success toast for task creation
-        if (modalMode === "create" && onTaskCreated) {
-          onTaskCreated("Task added successfully", `${formDataTask.name} has been added to ${section.title}`);
+                // Show success toast for task creation
+                if (modalMode === 'create' && onTaskCreated) {
+                    onTaskCreated('Task added successfully', `${formDataTask.name} has been added to ${section.title}`);
+                }
+            } else {
+                closeModal();
+            }
+        } catch (error) {
+            console.error('Network Error', error);
         }
-      } else {
-        closeModal();
-      }
-    } catch (error) {
-      console.error("Network Error", error);
     }
-  }
 
   async function toggleCheck(task) {
-    const baseUrl = "http://localhost:3030/tasks/";
-    try {
-      let response;
-      response = await fetch(`${baseUrl}${task._id}/toggle`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-      });
-      if (response.ok) {
-        await invalidateAll();
+      const baseUrl = 'http://localhost:3030/tasks/';
+      try {
+          const response = await fetch(`${baseUrl}${task._id}/toggle`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+          });
+          if (response.ok) {
+              await invalidateAll();
+          }
+      } catch (error) {
+          console.error(error);
       }
-    } catch (error) {
-      console.error(error);
-    }
   }
 
 </script>
@@ -149,11 +148,11 @@
 
 <Modal
   isOpen={isModalOpen} close={closeModal} 
-  title= {modalMode === "delete" ? "Delete Task" :
-          modalMode === "create" ? "Add New Item" :
-          "Edit Item"}>
+  title= {modalMode === 'delete' ? 'Delete Task' :
+      modalMode === 'create' ? 'Add New Item' :
+          'Edit Item'}>
   
-  {#if modalMode === "delete"}
+  {#if modalMode === 'delete'}
     <div class="text-center">
       <div
         class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-red-600"
@@ -224,7 +223,7 @@
         <button
           type="submit"
           class="rounded-xl bg-lime-600 px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-lime-700 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50">
-          {modalMode === "create" ? "Add Item" : "Save Changes"}
+          {modalMode === 'create' ? 'Add Item' : 'Save Changes'}
         </button>
       </div>
     </form>

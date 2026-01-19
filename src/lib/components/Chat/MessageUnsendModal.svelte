@@ -1,7 +1,7 @@
 <script lang="ts">
-  import Modal from "$lib/components/util/Modal.svelte";
+  import Modal from '$lib/components/util/Modal.svelte';
 
-  let { isOpen, onConfirm, onCancel } = $props();
+  const { isOpen, onConfirm, onCancel } = $props();
 </script>
 
 <Modal {isOpen} close={onCancel} title="Unsend Message">
