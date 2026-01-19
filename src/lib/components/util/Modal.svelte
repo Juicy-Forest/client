@@ -1,5 +1,5 @@
 <script>
-	let { isOpen, close, title, children } = $props();
+	const { isOpen, close, title, children } = $props();
 </script>
 
 {#if isOpen}

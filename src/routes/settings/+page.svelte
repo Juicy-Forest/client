@@ -7,54 +7,54 @@
   let activeTab = $state('profile');
   let showDeleteGardenModal = $state(false);
   let pendingGardenDelete: any = $state(null);
-  let { data } = $props();
-  let user: any = $state(data.userData);
-  let gardens = $state(data?.gardenData ?? []);
+  const { data } = $props();
+  const user: any = $state(data.userData);
+  const gardens = $state(data?.gardenData ?? []);
   
   const settingsOptions = [
-    {
-      id: 'profile',
-      label: 'Profile',
-      icon: 'fa-solid fa-user',
-      color: 'bg-blue-100 text-blue-700'
-    },
-    {
-      id: 'garden',
-      label: 'Garden',
-      icon: 'fa-solid fa-leaf',
-      color: 'bg-green-100 text-green-700'
-    }
+      {
+          id: 'profile',
+          label: 'Profile',
+          icon: 'fa-solid fa-user',
+          color: 'bg-blue-100 text-blue-700'
+      },
+      {
+          id: 'garden',
+          label: 'Garden',
+          icon: 'fa-solid fa-leaf',
+          color: 'bg-green-100 text-green-700'
+      }
   ];
 
   function openDeleteGardenModal(garden: any) {
-    pendingGardenDelete = garden;
-    showDeleteGardenModal = true;
+      pendingGardenDelete = garden;
+      showDeleteGardenModal = true;
   }
 
   function closeDeleteGardenModal() {
-    showDeleteGardenModal = false;
-    pendingGardenDelete = null;
+      showDeleteGardenModal = false;
+      pendingGardenDelete = null;
   }
 
   async function confirmDeleteGarden() {
-    if (!pendingGardenDelete) return;
-    try {
-      const form = new FormData();
-      form.append('gardenId', pendingGardenDelete._id);
+      if (!pendingGardenDelete) return;
+      try {
+          const form = new FormData();
+          form.append('gardenId', pendingGardenDelete._id);
 
-      const response = await fetch('?/deleteGarden', {
-        method: 'POST',
-        body: form
-      });
+          const response = await fetch('?/deleteGarden', {
+              method: 'POST',
+              body: form
+          });
 
-      if (response.ok) {
-        window.location.href = '/settings';
+          if (response.ok) {
+              window.location.href = '/settings';
+          }
+      } catch (error) {
+          console.error('Failed to delete garden:', error);
+      } finally {
+          closeDeleteGardenModal();
       }
-    } catch (error) {
-      console.error('Failed to delete garden:', error);
-    } finally {
-      closeDeleteGardenModal();
-    }
   }
 </script> 
 
@@ -81,7 +81,7 @@
       <div class="flex-1 overflow-y-auto pr-1">
         <div class="flex flex-col gap-2">
           {#each settingsOptions as option (option.id)}
-            <Option {option} {activeTab} setActiveTab={(value: string) => { activeTab = value }}/>
+            <Option {option} {activeTab} setActiveTab={(value: string) => { activeTab = value; }}/>
           {/each}
         </div>
       </div>

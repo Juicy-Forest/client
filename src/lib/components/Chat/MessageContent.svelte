@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { content, isEdited = false } = $props();
+  const { content, isEdited = false } = $props();
 </script>
 
 <p>{content}</p>

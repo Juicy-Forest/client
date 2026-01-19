@@ -1,31 +1,31 @@
 <script lang="ts">
-	import InventoryFilter from "$lib/components/inventory/InventoryFilter.svelte";
-	import Modal from "$lib/components/util/Modal.svelte";
-	import Toast from "$lib/components/UI/Toast.svelte";
-	import { setContext } from "svelte";
-	import InventoryDeleteModal from "$lib/components/inventory/InventoryDeleteModal.svelte";
-	import InventoryCreateEditModal from "$lib/components/inventory/InventoryCreateEditModal.svelte";
-	import { inventoryStore } from "$lib/stores/inventoryStore.svelte";
-	import InventoryItemList from "$lib/components/inventory/InventoryItemList.svelte";
-	import InventoryHeader from "$lib/components/inventory/InventoryHeader.svelte";
+	import InventoryFilter from '$lib/components/inventory/InventoryFilter.svelte';
+	import Modal from '$lib/components/util/Modal.svelte';
+	import Toast from '$lib/components/UI/Toast.svelte';
+	import { setContext } from 'svelte';
+	import InventoryDeleteModal from '$lib/components/inventory/InventoryDeleteModal.svelte';
+	import InventoryCreateEditModal from '$lib/components/inventory/InventoryCreateEditModal.svelte';
+	import { inventoryStore } from '$lib/stores/inventoryStore.svelte';
+	import InventoryItemList from '$lib/components/inventory/InventoryItemList.svelte';
+	import InventoryHeader from '$lib/components/inventory/InventoryHeader.svelte';
 	import { page } from '$app/stores';
 
-	let { data } = $props();
+	const { data } = $props();
 
 	$effect(() => {
-        const id: string = $page.url.searchParams.get('gardenId');
-        inventoryStore.selectedGardenId = id;
-    });
+	    const id: string = $page.url.searchParams.get('gardenId');
+	    inventoryStore.selectedGardenId = id;
+	});
 
 	const itemsForThisGarden = $derived(
-        data.inventory.filter((item) => item.gardenId === inventoryStore.selectedGardenId)
-    );
+	    data.inventory.filter((item) => item.gardenId === inventoryStore.selectedGardenId)
+	);
 
-	const selectedInventoryType = $state({ selectedInventoryType: "all" });
-	setContext("selectedInventoryType", selectedInventoryType);
+	const selectedInventoryType = $state({ selectedInventoryType: 'all' });
+	setContext('selectedInventoryType', selectedInventoryType);
 
-	let searchBarInput = $state({value: ""});
-	setContext("inventorySearchBarInput", searchBarInput);
+	const searchBarInput = $state({value: ''});
+	setContext('inventorySearchBarInput', searchBarInput);
 </script>
 
 <section
@@ -47,13 +47,13 @@
 <Modal
 	isOpen={inventoryStore.isModalOpen}
 	close={inventoryStore.closeModal}
-	title={inventoryStore.modalMode === "delete"
-		? "Delete Item"
-		: inventoryStore.modalMode === "create"
-			? "Add New Item"
-			: "Edit Item"}
+	title={inventoryStore.modalMode === 'delete'
+	    ? 'Delete Item'
+	    : inventoryStore.modalMode === 'create'
+	        ? 'Add New Item'
+	        : 'Edit Item'}
 >
-	{#if inventoryStore.modalMode === "delete"}
+	{#if inventoryStore.modalMode === 'delete'}
 		<InventoryDeleteModal item={inventoryStore.selectedItem} onCancel={inventoryStore.closeModal} onDelete={() => inventoryStore.handleSubmit(data.inventory)} />
 	{:else}
 	<!-- dont remove the bind here, works without but needed to stop svelte from spamming yellow errors in console -->

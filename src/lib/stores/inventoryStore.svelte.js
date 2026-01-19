@@ -1,18 +1,18 @@
-import { invalidateAll } from "$app/navigation";
+import { invalidateAll } from '$app/navigation';
 
 class InventoryStore {
-    selectedGardenId = $state("");
+    selectedGardenId = $state('');
     isModalOpen = $state(false);
-    modalMode = $state("create"); 
+    modalMode = $state('create'); 
     selectedItem = $state(null);
     errors = $state({});
     showToast = $state(false);
-    toastMessage = $state({ title: "", message: "" });
+    toastMessage = $state({ title: '', message: '' });
     formData = $state({
-        name: "",
-        type: "plant",
+        name: '',
+        type: 'plant',
         quantity: 1,
-        quantityType: "",
+        quantityType: '',
         isImportant: false,
         desiredQuantity: 0,
     });
@@ -23,10 +23,10 @@ class InventoryStore {
 
     resetForm() {
         this.formData = {
-            name: "",
-            type: "plant",
+            name: '',
+            type: 'plant',
             quantity: 1,
-            quantityType: "",
+            quantityType: '',
             isImportant: false,
             desiredQuantity: 0,
         };
@@ -36,9 +36,9 @@ class InventoryStore {
 
     openCreateModal = () => {
         this.resetForm();
-        this.modalMode = "create";
+        this.modalMode = 'create';
         this.isModalOpen = true;
-    }
+    };
 
     openEditModal = (item) => {
         this.selectedItem = item;
@@ -46,25 +46,25 @@ class InventoryStore {
             name: item.name,
             type: item.type,
             quantity: item.quantity,
-            quantityType: item.quantityType || "",
+            quantityType: item.quantityType || '',
             isImportant: item.isImportant || false,
             desiredQuantity: item.desiredQuantity || 0,
         };
         this.errors = {};
-        this.modalMode = "edit";
+        this.modalMode = 'edit';
         this.isModalOpen = true;
-    }
+    };
 
     openDeleteModal = (item) => {
         this.selectedItem = item;
-        this.modalMode = "delete";
+        this.modalMode = 'delete';
         this.isModalOpen = true;
-    }
+    };
 
     closeModal = () => {
         this.isModalOpen = false;
         this.errors = {};
-    }
+    };
 
     displayToast = (title, message) => {
         this.toastMessage = { title, message };
@@ -72,7 +72,7 @@ class InventoryStore {
         setTimeout(() => {
             this.showToast = false;
         }, 3000);
-    }
+    };
 
     validateForm(inventory) {
         const newErrors = {};
@@ -81,25 +81,25 @@ class InventoryStore {
         const duplicate = inventory.find(
             (item) =>
                 item.name.toLowerCase() === this.formData.name.trim().toLowerCase() &&
-                (this.modalMode === "create" || item._id !== this.selectedItem._id),
+                (this.modalMode === 'create' || item._id !== this.selectedItem._id),
         );
 
         if (!this.formData.name.trim()) {
-            newErrors.name = "Name is required.";
+            newErrors.name = 'Name is required.';
             isValid = false;
         } else if (duplicate) {
-            newErrors.name = "An item with this name already exists.";
+            newErrors.name = 'An item with this name already exists.';
             isValid = false;
         }
 
-        if (this.formData.quantity === null || this.formData.quantity === "" || this.formData.quantity < 0) {
-            newErrors.quantity = "Quantity must be 0 or higher.";
+        if (this.formData.quantity === null || this.formData.quantity === '' || this.formData.quantity < 0) {
+            newErrors.quantity = 'Quantity must be 0 or higher.';
             isValid = false;
         }
 
         if (this.formData.isImportant) {
-            if (this.formData.desiredQuantity === null || this.formData.desiredQuantity === "" || this.formData.desiredQuantity < 0) {
-                newErrors.desiredQuantity = "Required when marked important.";
+            if (this.formData.desiredQuantity === null || this.formData.desiredQuantity === '' || this.formData.desiredQuantity < 0) {
+                newErrors.desiredQuantity = 'Required when marked important.';
                 isValid = false;
             }
         }
@@ -109,11 +109,11 @@ class InventoryStore {
     }
 
     handleSubmit = async (inventory) => {
-        if (this.modalMode !== "delete" && !this.validateForm(inventory)) {
+        if (this.modalMode !== 'delete' && !this.validateForm(inventory)) {
             return;
         }
 
-        const baseUrl = "http://localhost:3030/inventory/";
+        const baseUrl = 'http://localhost:3030/inventory/';
 
         const payload = {
             ...this.formData,
@@ -122,21 +122,21 @@ class InventoryStore {
 
         try {
             let response;
-            if (this.modalMode === "create") {
+            if (this.modalMode === 'create') {
                 response = await fetch(baseUrl, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload),
                 });
-            } else if (this.modalMode === "edit") {
+            } else if (this.modalMode === 'edit') {
                 response = await fetch(`${baseUrl}${this.selectedItem._id}`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(this.formData),
                 });
-            } else if (this.modalMode === "delete") {
+            } else if (this.modalMode === 'delete') {
                 response = await fetch(`${baseUrl}${this.selectedItem._id}`, {
-                    method: "DELETE",
+                    method: 'DELETE',
                 });
             }
 
@@ -145,14 +145,14 @@ class InventoryStore {
                 await invalidateAll();
                 
                 // Show success toast
-                if (this.modalMode === "create") {
-                    this.displayToast("Item added successfully", `${this.formData.name} has been added to your inventory`);
+                if (this.modalMode === 'create') {
+                    this.displayToast('Item added successfully', `${this.formData.name} has been added to your inventory`);
                 }
             }
         } catch (error) {
-            console.error("Network Error", error);
+            console.error('Network Error', error);
         }
-    }
+    };
 }
 
 export const inventoryStore = new InventoryStore();

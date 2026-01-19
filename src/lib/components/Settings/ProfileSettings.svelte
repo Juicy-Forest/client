@@ -14,10 +14,10 @@
     password: { value: string; error: string; success: string };
   }
 
-  let {
-    user,
-    formState,
-    clearAllMessages
+  const {
+      user,
+      formState,
+      clearAllMessages
   } = $props<{
     user: User;
     formState: FormState;
@@ -33,16 +33,15 @@
     error={formState.username.error}
     success={formState.username.success}
     onEnhance={createFieldEnhancer({
-      fieldName: 'username',
-      formState,
-      clearAllMessages,
-      shouldReload: true,
-      onSuccess: (data) => {
-        user.username = data?.newUsername;
-      }
+        fieldName: 'username',
+        formState,
+        clearAllMessages,
+        shouldReload: true,
+        onSuccess: (data) => {
+            user.username = data?.newUsername;
+        }
     })}
   >
-    {#snippet children()}
       <div class="space-y-4">
         <div>
           <label for="newUsername" class="block text-xs font-medium text-stone-600 mb-2">Current Username: {user.username}</label>
@@ -57,7 +56,6 @@
           <ChangeButton settingField="username" />
         </div>
       </div>
-    {/snippet}
   </SettingSection>
 
   <SettingSection
@@ -67,16 +65,15 @@
     error={formState.email.error}
     success={formState.email.success}
     onEnhance={createFieldEnhancer({
-      fieldName: 'email',
-      formState,
-      clearAllMessages,
-      shouldReload: true,
-      onSuccess: (data) => {
-        user.email = data?.newEmail;
-      }
+        fieldName: 'email',
+        formState,
+        clearAllMessages,
+        shouldReload: true,
+        onSuccess: (data) => {
+            user.email = data?.newEmail;
+        }
     })}
   >
-    {#snippet children()}
       <div class="space-y-4">
         <div>
           <label for="newEmail" class="block text-xs font-medium text-stone-600 mb-2">Current Email: {user.email}</label>
@@ -91,7 +88,6 @@
           <ChangeButton settingField="email" />
         </div>
       </div>
-    {/snippet}
   </SettingSection>
 
   <SettingSection
@@ -101,13 +97,12 @@
     error={formState.password.error}
     success={formState.password.success}
     onEnhance={createFieldEnhancer({
-      fieldName: 'password',
-      formState,
-      clearAllMessages,
-      shouldReload: false
+        fieldName: 'password',
+        formState,
+        clearAllMessages,
+        shouldReload: false
     })}
   >
-    {#snippet children()}
       <div class="space-y-4">
         <div>
           <label for="newPassword" class="block text-xs font-medium text-stone-600 mb-2">New Password</label>
@@ -122,6 +117,5 @@
           <ChangeButton settingField="password" />
         </div>
       </div>
-    {/snippet}
   </SettingSection>
 </div>

@@ -1,37 +1,37 @@
 
 <script>
   //@ts-nocheck
-  import { invalidateAll } from "$app/navigation";
-  import SideBar from "$lib/components/Tasks/SideBar.svelte";
-  import TaskHeader from "$lib/components/Tasks/TaskHeader.svelte";
-  import TaskSection from "$lib/components/Tasks/TaskSection.svelte";
-  import Toast from "$lib/components/UI/Toast.svelte";
+  import { invalidateAll } from '$app/navigation';
+  import SideBar from '$lib/components/Tasks/SideBar.svelte';
+  import TaskHeader from '$lib/components/Tasks/TaskHeader.svelte';
+  import TaskSection from '$lib/components/Tasks/TaskSection.svelte';
+  import Toast from '$lib/components/UI/Toast.svelte';
 
-  let { data } = $props();
+  const { data } = $props();
 
-  let sections = $derived(data.sectionData?.map(section => ({
-    _id: section._id,
-    color: section.color,
-    initials: section.sectionName.charAt(0).toUpperCase(),
-    title: section.sectionName,
-    assigned: data.userData?.username || "You"
+  const sections = $derived(data.sectionData?.map(section => ({
+      _id: section._id,
+      color: section.color,
+      initials: section.sectionName.charAt(0).toUpperCase(),
+      title: section.sectionName,
+      assigned: data.userData?.username || 'You'
   })) || []);
 
   // Group tasks by sectionId
-  let tasksBySection = $derived(sections.reduce((acc, section) => {
-    acc[section._id] = data.tasks.filter(task => task.sectionId === section._id);
-    return acc;
+  const tasksBySection = $derived(sections.reduce((acc, section) => {
+      acc[section._id] = data.tasks.filter(task => task.sectionId === section._id);
+      return acc;
   }, {}));
 
   let showToast = $state(false);
-  let toastMessage = $state({ title: "", message: "" });
+  let toastMessage = $state({ title: '', message: '' });
 
   function displayToast(title, message) {
-    toastMessage = { title, message };
-    showToast = true;
-    setTimeout(() => {
-      showToast = false;
-    }, 3000);
+      toastMessage = { title, message };
+      showToast = true;
+      setTimeout(() => {
+          showToast = false;
+      }, 3000);
   }
 
 </script>

@@ -1,49 +1,49 @@
 <script lang="ts">
-  import { fly } from "svelte/transition";
-  import { cubicOut } from "svelte/easing";
+  import { fly } from 'svelte/transition';
+  import { cubicOut } from 'svelte/easing';
 
-  let { timestamp, onEdit, onUnsend, onClose } = $props();
+  const { timestamp, onEdit, onUnsend, onClose } = $props();
   
   let popupEl: HTMLDivElement;
   let openAbove = $state(true);
 
   // Check available space and position popup accordingly
   $effect(() => {
-    if (popupEl) {
-      const rect = popupEl.getBoundingClientRect();
-      const spaceAbove = rect.top;
-      const spaceBelow = window.innerHeight - rect.bottom;
+      if (popupEl) {
+          const rect = popupEl.getBoundingClientRect();
+          const spaceAbove = rect.top;
+          const spaceBelow = window.innerHeight - rect.bottom;
       
-      // If positioned above but not enough space, flip to below
-      // If positioned below but not enough space, flip to above
-      const popupHeight = rect.height;
+          // If positioned above but not enough space, flip to below
+          // If positioned below but not enough space, flip to above
+          const popupHeight = rect.height;
       
-      if (openAbove && spaceAbove < popupHeight && spaceBelow > popupHeight) {
-        openAbove = false;
-      } else if (!openAbove && spaceBelow < popupHeight && spaceAbove > popupHeight) {
-        openAbove = true;
+          if (openAbove && spaceAbove < popupHeight && spaceBelow > popupHeight) {
+              openAbove = false;
+          } else if (!openAbove && spaceBelow < popupHeight && spaceAbove > popupHeight) {
+              openAbove = true;
+          }
       }
-    }
   });
 
   function formatDateTime(ts: string) {
-    const date = new Date(ts);
-    return date.toLocaleString([], {
-      dateStyle: "medium",
-      timeStyle: "short",
-    });
+      const date = new Date(ts);
+      return date.toLocaleString([], {
+          dateStyle: 'medium',
+          timeStyle: 'short',
+      });
   }
 
   function handleBackdropClick(e: MouseEvent) {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
+      if (e.target === e.currentTarget) {
+          onClose();
+      }
   }
 
   function handleKeydown(e: KeyboardEvent) {
-    if (e.key === "Escape") {
-      onClose();
-    }
+      if (e.key === 'Escape') {
+          onClose();
+      }
   }
 </script>
 

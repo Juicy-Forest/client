@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { GardenData, Garden, GridBoxType, IconType } from "$lib/types/garden.js";
-  import type { SectionData, SectionInfo } from "$lib/types/section.js";
-  import { handleReturnGridClasses } from "$lib/utils/grid.js";
+  import type { GardenData, Garden, GridBoxType, IconType } from '$lib/types/garden.js';
+  import type { SectionData, SectionInfo } from '$lib/types/section.js';
+  import { handleReturnGridClasses } from '$lib/utils/grid.js';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
   import { fly, fade } from 'svelte/transition';
@@ -9,87 +9,87 @@
   let sensorData = $state({});
 
   onMount(() => {
-    const ws = new WebSocket("ws://localhost:3034");
-    ws.onopen = () => {
-      console.log('client connected to sensors microservice');
-    }
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      // console.log(data);
-      sensorData = data;
-    }
-    return () => {
-      ws?.close();
-    }
+      const ws = new WebSocket('ws://localhost:3034');
+      ws.onopen = () => {
+          console.log('client connected to sensors microservice');
+      };
+      ws.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+          // console.log(data);
+          sensorData = data;
+      };
+      return () => {
+          ws?.close();
+      };
   });
 
   // State variables
-  let { data } = $props();
+  const { data } = $props();
   // from server
-  let sectionData: SectionData = data.sectionData.flat();
+  const sectionData: SectionData = data.sectionData.flat();
 
-  let gardens = $state(data?.gardenData ?? []);
+  const gardens = $state(data?.gardenData ?? []);
   let sectionToDisplay: null | SectionInfo = $state(null);
-  let user: any = $state(data.userData);
+  const user: any = $state(data.userData);
   let currentGarden = $state(gardens[0]);
   let gardenGrid = $derived(currentGarden?.grid ?? []);
   let grid = $derived(gardenGrid);
 
   // Get current garden 
   $effect(() => {
-    const gardenId = $page.url.searchParams.get('gardenId');
-    currentGarden = gardenId ? gardens.find(g => g._id === gardenId) || gardens[0] : gardens[0];
-    gardenGrid = currentGarden ? currentGarden.grid : [];
-    grid = gardenGrid;
+      const gardenId = $page.url.searchParams.get('gardenId');
+      currentGarden = gardenId ? gardens.find(g => g._id === gardenId) || gardens[0] : gardens[0];
+      gardenGrid = currentGarden ? currentGarden.grid : [];
+      grid = gardenGrid;
   });
 
   // Filter sections for current garden
-  let currentSections = $derived(sectionData.filter(s => s.garden._id === currentGarden?._id));
+  const currentSections = $derived(sectionData.filter(s => s.garden._id === currentGarden?._id));
 
   const handleInspectSection = function (sectionId: string | null) {
-    if (!sectionId) return;
-    const section = currentSections.find((s: SectionInfo) => s._id === sectionId);
-    if (!section) return;
-    sectionToDisplay = section;
+      if (!sectionId) return;
+      const section = currentSections.find((s: SectionInfo) => s._id === sectionId);
+      if (!section) return;
+      sectionToDisplay = section;
   };
 
   export const plantTypes: IconType[] = [
-    {
-      type: "Plant",
-      icon: "🌱",
-    },
-    {
-      type: "Bush",
-      icon: "🌿",
-    },
-    {
-      type: "Tree",
-      icon: "🌾",
-    },
-    {
-      type: "Flower",
-      icon: "🌸",
-    },
-    {
-      type: "Greenhouse",
-      icon: "🏡",
-    },
-    {
-      type: "Pathway",
-      icon: "⬜",
-    },
-    {
-      type: "Pond",
-      icon: "🐸",
-    },
-    {
-      type: "Fence",
-      icon: "🪜",
-    },
+      {
+          type: 'Plant',
+          icon: '🌱',
+      },
+      {
+          type: 'Bush',
+          icon: '🌿',
+      },
+      {
+          type: 'Tree',
+          icon: '🌾',
+      },
+      {
+          type: 'Flower',
+          icon: '🌸',
+      },
+      {
+          type: 'Greenhouse',
+          icon: '🏡',
+      },
+      {
+          type: 'Pathway',
+          icon: '⬜',
+      },
+      {
+          type: 'Pond',
+          icon: '🐸',
+      },
+      {
+          type: 'Fence',
+          icon: '🪜',
+      },
   ];
   const typeToIcon = function (type: string) {
-    const res = plantTypes.find((obj) => obj.type === type) as IconType;
-    return res.icon;
+      const res = plantTypes.find((obj) => obj.type === type) as IconType;
+      return res.icon;
   };
 </script>
 
@@ -211,9 +211,9 @@
                 {#each grid as gridItem, i (gridItem.index)}
                   <button
                     onclick={() =>
-                      handleInspectSection(
-                        gridItem.section && gridItem.section
-                      )}
+                        handleInspectSection(
+                            gridItem.section && gridItem.section
+                        )}
                     aria-label="Grid cell"
                     class={`border border-stone-300/40 cursor-pointer flex items-center justify-center w-7 h-7 transition-all hover:brightness-95
                       ${handleReturnGridClasses(gridItem.section, currentSections)} `}
