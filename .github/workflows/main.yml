@@ -48,17 +48,16 @@ jobs:
 
       - name: Confirm functionality of build
         run: |
-          npm install -g serve
-          serve -s dist -l 3000 &
+          node build &
           sleep 5
-          curl -f http://localhost:3000 || exit 1
-          echo "Build is functional and serving"
+          curl -f http://localhost:3000 || http://localhost:4173 || exit 1
+          echo "build is functional and responding"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: production-build
-          path: dist/
+          path: build/
 
   all-checks-passed:
     runs-on: ubuntu-latest
