@@ -48,9 +48,9 @@ jobs:
 
       - name: Confirm functionality of build
         run: |
-          node build &
+          npm run preview &
           sleep 5
-          curl -f http://localhost:3000 || http://localhost:4173 || exit 1
+          curl -f http://localhost:4173 || exit 1
           echo "build is functional and responding"
 
       - name: Upload build artifact
