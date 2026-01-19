@@ -46,6 +46,19 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Confirm functionality of build
+        run: |
+          npx vite preview --port 4173 &
+          sleep 8
+          curl -f http://localhost:4173 || exit 1
+          echo "build is functional and responding"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-build
+          path: .svelte-kit/output/
+
   all-checks-passed:
     runs-on: ubuntu-latest
     needs: [frontend-actions]
