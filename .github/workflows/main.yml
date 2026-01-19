@@ -49,7 +49,7 @@ jobs:
       - name: Confirm functionality of build
         run: |
           npm install -g serve
-          serve -s build -l 3000 &
+          serve -s dist -l 3000 &
           sleep 5
           curl -f http://localhost:3000 || exit 1
           echo "Build is functional and serving"
