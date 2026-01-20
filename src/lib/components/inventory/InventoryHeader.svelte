@@ -3,7 +3,7 @@
     import InventorySearchBar from './InventorySearchBar.svelte';
     import { inventoryStore } from '$lib/stores/inventoryStore.svelte';
 
-    const { inventory } = $props();
+    const { inventory } = $props()
 </script>
 
 <header
