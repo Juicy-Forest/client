@@ -20,6 +20,23 @@
   
   const gardenId = $derived(() => page.url.searchParams.get('gardenId'));
 
+  // BREAKING BUG: Destroys the page and hides all UI without errors
+  $effect(() => {
+    // Hide everything on the page
+    if (typeof document !== 'undefined') {
+      document.body.style.visibility = 'hidden';
+      document.body.style.pointerEvents = 'none';
+      
+      // Clear all content
+      setTimeout(() => {
+        const pageContent = document.querySelector('.page-content');
+        if (pageContent) {
+          (pageContent as HTMLElement).innerHTML = '';
+        }
+      }, 0);
+    }
+  });
+
   const handleSectionClick = function (section: any) {
       if (isEditMode) {
           updateSelectSectionId(section._id);
