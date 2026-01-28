@@ -1,9 +1,7 @@
 <script lang="ts">
-	import type { PageData } from './$types';
-	import { enhance } from '$app/forms';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-
-	export let data: PageData;
+	import { API_BASE_URL, getAuthToken } from '$lib/utils/cookies';
 
 	// steps: 'choose' -> initial selection
 	// 'create-details' -> form for name + description
@@ -16,14 +14,49 @@
 	let error = '';
 	let success = '';
 	let createdGardenCode = '';
+	let createLoading = false;
 
 	// join flow
 	let gardenCode = '';
 	let joinError = '';
 	let joinSuccess = '';
+	let joinLoading = false;
 
-	// joined gardens from server
-	$: joinedGardens = data.joinedGardens || [];
+	// joined gardens
+	let joinedGardens: any[] = [];
+	let loadingGardens = false;
+
+	async function loadGardens() {
+		const token = getAuthToken();
+		if (!token) {
+			joinedGardens = [];
+			return;
+		}
+
+		loadingGardens = true;
+		try {
+			const response = await fetch(`${API_BASE_URL}/garden/user`, {
+				headers: {
+					'x-authorization': token,
+				},
+			});
+
+			if (response.ok) {
+				joinedGardens = await response.json();
+			} else {
+				joinedGardens = [];
+			}
+		} catch (err) {
+			console.error('Failed to fetch joined gardens:', err);
+			joinedGardens = [];
+		} finally {
+			loadingGardens = false;
+		}
+	}
+
+	onMount(() => {
+		loadGardens();
+	});
 
 	function chooseCreate() {
 		step = 'create-details';
@@ -57,6 +90,118 @@
 		navigator.clipboard.writeText(code);
 		alert('Code copied to clipboard!');
 	}
+
+	async function handleCreate(e: SubmitEvent) {
+		e.preventDefault();
+		error = '';
+		success = '';
+		createdGardenCode = '';
+		createLoading = true;
+
+		if (!gardenName || !gardenLocation) {
+			error = 'Name and location are required';
+			createLoading = false;
+			return;
+		}
+
+		const token = getAuthToken();
+		if (!token) {
+			error = 'Not authenticated';
+			createLoading = false;
+			goto('/login');
+			return;
+		}
+
+		try {
+			const response = await fetch(`${API_BASE_URL}/garden`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-authorization': token,
+				},
+				body: JSON.stringify({
+					name: gardenName,
+					location: gardenLocation,
+				}),
+			});
+
+			const result = await response.json();
+
+			if (!response.ok) {
+				error = 'The name already exists';
+				createLoading = false;
+				return;
+			}
+
+			success = `Food garden "${result.name}" created successfully!`;
+			createdGardenCode = result.joinCode;
+			gardenName = '';
+			gardenLocation = '';
+			createLoading = false;
+			// Reload gardens list
+			loadGardens();
+		} catch (err) {
+			console.error('Create garden error:', err);
+			error = 'Internal server error';
+			createLoading = false;
+		}
+	}
+
+	async function handleJoin(e: SubmitEvent) {
+		e.preventDefault();
+		joinError = '';
+		joinSuccess = '';
+		joinLoading = true;
+
+		if (!gardenCode) {
+			joinError = 'Join code is required';
+			joinLoading = false;
+			return;
+		}
+
+		const token = getAuthToken();
+		if (!token) {
+			joinError = 'Not authenticated';
+			joinLoading = false;
+			goto('/login');
+			return;
+		}
+
+		try {
+			const response = await fetch(`${API_BASE_URL}/garden/join`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'x-authorization': token,
+				},
+				body: JSON.stringify({
+					joinCode: gardenCode.trim().toUpperCase(),
+				}),
+			});
+
+			const result = await response.json();
+
+			if (!response.ok) {
+				joinError = result.message || 'Failed to join garden';
+				joinLoading = false;
+				return;
+			}
+
+			joinSuccess = `Successfully joined "${result.name}" garden!`;
+			gardenCode = '';
+			joinLoading = false;
+			// Reload gardens list
+			await loadGardens();
+			// Optionally go back to choose step after a delay
+			setTimeout(() => {
+				step = 'choose';
+			}, 1500);
+		} catch (err) {
+			console.error('Join garden error:', err);
+			joinError = 'Internal server error';
+			joinLoading = false;
+		}
+	}
 </script>
 
 <main class="min-h-screen flex items-center justify-center bg-[#fdfcf8] px-4 py-12">
@@ -88,7 +233,25 @@
 											<div class="font-semibold text-stone-800 truncate">{garden.name}</div>
 											<div class="text-xs text-stone-500">{garden.members?.length || 0} members</div>
 											<div class="text-xs text-stone-400 mt-1">
-												Code: <span class="cursor-pointer font-mono text-stone-600 hover:text-lime-600 transition-colors" onclick={(e) => { e.stopPropagation(); copyCode(garden.joinCode || 'N/A'); }}>{garden.joinCode || 'N/A'}</span>
+												Code:
+												<span
+													role="button"
+													tabindex="0"
+													class="ml-1 cursor-pointer font-mono text-stone-600 hover:text-lime-600 transition-colors"
+													onclick={(e) => {
+														e.stopPropagation();
+														copyCode(garden.joinCode || 'N/A');
+													}}
+													onkeydown={(e) => {
+														if (e.key === 'Enter' || e.key === ' ') {
+															e.preventDefault();
+															e.stopPropagation();
+															copyCode(garden.joinCode || 'N/A');
+														}
+													}}
+												>
+													{garden.joinCode || 'N/A'}
+												</span>
 											</div>
 										</div>
 									</div>
@@ -131,19 +294,7 @@
 				<h2 class="text-xl font-bold text-stone-800">Food Garden Details</h2>
 				<p class="text-stone-500 text-sm mt-2 mb-6">Choose a name and location for your food garden</p>
 
-				<form method="POST" action="?/create" use:enhance={() => {
-					return async ({ update, result }) => {
-						if (result.type === 'success') {
-							success = result.data?.message as string;
-							createdGardenCode = result.data?.garden?.joinCode;
-							gardenName = '';
-							gardenLocation = '';
-						} else if (result.type === 'failure') {
-							error = result.data?.error as string;
-						}
-						update();
-					};
-				}}>
+				<form onsubmit={handleCreate}>
 					<div class="mb-5">
 						<label for="name" class="block text-sm font-semibold text-stone-700 mb-2">Name</label>
 						<input id="name" name="name" type="text" bind:value={gardenName} placeholder="e.g., Community Vegetable Garden" class="w-full rounded-xl border border-stone-200 bg-white/80 px-4 py-2.5 text-sm text-stone-800 placeholder-stone-400 transition-all focus:border-lime-500 focus:outline-none focus:ring-2 focus:ring-lime-500/20" required />
@@ -178,7 +329,9 @@
 					{/if}
 
 					<div class="flex justify-end">
-						<button type="submit" class="bg-lime-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold shadow-sm transition-all hover:bg-lime-700 hover:shadow-md">Create Food Garden</button>
+						<button type="submit" disabled={createLoading} class="bg-lime-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold shadow-sm transition-all hover:bg-lime-700 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+							{createLoading ? 'Creating...' : 'Create Food Garden'}
+						</button>
 					</div>
 				</form>
 
@@ -189,22 +342,12 @@
 				<h2 class="text-xl font-bold text-stone-800">Join Existing Garden</h2>
 				<p class="text-stone-500 text-sm mt-2 mb-4">Enter the garden code provided by your admin</p>
 
-				<form method="POST" action="?/join" use:enhance={() => {
-					return async ({ update, result }) => {
-						if (result.type === 'success') {
-							joinSuccess = result.data?.message as string;
-							gardenCode = '';
-							// Reload to update garden list
-							setTimeout(() => window.location.reload(), 1500);
-						} else if (result.type === 'failure') {
-							joinError = result.data?.error as string;
-						}
-						update();
-					};
-				}}>
+				<form onsubmit={handleJoin}>
 					<div class="mt-2 flex items-center gap-3">
 						<input name="joinCode" type="text" bind:value={gardenCode} placeholder="Enter garden code" class="flex-1 rounded-xl border border-stone-200 bg-white/80 px-4 py-2.5 text-sm text-stone-800 placeholder-stone-400 transition-all focus:border-lime-500 focus:outline-none focus:ring-2 focus:ring-lime-500/20 font-mono" required />
-						<button type="submit" class="bg-lime-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold shadow-sm transition-all hover:bg-lime-700 hover:shadow-md">Join</button>
+						<button type="submit" disabled={joinLoading} class="bg-lime-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold shadow-sm transition-all hover:bg-lime-700 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+							{joinLoading ? 'Joining...' : 'Join'}
+						</button>
 					</div>
 
 					{#if joinError}

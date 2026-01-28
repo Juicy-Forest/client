@@ -1,18 +1,67 @@
 <script lang="ts">
-    import { enhance } from '$app/forms';
     import { goto } from '$app/navigation';
+    import { API_BASE_URL, setCookie, deleteCookie } from '$lib/utils/cookies';
 
     let username = $state('');
     let email = $state('');
     let password = $state('');
     let confirmPassword = $state('');
     let error = $state('');
+    let loading = $state(false);
 
-    function submit() {
+    async function handleRegister(e: SubmitEvent) {
+        e.preventDefault();
         error = '';
+        loading = true;
+
         if (password !== confirmPassword) {
             error = 'Passwords do not match';
+            loading = false;
             return;
+        }
+
+        if (!username || !email || !password) {
+            error = 'All fields are required';
+            loading = false;
+            return;
+        }
+
+        try {
+            // Clear any existing auth token (logout old account)
+            deleteCookie('auth-token');
+
+            const response = await fetch(`${API_BASE_URL}/users/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username,
+                    email,
+                    password,
+                }),
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                error = result.error || 'Registration failed';
+                loading = false;
+                return;
+            }
+
+            // Store the token from the server response (login new account)
+            if (result.accessToken) {
+                setCookie('auth-token', result.accessToken, 7);
+                setTimeout(() => goto('/createjoin'), 500);
+            } else {
+                error = 'Registration successful but no token received';
+                loading = false;
+            }
+        } catch (err) {
+            console.error('Registration error:', err);
+            error = 'Internal server error';
+            loading = false;
         }
     }
 </script>
@@ -27,15 +76,7 @@
             <p class="text-stone-500 mt-2 text-sm">Create your account</p>
         </div>
 
-        <form method="POST" action="?/register" use:enhance={() => {
-            submit();
-            return async ({ update, result }) => {
-                if (result.type === 'failure') {
-                    error = result.data?.error as string;
-                }
-                update();
-            };
-        }} class="bg-white/80 backdrop-blur-xl rounded-2xl border border-stone-200/60 shadow-xl shadow-stone-200/20 p-8">
+        <form onsubmit={handleRegister} class="bg-white/80 backdrop-blur-xl rounded-2xl border border-stone-200/60 shadow-xl shadow-stone-200/20 p-8">
             <h2 class="text-xl font-bold text-stone-800 mb-6">Get started</h2>
             
             <div class="mb-5">
@@ -65,9 +106,11 @@
                 </div>
             {/if}
 
-            <button type="submit" class="w-full bg-lime-600 text-white py-2.5 rounded-xl text-sm font-semibold shadow-sm transition-all hover:bg-lime-700 hover:shadow-md">Sign Up</button>
+            <button type="submit" disabled={loading} class="w-full bg-lime-600 text-white py-2.5 rounded-xl text-sm font-semibold shadow-sm transition-all hover:bg-lime-700 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                {loading ? 'Signing up...' : 'Sign Up'}
+            </button>
 
-            <p class="text-center text-stone-500 text-sm mt-6">Already have an account? <button type="button" on:click={() => goto('/login')} class="text-lime-600 font-semibold bg-transparent border-none cursor-pointer hover:text-lime-700 transition-colors">Sign in</button></p>
+            <p class="text-center text-stone-500 text-sm mt-6">Already have an account? <button type="button" onclick={() => goto('/login')} class="text-lime-600 font-semibold bg-transparent border-none cursor-pointer hover:text-lime-700 transition-colors">Sign in</button></p>
         </form>
     </div>
 </main>

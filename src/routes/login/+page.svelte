@@ -1,11 +1,60 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { enhance } from '$app/forms';
+    import { API_BASE_URL, setCookie } from '$lib/utils/cookies';
 
     let email = $state('');
     let password = $state('');
     let error = $state('');
     let success = $state('');
+    let loading = $state(false);
+
+    async function handleLogin(e: SubmitEvent) {
+        e.preventDefault();
+        error = '';
+        success = '';
+        loading = true;
+
+        if (!email || !password) {
+            error = 'Email and password are required';
+            loading = false;
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/users/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email,
+                    password,
+                }),
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                error = result.message || 'Incorrect email or password';
+                loading = false;
+                return;
+            }
+
+            // Store the token from the server response
+            if (result.accessToken) {
+                setCookie('auth-token', result.accessToken, 7);
+                success = 'Login successful!';
+                setTimeout(() => goto('/createjoin'), 1000);
+            } else {
+                error = 'No access token received';
+                loading = false;
+            }
+        } catch (err) {
+            console.error('Login API error:', err);
+            error = 'Internal server error';
+            loading = false;
+        }
+    }
 </script>
 
 <main class="min-h-screen flex items-center justify-center bg-[#fdfcf8] px-4">
@@ -18,17 +67,7 @@
             <p class="text-stone-500 mt-2 text-sm">Manage your garden with ease</p>
         </div>
 
-        <form method="POST" action="?/login" use:enhance={() => {
-            return async ({ update, result }) => {
-                if (result.type === 'success') {
-                    success = result.data?.message as string;
-                    setTimeout(() => goto('/createjoin'), 2000);
-                } else if (result.type === 'failure') {
-                    error = result.data?.error as string;
-                }
-                update();
-            };
-        }} class="bg-white/80 backdrop-blur-xl rounded-2xl border border-stone-200/60 shadow-xl shadow-stone-200/20 p-8">
+        <form onsubmit={handleLogin} class="bg-white/80 backdrop-blur-xl rounded-2xl border border-stone-200/60 shadow-xl shadow-stone-200/20 p-8">
             <h2 class="text-xl font-bold text-stone-800 mb-6">Welcome back</h2>
             
             <div class="mb-5">
@@ -55,9 +94,11 @@
                 </div>
             {/if}
 
-            <button type="submit" class="w-full bg-lime-600 text-white py-2.5 rounded-xl text-sm font-semibold shadow-sm transition-all hover:bg-lime-700 hover:shadow-md">Sign In</button>
+            <button type="submit" disabled={loading} class="w-full bg-lime-600 text-white py-2.5 rounded-xl text-sm font-semibold shadow-sm transition-all hover:bg-lime-700 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                {loading ? 'Signing in...' : 'Sign In'}
+            </button>
 
-            <p class="text-center text-stone-500 text-sm mt-6">Don't have an account? <button type="button" on:click={() => goto('/register')} class="text-lime-600 font-semibold bg-transparent border-none cursor-pointer hover:text-lime-700 transition-colors">Sign up</button></p>
+            <p class="text-center text-stone-500 text-sm mt-6">Don't have an account? <button type="button" onclick={() => goto('/register')} class="text-lime-600 font-semibold bg-transparent border-none cursor-pointer hover:text-lime-700 transition-colors">Sign up</button></p>
         </form>
     </div>
 </main>
