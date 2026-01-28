@@ -22,12 +22,12 @@
     gardenName: { value: string; error: string; success: string };
   }
 
-  let {
-    user,
-    gardens,
-    formState,
-    clearAllMessages,
-    openDeleteGardenModal
+  const {
+      user,
+      gardens,
+      formState,
+      clearAllMessages,
+      openDeleteGardenModal
   } = $props<{
     user: User;
     gardens: Garden[];
@@ -47,18 +47,17 @@
         error={formState.gardenName.error}
         success={formState.gardenName.success}
         onEnhance={createFieldEnhancer({
-          fieldName: 'gardenName',
-          formState,
-          clearAllMessages,
-          shouldReload: false,
-          onSuccess: (data) => {
-            if (gardens[0]) {
-              gardens[0].name = data?.newGardenName;
+            fieldName: 'gardenName',
+            formState,
+            clearAllMessages,
+            shouldReload: false,
+            onSuccess: (data) => {
+                if (gardens[0]) {
+                    gardens[0].name = data?.newGardenName;
+                }
             }
-          }
         })}
       >
-        {#snippet children()}
           <div class="space-y-4">
             <div>
               <label for="gardenName" class="block text-xs font-medium text-stone-600 mb-2">Current Garden Name: {gardens[0]?.name}</label>
@@ -74,7 +73,6 @@
               <ChangeButton settingField="Garden name" />
             </div>
           </div>
-        {/snippet}
       </SettingSection>
 
       <GardenMembers 
@@ -83,7 +81,7 @@
         isOwner={true}
         gardenId={gardens[0]?._id}
         onMemberRemoved={() => {
-          location.reload();
+            location.reload();
         }}
       />
 

@@ -1,5 +1,5 @@
 <script>
-    let { item, onEdit, onDelete } = $props();
+    const { item, onEdit, onDelete } = $props();
     
     const typeIcons = {
         plant: 'fa-seedling',

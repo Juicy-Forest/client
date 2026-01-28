@@ -1,16 +1,16 @@
 <script lang="ts">
-  import type { ChatService } from "$lib/services/chat.svelte";
-  import { getContext } from "svelte";
+  import type { ChatService } from '$lib/services/chat.svelte';
+  import { getContext } from 'svelte';
 
-  let draftMessage = $state("");
-  const chat: ChatService = getContext("chatService");
+  let draftMessage = $state('');
+  const chat: ChatService = getContext('chatService');
 
   function handleSubmit(e: Event) {
-    e.preventDefault();
-    if (draftMessage.trim()) {
-      chat.sendMessage(draftMessage);
-      draftMessage = "";
-    }
+      e.preventDefault();
+      if (draftMessage.trim()) {
+          chat.sendMessage(draftMessage);
+          draftMessage = '';
+      }
   }
 </script>
 

@@ -5,7 +5,7 @@
     activeChannel: Channel;
   }
 
-  let { activeChannel }: Props = $props();
+  const { activeChannel }: Props = $props();
 </script>
 
 <header class="flex flex-wrap items-center justify-between gap-4 border-b border-stone-100 bg-white/50 px-8 py-5 backdrop-blur-sm">

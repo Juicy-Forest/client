@@ -5,25 +5,25 @@
 
     const { inventory } = $props();
     
-    const selectedInventoryType = getContext("selectedInventoryType");
-    const searchBarInput = getContext("inventorySearchBarInput")
+    const selectedInventoryType = getContext('selectedInventoryType');
+    const searchBarInput = getContext('inventorySearchBarInput');
     
     const filteredItems = $derived(
-        selectedInventoryType.selectedInventoryType === "all"
+        selectedInventoryType.selectedInventoryType === 'all'
             ? inventory
             : inventory.filter((item) =>
-                    selectedInventoryType.selectedInventoryType === true
-                        ? item.isImportant
-                        : item.type === 
+                selectedInventoryType.selectedInventoryType === true
+                    ? item.isImportant
+                    : item.type === 
 							selectedInventoryType.selectedInventoryType,
-                ),
+            ),
     );
 
         const filteredSearchItems = $derived(
-        searchBarInput.value != ""
-            ? filteredItems.filter((item) => item.name.toLowerCase().includes(searchBarInput.value.toLowerCase()))
-            : filteredItems,
-    );
+            searchBarInput.value !== ''
+                ? filteredItems.filter((item) => item.name.toLowerCase().includes(searchBarInput.value.toLowerCase()))
+                : filteredItems,
+        );
 
 </script>
 

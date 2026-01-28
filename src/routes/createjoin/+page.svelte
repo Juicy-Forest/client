@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { API_BASE_URL, getAuthToken } from '$lib/utils/cookies';
 
@@ -59,36 +60,36 @@
 	});
 
 	function chooseCreate() {
-		step = 'create-details';
-		error = '';
-		success = '';
-		createdGardenCode = '';
+	    step = 'create-details';
+	    error = '';
+	    success = '';
+	    createdGardenCode = '';
 	}
 
 	function chooseJoin() {
-		step = 'join';
-		joinError = '';
-		joinSuccess = '';
+	    step = 'join';
+	    joinError = '';
+	    joinSuccess = '';
 	}
 
 	function back() {
-		if (step === 'create-details') {
-			step = 'choose';
-			return;
-		}
-		if (step === 'join') {
-			step = 'choose';
-			return;
-		}
+	    if (step === 'create-details') {
+	        step = 'choose';
+	        return;
+	    }
+	    if (step === 'join') {
+	        step = 'choose';
+	        return;
+	    }
 	}
 
 	function selectGarden(garden: any) {
-		goto('/?gardenId=' + garden._id);
+	    goto('/?gardenId=' + garden._id);
 	}
 
 	function copyCode(code: string) {
-		navigator.clipboard.writeText(code);
-		alert('Code copied to clipboard!');
+	    navigator.clipboard.writeText(code);
+	    alert('Code copied to clipboard!');
 	}
 
 	async function handleCreate(e: SubmitEvent) {
@@ -294,7 +295,34 @@
 				<h2 class="text-xl font-bold text-stone-800">Food Garden Details</h2>
 				<p class="text-stone-500 text-sm mt-2 mb-6">Choose a name and location for your food garden</p>
 
-				<form onsubmit={handleCreate}>
+				<form
+					method="POST"
+					action="?/create"
+					use:enhance={({ cancel }) => {
+						error = '';
+						success = '';
+						createdGardenCode = '';
+						createLoading = true;
+
+						return async ({ update, result }) => {
+							createLoading = false;
+
+							if (result.type === 'success') {
+								const data = result.data as any;
+								success = (data?.message as string) ?? '';
+								createdGardenCode = data?.garden?.joinCode ?? '';
+								gardenName = '';
+								gardenLocation = '';
+							} else if (result.type === 'failure') {
+								error = (result.data?.error as string) ?? 'Failed to create garden';
+							} else if (result.type === 'error') {
+								error = 'Failed to create garden';
+							}
+
+							await update();
+						};
+					}}
+				>
 					<div class="mb-5">
 						<label for="name" class="block text-sm font-semibold text-stone-700 mb-2">Name</label>
 						<input id="name" name="name" type="text" bind:value={gardenName} placeholder="e.g., Community Vegetable Garden" class="w-full rounded-xl border border-stone-200 bg-white/80 px-4 py-2.5 text-sm text-stone-800 placeholder-stone-400 transition-all focus:border-lime-500 focus:outline-none focus:ring-2 focus:ring-lime-500/20" required />
@@ -342,7 +370,32 @@
 				<h2 class="text-xl font-bold text-stone-800">Join Existing Garden</h2>
 				<p class="text-stone-500 text-sm mt-2 mb-4">Enter the garden code provided by your admin</p>
 
-				<form onsubmit={handleJoin}>
+				<form
+					method="POST"
+					action="?/join"
+					use:enhance={() => {
+						joinError = '';
+						joinSuccess = '';
+						joinLoading = true;
+
+						return async ({ update, result }) => {
+							joinLoading = false;
+
+							if (result.type === 'success') {
+								joinSuccess = (result.data?.message as string) ?? '';
+								gardenCode = '';
+								// Reload to update garden list
+								setTimeout(() => window.location.reload(), 1500);
+							} else if (result.type === 'failure') {
+								joinError = (result.data?.error as string) ?? 'Failed to join garden';
+							} else if (result.type === 'error') {
+								joinError = 'Failed to join garden';
+							}
+
+							await update();
+						};
+					}}
+				>
 					<div class="mt-2 flex items-center gap-3">
 						<input name="joinCode" type="text" bind:value={gardenCode} placeholder="Enter garden code" class="flex-1 rounded-xl border border-stone-200 bg-white/80 px-4 py-2.5 text-sm text-stone-800 placeholder-stone-400 transition-all focus:border-lime-500 focus:outline-none focus:ring-2 focus:ring-lime-500/20 font-mono" required />
 						<button type="submit" disabled={joinLoading} class="bg-lime-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold shadow-sm transition-all hover:bg-lime-700 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed">

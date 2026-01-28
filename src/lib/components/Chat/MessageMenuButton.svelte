@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { onclick } = $props();
+  const { onclick } = $props();
 </script>
 
 <button

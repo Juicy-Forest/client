@@ -1,7 +1,7 @@
 <script>
     import { getContext } from 'svelte';
 
-    let inventorySearchBarInput = getContext("inventorySearchBarInput");
+    const inventorySearchBarInput = getContext('inventorySearchBarInput');
 </script>
 
 <div class="relative w-full max-w-xs">
