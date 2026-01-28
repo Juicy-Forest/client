@@ -46,10 +46,13 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: temp debug
+        run: find . -maxdepth 3 -type d
+
       - name: Confirm functionality of build
         run: |
-          npx vite preview --port 4173 &
-          sleep 8
+          npm run preview &
+          sleep 5
           curl -f http://localhost:4173 || exit 1
           echo "build is functional and responding"
 
@@ -57,7 +60,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: production-build
-          path: .svelte-kit/output/
+          path: client/build/
 
   all-checks-passed:
     runs-on: ubuntu-latest
